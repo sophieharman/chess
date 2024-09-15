@@ -59,14 +59,14 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
         // Calculate Possible Moves
-        Collection<ChessMove> moves = pieceMovesCalculator(myPosition);
+        Collection<ChessMove> moves = pieceMovesCalculator(board, myPosition);
         return moves;
     }
 
-    public Collection<ChessMove> pieceMovesCalculator(ChessPosition myPosition)
+    public Collection<ChessMove> pieceMovesCalculator(ChessBoard board, ChessPosition myPosition)
     {
         // Grid Border Positions
-        Collection<ChessMove> borders = new ArrayList<ChessMove>();
+        Collection<ChessPosition> borders = new ArrayList<ChessPosition>();
 
         for(int i = 1; i <= 8; i++)
         {
@@ -82,11 +82,17 @@ public class ChessPiece {
             borders.add(edge4);
         }
 
+        System.out.println(borders);
+
+
+
         // Calculate Bishop Moves
-        if (type == PieceType.BISHOP)
-        {
-            // CODE HERE!!!!
-        }
+//        if (type == PieceType.BISHOP)
+//        {
+        Collection<ChessMove> moves = diagonal(board, myPosition, borders);
+//        }
+
+        return moves;
 
     }
 
@@ -96,16 +102,14 @@ public class ChessPiece {
         return position == null;
     }
 
-    public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, List<List<Integer>> borders)
+    public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> borders)
     {
         Collection<ChessMove> possible_positions = new ArrayList<ChessMove>();
 
-        int curr_a = myPosition.getColumn();
-        int curr_b = myPosition.getRow();
 
         // TOP LEFT DIAGONAL
-        int a1 = curr_a;
-        int b1 = curr_b;
+        int a1 = myPosition.getColumn();
+        int b1 = myPosition.getRow();
         while(true)
         {
             // Coordinates for Possible Position
@@ -119,13 +123,17 @@ public class ChessPiece {
                 break;
             }
 
+            // Call ChessMove Class
+            ChessMove move = new ChessMove(myPosition, pos, type);
             // Append Position to List of Valid Positions
-            possible_positions.add(pos);
+            possible_positions.add(move);
+
+            System.out.println(move);
         }
 
         // BOTTOM RIGHT DIAGONAL
-        int a2 = curr_a;
-        int b2 = curr_b;
+        int a2 = myPosition.getColumn();
+        int b2 = myPosition.getRow();
         while(true)
         {
             a2++;
@@ -138,13 +146,15 @@ public class ChessPiece {
                 break;
             }
 
+            // Call ChessMove Class
+            ChessMove move = new ChessMove(myPosition, pos, type);
             // Append Position to List of Valid Positions
-            possible_positions.add(pos);
+            possible_positions.add(move);
         }
 
         // TOP RIGHT DIAGONAL
-        int a3 = curr_a;
-        int b3 = curr_b;
+        int a3 = myPosition.getColumn();
+        int b3 = myPosition.getRow();
         while(true)
         {
             a3++;
@@ -157,13 +167,15 @@ public class ChessPiece {
                 break;
             }
 
+            // Call ChessMove Class
+            ChessMove move = new ChessMove(myPosition, pos, type);
             // Append Position to List of Valid Positions
-            possible_positions.add(pos);
+            possible_positions.add(move);
         }
 
         // BOTTOM LEFT DIAGONAL
-        int a4 = curr_a;
-        int b4 = curr_b;
+        int a4 = myPosition.getColumn();
+        int b4 = myPosition.getRow();
         while(true)
         {
             a4--;
@@ -176,10 +188,11 @@ public class ChessPiece {
                 break;
             }
 
+            // Call ChessMove Class
+            ChessMove move = new ChessMove(myPosition, pos, type);
             // Append Position to List of Valid Positions
-            possible_positions.add(pos);
+            possible_positions.add(move);
         }
-
 
         return possible_positions;
 

@@ -8,14 +8,12 @@ package chess;
  */
 public class ChessMove {
 
-    // Don't know if I'm doing this right?
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
 
-        // Don't know if I'm doing this right?
         this.startPosition = startPosition;
         this.endPosition = endPosition;
     }
@@ -46,3 +44,6 @@ public class ChessMove {
         throw new RuntimeException("Not implemented");
     }
 }
+
+
+// OVERRIDE EQUALS METHOD!
