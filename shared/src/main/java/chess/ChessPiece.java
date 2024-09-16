@@ -1,8 +1,5 @@
 package chess;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -66,24 +63,21 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMovesCalculator(ChessBoard board, ChessPosition myPosition)
     {
         // Grid Border Positions
-        Collection<ChessPosition> borders = new ArrayList<ChessPosition>();
+        Collection<ChessPosition> borders = new HashSet<ChessPosition>();
 
-        for(int i = 1; i <= 8; i++)
+        for(int i = 0; i <= 9; i++)
         {
 
-            ChessPosition edge1 = new ChessPosition(1, i);
-            ChessPosition edge2 = new ChessPosition(i, 1);
-            ChessPosition edge3 = new ChessPosition(8, i);
-            ChessPosition edge4 = new ChessPosition(i, 8);
+            ChessPosition edge1 = new ChessPosition(0, i);
+            ChessPosition edge2 = new ChessPosition(i, 0);
+            ChessPosition edge3 = new ChessPosition(9, i);
+            ChessPosition edge4 = new ChessPosition(i, 9);
 
             borders.add(edge1);
             borders.add(edge2);
             borders.add(edge3);
             borders.add(edge4);
         }
-
-        System.out.println(borders);
-
 
 
         // Calculate Bishop Moves
@@ -128,7 +122,6 @@ public class ChessPiece {
             // Append Position to List of Valid Positions
             possible_positions.add(move);
 
-            System.out.println(move);
         }
 
         // BOTTOM RIGHT DIAGONAL
@@ -199,6 +192,17 @@ public class ChessPiece {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return type == that.type && pieceColor == that.pieceColor;
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, pieceColor);
+    }
 }
+
