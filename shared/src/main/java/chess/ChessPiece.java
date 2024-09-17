@@ -83,10 +83,17 @@ public class ChessPiece {
     }
 
 
-    public boolean blocked(ChessPosition position)
+    public boolean blocked(ChessBoard board, ChessPosition position)
     {
-        // Return True if Position is Blocked
-        return position == null;
+        ChessPiece piece = board.getPiece(position);
+
+        if(piece == null)
+        {
+            return false;
+        }
+        // Return True if Position is Not Blocked
+        return true;
+
     }
 
     public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> borders)
@@ -97,7 +104,6 @@ public class ChessPiece {
         // TOP LEFT DIAGONAL
         int a1 = myPosition.getColumn();
         int b1 = myPosition.getRow();
-        System.out.println("TOP LEFT:");
         while(true)
         {
             // Coordinates for Possible Position
@@ -107,20 +113,15 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(pos))
+            if(borders.contains(pos) || blocked(board, pos))
             {
                 break;
             }
 
 
-//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
-
-
             // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
             possible_moves.add(move);
-
-            System.out.println(move);
 
 
         }
@@ -128,8 +129,6 @@ public class ChessPiece {
         // BOTTOM RIGHT DIAGONAL
         int a2 = myPosition.getColumn();
         int b2 = myPosition.getRow();
-        System.out.println(" ");
-        System.out.println("BOTTOM RIGHT:");
         while(true)
         {
             a2++;
@@ -138,28 +137,22 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(pos))
+            if(borders.contains(pos) || blocked(board, pos))
             {
                 break;
             }
-
-
-//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
 
 
             // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
             possible_moves.add(move);
 
-            System.out.println(move);
         }
 
 
         // BOTTOM LEFT DIAGONAL
         int a3 = myPosition.getColumn();
         int b3 = myPosition.getRow();
-        System.out.println(" ");
-        System.out.println("BOTTOM LEFT:");
         while(true)
         {
             a3++;
@@ -168,26 +161,20 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(pos))
+            if(borders.contains(pos) || blocked(board, pos))
             {
                 break;
             }
 
 
-//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
-
             // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
             possible_moves.add(move);
-
-            System.out.println(move);
         }
 
         // TOP RIGHT DIAGONAL
         int a4 = myPosition.getColumn();
         int b4 = myPosition.getRow();
-        System.out.println(" ");
-        System.out.println("TOP RIGHT:");
         while(true)
         {
             a4--;
@@ -195,20 +182,15 @@ public class ChessPiece {
             ChessPosition pos = new ChessPosition(b4, a4);
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(pos))
+            if(borders.contains(pos) || blocked(board, pos))
             {
                 break;
             }
 
 
-//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
-
-
             // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
             possible_moves.add(move);
-
-            System.out.println(move);
         }
 
         return possible_moves;
