@@ -55,10 +55,11 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
+
         // Grid Border Positions
         Collection<ChessPosition> borders = new HashSet<ChessPosition>();
 
-        for(int i = 0; i <= 9; i++)
+        for(int i = 1; i <= 8; i++)
         {
 
             ChessPosition edge1 = new ChessPosition(0, i);
@@ -83,14 +84,18 @@ public class ChessPiece {
     }
 
 
-    public boolean blocked(ChessBoard board, ChessPosition position)
+    public boolean blocked(ChessBoard board, ChessPosition position, boolean captured)
     {
         ChessPiece piece = board.getPiece(position);
 
-        if(piece == null)
+        if(piece.getTeamColor() != pieceColor) {
+            captured=true;
+        }
+        if(piece == null||piece.getTeamColor() != pieceColor||captured)
         {
             return false;
         }
+
         // Return True if Position is Not Blocked
         return true;
 
@@ -102,18 +107,19 @@ public class ChessPiece {
 
 
         // TOP LEFT DIAGONAL
-        int a1 = myPosition.getColumn();
-        int b1 = myPosition.getRow();
+        int a = myPosition.getColumn();
+        int b = myPosition.getRow();
+        boolean captured = false;
         while(true)
         {
             // Coordinates for Possible Position
-            a1--;
-            b1--;
-            ChessPosition pos = new ChessPosition(b1, a1);
+            a--;
+            b--;
+            ChessPosition pos = new ChessPosition(b, a);
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos))
+            if(borders.contains(pos) || blocked(board, pos, captured))
             {
                 break;
             }
@@ -127,17 +133,18 @@ public class ChessPiece {
         }
 
         // BOTTOM RIGHT DIAGONAL
-        int a2 = myPosition.getColumn();
-        int b2 = myPosition.getRow();
+        a = myPosition.getColumn();
+        b = myPosition.getRow();
+        captured = false;
         while(true)
         {
-            a2++;
-            b2++;
-            ChessPosition pos = new ChessPosition(b2, a2);
+            a++;
+            b++;
+            ChessPosition pos = new ChessPosition(b, a);
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos))
+            if(borders.contains(pos) || blocked(board, pos, captured))
             {
                 break;
             }
@@ -151,17 +158,18 @@ public class ChessPiece {
 
 
         // BOTTOM LEFT DIAGONAL
-        int a3 = myPosition.getColumn();
-        int b3 = myPosition.getRow();
+        a = myPosition.getColumn();
+        b = myPosition.getRow();
+        captured = false;
         while(true)
         {
-            a3++;
-            b3--;
-            ChessPosition pos = new ChessPosition(b3, a3);
+            a++;
+            b--;
+            ChessPosition pos = new ChessPosition(b, a);
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos))
+            if(borders.contains(pos) || blocked(board, pos, captured))
             {
                 break;
             }
@@ -173,16 +181,17 @@ public class ChessPiece {
         }
 
         // TOP RIGHT DIAGONAL
-        int a4 = myPosition.getColumn();
-        int b4 = myPosition.getRow();
+        a = myPosition.getColumn();
+        b = myPosition.getRow();
+        captured = false;
         while(true)
         {
-            a4--;
-            b4++;
-            ChessPosition pos = new ChessPosition(b4, a4);
+            a--;
+            b++;
+            ChessPosition pos = new ChessPosition(b, a);
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos))
+            if(borders.contains(pos) || blocked(board, pos, captured))
             {
                 break;
             }
