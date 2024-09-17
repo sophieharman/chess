@@ -55,13 +55,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
-        // Calculate Possible Moves
-        Collection<ChessMove> moves = pieceMovesCalculator(board, myPosition);
-        return moves;
-    }
-
-    public Collection<ChessMove> pieceMovesCalculator(ChessBoard board, ChessPosition myPosition)
-    {
         // Grid Border Positions
         Collection<ChessPosition> borders = new HashSet<ChessPosition>();
 
@@ -87,8 +80,8 @@ public class ChessPiece {
 //        }
 
         return moves;
-
     }
+
 
     public boolean blocked(ChessPosition position)
     {
@@ -98,18 +91,20 @@ public class ChessPiece {
 
     public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> borders)
     {
-        Collection<ChessMove> possible_positions = new ArrayList<ChessMove>();
+        Collection<ChessMove> possible_moves = new ArrayList<ChessMove>();
 
 
         // TOP LEFT DIAGONAL
         int a1 = myPosition.getColumn();
         int b1 = myPosition.getRow();
+        System.out.println("TOP LEFT:");
         while(true)
         {
             // Coordinates for Possible Position
             a1--;
             b1--;
-            ChessPosition pos = new ChessPosition(a1, b1);
+            ChessPosition pos = new ChessPosition(b1, a1);
+
 
             // Verify Position is within the Board Range and Position is Open
             if(borders.contains(pos) || blocked(pos))
@@ -117,21 +112,30 @@ public class ChessPiece {
                 break;
             }
 
-            // Call ChessMove Class
+
+//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
+
+
+            // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
-            // Append Position to List of Valid Positions
-            possible_positions.add(move);
+            possible_moves.add(move);
+
+            System.out.println(move);
+
 
         }
 
         // BOTTOM RIGHT DIAGONAL
         int a2 = myPosition.getColumn();
         int b2 = myPosition.getRow();
+        System.out.println(" ");
+        System.out.println("BOTTOM RIGHT:");
         while(true)
         {
             a2++;
             b2++;
-            ChessPosition pos = new ChessPosition(a2, b2);
+            ChessPosition pos = new ChessPosition(b2, a2);
+
 
             // Verify Position is within the Board Range and Position is Open
             if(borders.contains(pos) || blocked(pos))
@@ -139,20 +143,29 @@ public class ChessPiece {
                 break;
             }
 
-            // Call ChessMove Class
+
+//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
+
+
+            // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
-            // Append Position to List of Valid Positions
-            possible_positions.add(move);
+            possible_moves.add(move);
+
+            System.out.println(move);
         }
 
-        // TOP RIGHT DIAGONAL
+
+        // BOTTOM LEFT DIAGONAL
         int a3 = myPosition.getColumn();
         int b3 = myPosition.getRow();
+        System.out.println(" ");
+        System.out.println("BOTTOM LEFT:");
         while(true)
         {
             a3++;
             b3--;
-            ChessPosition pos = new ChessPosition(a3, b3);
+            ChessPosition pos = new ChessPosition(b3, a3);
+
 
             // Verify Position is within the Board Range and Position is Open
             if(borders.contains(pos) || blocked(pos))
@@ -160,20 +173,26 @@ public class ChessPiece {
                 break;
             }
 
-            // Call ChessMove Class
+
+//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
+
+            // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
-            // Append Position to List of Valid Positions
-            possible_positions.add(move);
+            possible_moves.add(move);
+
+            System.out.println(move);
         }
 
-        // BOTTOM LEFT DIAGONAL
+        // TOP RIGHT DIAGONAL
         int a4 = myPosition.getColumn();
         int b4 = myPosition.getRow();
+        System.out.println(" ");
+        System.out.println("TOP RIGHT:");
         while(true)
         {
             a4--;
             b4++;
-            ChessPosition pos = new ChessPosition(a3, b3);
+            ChessPosition pos = new ChessPosition(b4, a4);
 
             // Verify Position is within the Board Range and Position is Open
             if(borders.contains(pos) || blocked(pos))
@@ -181,13 +200,18 @@ public class ChessPiece {
                 break;
             }
 
-            // Call ChessMove Class
+
+//            System.out.println("Col: " + pos.getColumn() + ", Row: " + pos.getRow());
+
+
+            // Initialize Possible Move
             ChessMove move = new ChessMove(myPosition, pos, type);
-            // Append Position to List of Valid Positions
-            possible_positions.add(move);
+            possible_moves.add(move);
+
+            System.out.println(move);
         }
 
-        return possible_positions;
+        return possible_moves;
 
 
     }
