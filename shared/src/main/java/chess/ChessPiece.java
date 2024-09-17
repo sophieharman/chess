@@ -11,6 +11,7 @@ public class ChessPiece {
 
     private final ChessPiece.PieceType type;
     private final ChessGame.TeamColor pieceColor;
+    private static boolean captured = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
     {
@@ -59,7 +60,7 @@ public class ChessPiece {
         // Grid Border Positions
         Collection<ChessPosition> borders = new HashSet<ChessPosition>();
 
-        for(int i = 1; i <= 8; i++)
+        for(int i = 1; i <= 9; i++)
         {
 
             ChessPosition edge1 = new ChessPosition(0, i);
@@ -73,43 +74,68 @@ public class ChessPiece {
             borders.add(edge4);
         }
 
+        // Initialize Moves Collection
+        Collection<ChessMove> moves = Collections.emptyList();
 
-        // Calculate Bishop Moves
-//        if (type == PieceType.BISHOP)
-//        {
-        Collection<ChessMove> moves = diagonal(board, myPosition, borders);
-//        }
+        if (type == PieceType.BISHOP)
+        {
+            moves = diagonal(board, myPosition, borders);
+        }
+        else if (type == PieceType.KNIGHT)
+        {
+            System.out.println("Implement");
+        }
+        else if (type == PieceType.ROOK)
+        {
+            System.out.println("Implement");
+        }
+        else if (type == PieceType.PAWN)
+        {
+            System.out.println("Implement");
+        }
+        else if(type == PieceType.KING)
+        {
+            System.out.println("Implement");
+        }
+        else if (type == PieceType.QUEEN)
+        {
+            System.out.println("Implement");
+        }
 
         return moves;
     }
 
 
-    public boolean blocked(ChessBoard board, ChessPosition position, boolean captured)
+    public boolean blocked(ChessBoard board, ChessPosition position)
     {
+
         ChessPiece piece = board.getPiece(position);
 
-        if(piece.getTeamColor() != pieceColor) {
-            captured=true;
-        }
-        if(piece == null||piece.getTeamColor() != pieceColor||captured)
+        if(piece == null)
         {
             return false;
         }
-
-        // Return True if Position is Not Blocked
-        return true;
+        else
+        {
+            if(piece.getTeamColor() != pieceColor)
+            {
+               return false;
+            }
+            return true;
+        }
 
     }
 
     public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> borders)
     {
+
         Collection<ChessMove> possible_moves = new ArrayList<ChessMove>();
 
 
         // TOP LEFT DIAGONAL
         int a = myPosition.getColumn();
         int b = myPosition.getRow();
-        boolean captured = false;
+        captured = false;
         while(true)
         {
             // Coordinates for Possible Position
@@ -119,7 +145,7 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos, captured))
+            if(borders.contains(pos) || blocked(board, pos)||captured)
             {
                 break;
             }
@@ -140,11 +166,13 @@ public class ChessPiece {
         {
             a++;
             b++;
+
             ChessPosition pos = new ChessPosition(b, a);
 
 
+
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos, captured))
+            if(borders.contains(pos) || blocked(board, pos)||captured)
             {
                 break;
             }
@@ -165,11 +193,12 @@ public class ChessPiece {
         {
             a++;
             b--;
+
             ChessPosition pos = new ChessPosition(b, a);
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos, captured))
+            if(borders.contains(pos) || blocked(board, pos)||captured)
             {
                 break;
             }
@@ -191,7 +220,7 @@ public class ChessPiece {
             ChessPosition pos = new ChessPosition(b, a);
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos, captured))
+            if(borders.contains(pos) || blocked(board, pos)||captured)
             {
                 break;
             }
