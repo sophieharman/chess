@@ -95,7 +95,10 @@ public class ChessPiece {
         }
         else if (type == PieceType.QUEEN)
         {
-            System.out.println("Implement");
+            Collection<ChessMove> moves1 = diagonal(board, myPosition, grid_positions);
+            Collection<ChessMove> moves2 = straight(board, myPosition, grid_positions);
+            moves.addAll(moves1);
+            moves.addAll(moves2);
         }
 
         return moves;
