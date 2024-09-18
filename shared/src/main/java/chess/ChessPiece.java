@@ -58,28 +58,24 @@ public class ChessPiece {
     {
 
         // Grid Border Positions
-        Collection<ChessPosition> borders = new HashSet<ChessPosition>();
+        Collection<ChessPosition> grid_positions = new HashSet<ChessPosition>();
 
-        for(int i = 1; i <= 9; i++)
+        for(int i = 1; i <= 8; i++)
         {
-
-            ChessPosition edge1 = new ChessPosition(0, i);
-            ChessPosition edge2 = new ChessPosition(i, 0);
-            ChessPosition edge3 = new ChessPosition(9, i);
-            ChessPosition edge4 = new ChessPosition(i, 9);
-
-            borders.add(edge1);
-            borders.add(edge2);
-            borders.add(edge3);
-            borders.add(edge4);
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                grid_positions.add(position);
+            }
         }
+
 
         // Initialize Moves Collection
         Collection<ChessMove> moves = Collections.emptyList();
 
         if (type == PieceType.BISHOP)
         {
-            moves = diagonal(board, myPosition, borders);
+            moves = diagonal(board, myPosition, grid_positions);
         }
         else if (type == PieceType.KNIGHT)
         {
@@ -106,10 +102,10 @@ public class ChessPiece {
     }
 
 
-    public boolean blocked(ChessBoard board, ChessPosition position)
+    public boolean blocked(ChessBoard board, ChessPosition myPosition)
     {
 
-        ChessPiece piece = board.getPiece(position);
+        ChessPiece piece = board.getPiece(myPosition);
 
         if(piece == null)
         {
@@ -126,7 +122,7 @@ public class ChessPiece {
 
     }
 
-    public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> borders)
+    public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions)
     {
 
         Collection<ChessMove> possible_moves = new ArrayList<ChessMove>();
@@ -145,10 +141,18 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos)||captured)
+            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
             {
                 break;
             }
+
+            ChessPiece piece = board.getPiece(pos);
+            if(piece != null && piece.getTeamColor() != pieceColor)
+            {
+                captured = true;
+            }
+
+
 
 
             // Initialize Possible Move
@@ -172,9 +176,15 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos)||captured)
+            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
             {
                 break;
+            }
+
+            ChessPiece piece = board.getPiece(pos);
+            if(piece != null && piece.getTeamColor() != pieceColor)
+            {
+                captured = true;
             }
 
 
@@ -198,9 +208,15 @@ public class ChessPiece {
 
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos)||captured)
+            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
             {
                 break;
+            }
+
+            ChessPiece piece = board.getPiece(pos);
+            if(piece != null && piece.getTeamColor() != pieceColor)
+            {
+                captured = true;
             }
 
 
@@ -220,9 +236,15 @@ public class ChessPiece {
             ChessPosition pos = new ChessPosition(b, a);
 
             // Verify Position is within the Board Range and Position is Open
-            if(borders.contains(pos) || blocked(board, pos)||captured)
+            if(!grid_positions.contains(pos) || blocked(board, pos)||captured)
             {
                 break;
+            }
+
+            ChessPiece piece = board.getPiece(pos);
+            if(piece != null && piece.getTeamColor() != pieceColor)
+            {
+                captured = true;
             }
 
 
