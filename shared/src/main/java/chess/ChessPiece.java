@@ -69,9 +69,13 @@ public class ChessPiece {
             }
         }
 
-
         // Initialize Moves Collection
-        Collection<ChessMove> moves = Collections.emptyList();
+        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+
+
+        // Position
+        int x = myPosition.getRow();
+        int y = myPosition.getColumn();
 
         if (type == PieceType.BISHOP)
         {
@@ -91,7 +95,26 @@ public class ChessPiece {
         }
         else if(type == PieceType.KING)
         {
-            System.out.println("Implement");
+            List<List<Integer>> coords = Arrays.asList(
+                    Arrays.asList(x+1,y),
+                    Arrays.asList(x-1,y),
+                    Arrays.asList(x,y+1),
+                    Arrays.asList(x,y-1),
+                    Arrays.asList(x+1,y+1),
+                    Arrays.asList(x-1,y-1),
+                    Arrays.asList(x+1,y-1),
+                    Arrays.asList(x-1,y+1));
+
+            for (List<Integer> coord : coords)
+            {
+                x = coord.get(0);
+                y = coord.get(1);
+                ChessMove move = exploreBoard(board, myPosition, x ,y);
+                moves.add(move);
+            }
+
+            moves.removeIf(Objects::isNull);
+            return moves;
         }
         else if (type == PieceType.QUEEN)
         {
@@ -342,7 +365,6 @@ public class ChessPiece {
         // TOP RIGHT DIAGONAL
         a = myPosition.getColumn();
         b = myPosition.getRow();
-        captured = false;
         while(true)
         {
             a--;
@@ -371,6 +393,39 @@ public class ChessPiece {
 
 
     }
+
+    public ChessMove exploreBoard(ChessBoard board, ChessPosition myPosition, int x, int y)
+    {
+        // Grid Border Positions
+        Collection<ChessPosition> grid_positions = new HashSet<ChessPosition>();
+
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                grid_positions.add(position);
+            }
+        }
+
+        ChessPosition pos = new ChessPosition(x, y);
+
+        // Verify Position is within the Board Range and Position is Open
+        if (!grid_positions.contains(pos) || blocked(board, pos))
+        {
+            return null;
+        }
+
+        ChessPiece piece = board.getPiece(pos);
+        if (piece != null && piece.getTeamColor() != pieceColor)
+        {
+            captured = true;
+        }
+
+        // Initialize Possible Move
+        return new ChessMove(myPosition, pos, type);
+    }
+
 
     @Override
     public boolean equals(Object o) {
