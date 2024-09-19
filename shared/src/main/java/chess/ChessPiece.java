@@ -87,7 +87,55 @@ public class ChessPiece {
         }
         else if (type == PieceType.ROOK)
         {
-            moves = straight(board, myPosition, grid_positions);
+            while(true)
+            {
+                x++;
+                // Verify Position is within the Board Range and Position is Open
+                ChessPosition pos = new ChessPosition(x, y);
+                if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+                ChessMove move = exploreBoard(board, myPosition, x ,y);
+                moves.add(move);
+            }
+            captured = false;
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+            while(true)
+            {
+                x--;
+                // Verify Position is within the Board Range and Position is Open
+                ChessPosition pos = new ChessPosition(x, y);
+                if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+                ChessMove move = exploreBoard(board, myPosition, x ,y);
+                moves.add(move);
+            }
+            captured = false;
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+            while(true)
+            {
+                y++;
+                // Verify Position is within the Board Range and Position is Open
+                ChessPosition pos = new ChessPosition(x, y);
+                if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+                ChessMove move = exploreBoard(board, myPosition, x ,y);
+                moves.add(move);
+            }
+            captured = false;
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+            while(true)
+            {
+                y--;
+                // Verify Position is within the Board Range and Position is Open
+                ChessPosition pos = new ChessPosition(x, y);
+                if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+                ChessMove move = exploreBoard(board, myPosition, x ,y);
+                moves.add(move);
+            }
+
+            moves.removeIf(Objects::isNull);
+            return moves;
+
         }
         else if (type == PieceType.PAWN)
         {
@@ -109,8 +157,14 @@ public class ChessPiece {
             {
                 x = coord.get(0);
                 y = coord.get(1);
-                ChessMove move = exploreBoard(board, myPosition, x ,y);
-                moves.add(move);
+                captured=false;
+                ChessPosition pos = new ChessPosition(x, y);
+                if(grid_positions.contains(pos))
+                {
+                    ChessMove move = exploreBoard(board, myPosition, x ,y);
+                    moves.add(move);
+                }
+
             }
 
             moves.removeIf(Objects::isNull);
@@ -396,30 +450,16 @@ public class ChessPiece {
 
     public ChessMove exploreBoard(ChessBoard board, ChessPosition myPosition, int x, int y)
     {
-        // Grid Border Positions
-        Collection<ChessPosition> grid_positions = new HashSet<ChessPosition>();
-
-        for(int i = 1; i <= 8; i++)
-        {
-            for(int j = 1; j <= 8; j++)
-            {
-                ChessPosition position = new ChessPosition(i, j);
-                grid_positions.add(position);
-            }
-        }
 
         ChessPosition pos = new ChessPosition(x, y);
-
-        // Verify Position is within the Board Range and Position is Open
-        if (!grid_positions.contains(pos) || blocked(board, pos))
-        {
-            return null;
-        }
-
         ChessPiece piece = board.getPiece(pos);
         if (piece != null && piece.getTeamColor() != pieceColor)
         {
             captured = true;
+        }
+        if (piece != null && piece.getTeamColor() == pieceColor)
+        {
+            return null;
         }
 
         // Initialize Possible Move
