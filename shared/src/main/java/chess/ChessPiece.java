@@ -320,132 +320,70 @@ public class ChessPiece {
     public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions)
     {
 
-        Collection<ChessMove> possible_moves = new ArrayList<ChessMove>();
-
+        Collection<ChessMove> moves = new ArrayList<ChessMove>();
 
         // TOP LEFT DIAGONAL
-        int a = myPosition.getColumn();
-        int b = myPosition.getRow();
+        int x = myPosition.getRow();
+        int y = myPosition.getColumn();
         captured = false;
         while(true)
         {
             // Coordinates for Possible Position
-            a--;
-            b--;
-            ChessPosition pos = new ChessPosition(b, a);
-
-
+            x--;
+            y--;
             // Verify Position is within the Board Range and Position is Open
-            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
-            {
-                break;
-            }
-
-            ChessPiece piece = board.getPiece(pos);
-            if(piece != null && piece.getTeamColor() != pieceColor)
-            {
-                captured = true;
-            }
-
-
-            // Initialize Possible Move
-            ChessMove move = new ChessMove(myPosition, pos, type);
-            possible_moves.add(move);
-
-
+            ChessPosition pos = new ChessPosition(x, y);
+            if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+            ChessMove move = exploreBoard(board, myPosition, x ,y);
+            moves.add(move);
         }
 
         // BOTTOM RIGHT DIAGONAL
-        a = myPosition.getColumn();
-        b = myPosition.getRow();
+        x = myPosition.getRow();
+        y = myPosition.getColumn();
         captured = false;
         while(true)
         {
-            a++;
-            b++;
-
-            ChessPosition pos = new ChessPosition(b, a);
-
+            x++;
+            y++;
             // Verify Position is within the Board Range and Position is Open
-            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
-            {
-                break;
-            }
-
-            ChessPiece piece = board.getPiece(pos);
-            if(piece != null && piece.getTeamColor() != pieceColor)
-            {
-                captured = true;
-            }
-
-
-            // Initialize Possible Move
-            ChessMove move = new ChessMove(myPosition, pos, type);
-            possible_moves.add(move);
-
+            ChessPosition pos = new ChessPosition(x, y);
+            if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+            ChessMove move = exploreBoard(board, myPosition, x ,y);
+            moves.add(move);
         }
 
 
         // BOTTOM LEFT DIAGONAL
-        a = myPosition.getColumn();
-        b = myPosition.getRow();
+        x = myPosition.getRow();
+        y = myPosition.getColumn();
         captured = false;
         while(true)
         {
-            a++;
-            b--;
-
-            ChessPosition pos = new ChessPosition(b, a);
-
-
+            x++;
+            y--;
             // Verify Position is within the Board Range and Position is Open
-            if(!grid_positions.contains(pos)||blocked(board, pos)||captured)
-            {
-                break;
-            }
-
-            ChessPiece piece = board.getPiece(pos);
-            if(piece != null && piece.getTeamColor() != pieceColor)
-            {
-                captured = true;
-            }
-
-
-            // Initialize Possible Move
-            ChessMove move = new ChessMove(myPosition, pos, type);
-            possible_moves.add(move);
+            ChessPosition pos = new ChessPosition(x, y);
+            if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+            ChessMove move = exploreBoard(board, myPosition, x ,y);
+            moves.add(move);
         }
 
         // TOP RIGHT DIAGONAL
-        a = myPosition.getColumn();
-        b = myPosition.getRow();
+        x = myPosition.getRow();
+        y = myPosition.getColumn();
         while(true)
         {
-            a--;
-            b++;
-            ChessPosition pos = new ChessPosition(b, a);
-
+            x--;
+            y++;
             // Verify Position is within the Board Range and Position is Open
-            if(!grid_positions.contains(pos) || blocked(board, pos)||captured)
-            {
-                break;
-            }
-
-            ChessPiece piece = board.getPiece(pos);
-            if(piece != null && piece.getTeamColor() != pieceColor)
-            {
-                captured = true;
-            }
-
-
-            // Initialize Possible Move
-            ChessMove move = new ChessMove(myPosition, pos, type);
-            possible_moves.add(move);
+            ChessPosition pos = new ChessPosition(x, y);
+            if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
+            ChessMove move = exploreBoard(board, myPosition, x ,y);
+            moves.add(move);
         }
 
-        return possible_moves;
-
-
+        return moves;
     }
 
     public ChessMove exploreBoard(ChessBoard board, ChessPosition myPosition, int x, int y)
