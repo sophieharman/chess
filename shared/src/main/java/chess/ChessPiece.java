@@ -1,6 +1,9 @@
 package chess;
 import java.util.*;
 
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -306,6 +309,12 @@ public class ChessPiece {
 
     public Collection<ChessMove> pawn(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions)
     {
+        List<PieceType> pieceTypes = Arrays.asList(
+                PieceType.ROOK,
+                PieceType.KNIGHT,
+                PieceType.BISHOP,
+                PieceType.QUEEN);
+
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
         ChessPiece piece = board.getPiece(myPosition);
 
@@ -320,8 +329,11 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                ChessMove move = new ChessMove(myPosition, pos, null);
+                for(ChessPiece.PieceType promotionPiece : pieceTypes)
+                {
+                ChessMove move = promote(myPosition, pos, piece, promotionPiece, x+1);
                 moves.add(move);
+                }
             }
             else
             {
@@ -337,6 +349,7 @@ public class ChessPiece {
                 moves.removeIf(Objects::isNull);
                 return moves;
             }
+
             // 1st move
             x = myPosition.getRow();
             y = myPosition.getColumn();
@@ -373,8 +386,11 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                ChessMove move = new ChessMove(myPosition, pos, null);
-                moves.add(move);
+                for(ChessPiece.PieceType promotionPiece : pieceTypes)
+                {
+                    ChessMove move = promote(myPosition, pos, piece, promotionPiece, x-1);
+                    moves.add(move);
+                }
             }
             else
             {
@@ -407,8 +423,6 @@ public class ChessPiece {
                 }
             }
 
-
-
             // Check diags
             x = myPosition.getRow();
             y = myPosition.getColumn();
@@ -424,26 +438,63 @@ public class ChessPiece {
         return moves;
     }
 
+
+    public ChessMove promote(ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, PieceType promotionPiece, int x)
+    {
+        List<PieceType> pieceTypes = Arrays.asList(
+                PieceType.ROOK,
+                PieceType.KNIGHT,
+                PieceType.BISHOP,
+                PieceType.QUEEN);
+        if(piece.getTeamColor() == WHITE)
+        {
+            if(x == 8)
+            {
+                ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
+                return move;
+            }
+            ChessMove move = new ChessMove(myPosition, newPosition,null);
+            return move;
+
+        }
+        else
+        {
+            if(x == 1)
+            {
+                ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
+                return move;
+            }
+            ChessMove move = new ChessMove(myPosition, newPosition,null);
+            return move;
+        }
+    }
+
     public ChessMove exploreBoard(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions, int x, int y)
     {
 
         ChessPosition pos = new ChessPosition(x, y);
 
-        if(grid_positions.contains(pos)) {
+        if(grid_positions.contains(pos))
+        {
 
             ChessPiece piece = board.getPiece(pos);
 
-            if (piece != null && piece.getTeamColor() != pieceColor) {
+            if (piece != null && piece.getTeamColor() != pieceColor)
+            {
                 captured = true;
-                if (type == PieceType.PAWN) {
-                    return new ChessMove(myPosition, pos, null);
+                if (type == PieceType.PAWN)
+                {
+                    System.out.println("NEED TO IMPLEMENT");
+//                    ChessMove move = promote(myPosition, pos, piece, x);
+//                    return move;
                 }
             }
             if (piece != null && piece.getTeamColor() == pieceColor) {
                 return null;
             }
 
-            if (type == PieceType.PAWN) {
+            if (type == PieceType.PAWN)
+            {
                 return null;
             }
 
