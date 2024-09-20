@@ -83,7 +83,31 @@ public class ChessPiece {
         }
         else if (type == PieceType.KNIGHT)
         {
-            System.out.println("Implement");
+            List<List<Integer>> coords = Arrays.asList(
+                    Arrays.asList(x+2,y+1),
+                    Arrays.asList(x+2,y-1),
+                    Arrays.asList(x-2,y+1),
+                    Arrays.asList(x-2,y-1),
+                    Arrays.asList(x+1,y+2),
+                    Arrays.asList(x-1,y+2),
+                    Arrays.asList(x+1,y-2),
+                    Arrays.asList(x-1,y-2));
+
+            for (List<Integer> coord : coords)
+            {
+                x = coord.get(0);
+                y = coord.get(1);
+                captured=false;
+                ChessPosition pos = new ChessPosition(x, y);
+                if(grid_positions.contains(pos))
+                {
+                    ChessMove move = exploreBoard(board, myPosition, x ,y);
+                    moves.add(move);
+                }
+
+            }
+
+            moves.removeIf(Objects::isNull);
         }
         else if (type == PieceType.ROOK)
         {
@@ -120,7 +144,6 @@ public class ChessPiece {
             }
 
             moves.removeIf(Objects::isNull);
-            return moves;
         }
         else if (type == PieceType.QUEEN)
         {
