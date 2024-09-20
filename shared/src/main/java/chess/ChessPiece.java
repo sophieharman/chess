@@ -12,13 +12,11 @@ public class ChessPiece {
     private final ChessPiece.PieceType type;
     private final ChessGame.TeamColor pieceColor;
     private static boolean captured = false;
-    private boolean pawn_move1;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
     {
         this.type = type;
         this.pieceColor = pieceColor;
-        this.pawn_move1 = true;
 
     }
 
@@ -309,36 +307,10 @@ public class ChessPiece {
     public Collection<ChessMove> pawn(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions)
     {
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
-
         ChessPiece piece = board.getPiece(myPosition);
 
         int x = myPosition.getRow();
         int y = myPosition.getColumn();
-
-        // 1st Move
-        if(pawn_move1)
-        {
-            pawn_move1 = false;
-
-            if(piece.getTeamColor() == ChessGame.TeamColor.WHITE)
-            {
-                x += 2;
-                ChessPosition pos = new ChessPosition(x, y);
-
-                ChessMove move = new ChessMove(myPosition, pos, type);
-                moves.add(move);
-
-            }
-            else
-            {
-                x -= 2;
-                ChessPosition pos = new ChessPosition(x, y);
-
-
-                ChessMove move = new ChessMove(myPosition, pos, type);
-                moves.add(move);
-            }
-        }
 
         if(piece.getTeamColor() == ChessGame.TeamColor.WHITE)
         {
@@ -346,13 +318,30 @@ public class ChessPiece {
             y = myPosition.getColumn();
             ChessPosition pos = new ChessPosition(x + 1, y);
             ChessPiece new_piece = board.getPiece(pos);
-
             if(new_piece == null)
             {
                 ChessMove move = new ChessMove(myPosition, pos, type);
                 moves.add(move);
             }
+            else
+            {
+                return moves;
+            }
+            // 1st move
+            if(myPosition.getRow() == 2)
+            {
+                x += 2;
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
 
+                pos = new ChessPosition(x, y);
+                piece = board.getPiece(pos);
+                if(piece == null)
+                {
+                    ChessMove move = new ChessMove(myPosition, pos, type);
+                    moves.add(move);
+                }
+            }
 
             // Check diags
             x = myPosition.getRow();
@@ -363,6 +352,7 @@ public class ChessPiece {
             ChessMove diag2 = exploreBoard(board, myPosition, x + 1, y - 1);
             moves.add(diag1);
             moves.add(diag2);
+
         }
         else
         {
@@ -370,26 +360,46 @@ public class ChessPiece {
             y = myPosition.getColumn();
             ChessPosition pos = new ChessPosition(x - 1, y);
             ChessPiece new_piece = board.getPiece(pos);
-
             if(new_piece == null)
             {
                 ChessMove move = new ChessMove(myPosition, pos, type);
                 moves.add(move);
             }
+            else
+            {
+                return moves;
+            }
+
+            // 1st move
+            if(myPosition.getRow() == 7)
+            {
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
+
+                x -= 2;
+                pos = new ChessPosition(x, y);
+                piece = board.getPiece(pos);
+                if(piece == null)
+                {
+                    ChessMove move = new ChessMove(myPosition, pos, type);
+                    moves.add(move);
+                }
+            }
+
 
 
             // Check diags
             x = myPosition.getRow();
+            y = myPosition.getColumn();
             ChessMove diag1 = exploreBoard(board, myPosition, x - 1, y + 1);
             x = myPosition.getRow();
+            y = myPosition.getColumn();
             ChessMove diag2 = exploreBoard(board, myPosition, x - 1, y - 1);
             moves.add(diag1);
             moves.add(diag2);
         }
 
         moves.removeIf(Objects::isNull);
-
-        // Promote Pawn
         return moves;
     }
 
