@@ -325,15 +325,26 @@ public class ChessPiece {
             }
             else
             {
+                // Check diags
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
+                ChessMove diag1 = exploreBoard(board, myPosition, x + 1, y + 1);
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
+                ChessMove diag2 = exploreBoard(board, myPosition, x + 1, y - 1);
+                moves.add(diag1);
+                moves.add(diag2);
+                moves.removeIf(Objects::isNull);
                 return moves;
             }
             // 1st move
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+
             if(myPosition.getRow() == 2)
             {
-                x += 2;
-                x = myPosition.getRow();
-                y = myPosition.getColumn();
 
+                x += 2;
                 pos = new ChessPosition(x, y);
                 piece = board.getPiece(pos);
                 if(piece == null)
@@ -367,6 +378,16 @@ public class ChessPiece {
             }
             else
             {
+                // Check diags
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
+                ChessMove diag1 = exploreBoard(board, myPosition, x - 1, y + 1);
+                x = myPosition.getRow();
+                y = myPosition.getColumn();
+                ChessMove diag2 = exploreBoard(board, myPosition, x - 1, y - 1);
+                moves.add(diag1);
+                moves.add(diag2);
+                moves.removeIf(Objects::isNull);
                 return moves;
             }
 
@@ -430,6 +451,13 @@ public class ChessPiece {
         return new ChessMove(myPosition, pos, type);
     }
 
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "type=" + type +
+                ", pieceColor=" + pieceColor +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {
