@@ -12,6 +12,7 @@ public class ChessMove {
 
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
+    private final ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece)
@@ -19,6 +20,7 @@ public class ChessMove {
 
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+        this.promotionPiece = promotionPiece;
     }
 
     /**
@@ -43,8 +45,9 @@ public class ChessMove {
      *
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
-    public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+    public ChessPiece.PieceType getPromotionPiece()
+    {
+        return promotionPiece;
     }
 
     @Override
@@ -52,6 +55,7 @@ public class ChessMove {
         return "ChessMove{" +
                 "startPosition=" + startPosition +
                 ", endPosition=" + endPosition +
+                ", promotionPiece=" + promotionPiece +
                 '}';
     }
 
@@ -60,12 +64,12 @@ public class ChessMove {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition);
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startPosition, endPosition);
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 }
 

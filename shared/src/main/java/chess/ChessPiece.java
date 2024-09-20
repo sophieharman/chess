@@ -320,7 +320,7 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                ChessMove move = new ChessMove(myPosition, pos, type);
+                ChessMove move = new ChessMove(myPosition, pos, null);
                 moves.add(move);
             }
             else
@@ -349,7 +349,7 @@ public class ChessPiece {
                 piece = board.getPiece(pos);
                 if(piece == null)
                 {
-                    ChessMove move = new ChessMove(myPosition, pos, type);
+                    ChessMove move = new ChessMove(myPosition, pos, null);
                     moves.add(move);
                 }
             }
@@ -373,7 +373,7 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                ChessMove move = new ChessMove(myPosition, pos, type);
+                ChessMove move = new ChessMove(myPosition, pos, null);
                 moves.add(move);
             }
             else
@@ -402,7 +402,7 @@ public class ChessPiece {
                 piece = board.getPiece(pos);
                 if(piece == null)
                 {
-                    ChessMove move = new ChessMove(myPosition, pos, type);
+                    ChessMove move = new ChessMove(myPosition, pos, null);
                     moves.add(move);
                 }
             }
@@ -429,7 +429,6 @@ public class ChessPiece {
 
         ChessPosition pos = new ChessPosition(x, y);
 
-
         if(grid_positions.contains(pos)) {
 
             ChessPiece piece = board.getPiece(pos);
@@ -437,7 +436,7 @@ public class ChessPiece {
             if (piece != null && piece.getTeamColor() != pieceColor) {
                 captured = true;
                 if (type == PieceType.PAWN) {
-                    return new ChessMove(myPosition, pos, type);
+                    return new ChessMove(myPosition, pos, null);
                 }
             }
             if (piece != null && piece.getTeamColor() == pieceColor) {
@@ -451,7 +450,7 @@ public class ChessPiece {
         }
 
         // Initialize Possible Move
-        return new ChessMove(myPosition, pos, type);
+        return new ChessMove(myPosition, pos, null);
     }
 
     @Override
