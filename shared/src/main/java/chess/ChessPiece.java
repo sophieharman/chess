@@ -105,8 +105,8 @@ public class ChessPiece {
                 ChessPosition pos = new ChessPosition(x, y);
                 if(grid_positions.contains(pos))
                 {
-                    ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-                    moves.add(move);
+                    Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+                    moves.addAll(additional_moves);
                 }
 
             }
@@ -141,8 +141,8 @@ public class ChessPiece {
                 ChessPosition pos = new ChessPosition(x, y);
                 if(grid_positions.contains(pos))
                 {
-                    ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-                    moves.add(move);
+                    Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+                    moves.addAll(additional_moves);
                 }
 
             }
@@ -187,8 +187,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions,  x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         // SOMETHING
@@ -201,8 +201,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
 
@@ -216,8 +216,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions,  x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         // SOMETHING
@@ -229,8 +229,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         return moves;
@@ -253,8 +253,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         // BOTTOM RIGHT DIAGONAL
@@ -268,8 +268,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
 
@@ -286,8 +286,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         // TOP RIGHT DIAGONAL
@@ -300,8 +300,8 @@ public class ChessPiece {
             // Verify Position is within the Board Range and Position is Open
             ChessPosition pos = new ChessPosition(x, y);
             if (!grid_positions.contains(pos) || blocked(board, pos) || captured) {break;}
-            ChessMove move = exploreBoard(board, myPosition, grid_positions, x ,y);
-            moves.add(move);
+            Collection<ChessMove> additional_moves = exploreBoard(board, myPosition, grid_positions, null, x ,y);
+            moves.addAll(additional_moves);
         }
 
         return moves;
@@ -309,11 +309,6 @@ public class ChessPiece {
 
     public Collection<ChessMove> pawn(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions)
     {
-        List<PieceType> pieceTypes = Arrays.asList(
-                PieceType.ROOK,
-                PieceType.KNIGHT,
-                PieceType.BISHOP,
-                PieceType.QUEEN);
 
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
         ChessPiece piece = board.getPiece(myPosition);
@@ -329,23 +324,20 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                for(ChessPiece.PieceType promotionPiece : pieceTypes)
-                {
-                ChessMove move = promote(myPosition, pos, piece, promotionPiece, x+1);
-                moves.add(move);
-                }
+            Collection<ChessMove> promotion_moves = promote(myPosition, pos, piece,x+1);
+            moves.addAll(promotion_moves);
             }
             else
             {
                 // Check diags
                 x = myPosition.getRow();
                 y = myPosition.getColumn();
-                ChessMove diag1 = exploreBoard(board, myPosition, grid_positions, x + 1, y + 1);
+                Collection<ChessMove> diag1 = exploreBoard(board, myPosition, grid_positions, null,x + 1, y + 1);
                 x = myPosition.getRow();
                 y = myPosition.getColumn();
-                ChessMove diag2 = exploreBoard(board, myPosition, grid_positions, x + 1, y - 1);
-                moves.add(diag1);
-                moves.add(diag2);
+                Collection<ChessMove> diag2 = exploreBoard(board, myPosition, grid_positions, null, x + 1, y - 1);
+                moves.addAll(diag1);
+                moves.addAll(diag2);
                 moves.removeIf(Objects::isNull);
                 return moves;
             }
@@ -370,12 +362,12 @@ public class ChessPiece {
             // Check diags
             x = myPosition.getRow();
             y = myPosition.getColumn();
-            ChessMove diag1 = exploreBoard(board, myPosition, grid_positions, x + 1, y + 1);
+            Collection<ChessMove> diag1 = exploreBoard(board, myPosition, grid_positions, piece, x + 1, y + 1);
             x = myPosition.getRow();
             y = myPosition.getColumn();
-            ChessMove diag2 = exploreBoard(board, myPosition, grid_positions, x + 1, y - 1);
-            moves.add(diag1);
-            moves.add(diag2);
+            Collection<ChessMove> diag2 = exploreBoard(board, myPosition, grid_positions, piece, x + 1, y - 1);
+            moves.addAll(diag1);
+            moves.addAll(diag2);
 
         }
         else
@@ -386,23 +378,20 @@ public class ChessPiece {
             ChessPiece new_piece = board.getPiece(pos);
             if(new_piece == null)
             {
-                for(ChessPiece.PieceType promotionPiece : pieceTypes)
-                {
-                    ChessMove move = promote(myPosition, pos, piece, promotionPiece, x-1);
-                    moves.add(move);
-                }
+                Collection<ChessMove> promotion_moves = promote(myPosition, pos, piece,x-1);
+                moves.addAll(promotion_moves);
             }
             else
             {
                 // Check diags
                 x = myPosition.getRow();
                 y = myPosition.getColumn();
-                ChessMove diag1 = exploreBoard(board, myPosition, grid_positions, x - 1, y + 1);
+                Collection<ChessMove> diag1 = exploreBoard(board, myPosition, grid_positions, null,x - 1, y + 1);
                 x = myPosition.getRow();
                 y = myPosition.getColumn();
-                ChessMove diag2 = exploreBoard(board, myPosition, grid_positions, x - 1, y - 1);
-                moves.add(diag1);
-                moves.add(diag2);
+                Collection<ChessMove> diag2 = exploreBoard(board, myPosition, grid_positions, null, x - 1, y - 1);
+                moves.addAll(diag1);
+                moves.addAll(diag2);
                 moves.removeIf(Objects::isNull);
                 return moves;
             }
@@ -423,15 +412,19 @@ public class ChessPiece {
                 }
             }
 
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+            ChessPiece og_piece = board.getPiece(myPosition);
+
             // Check diags
             x = myPosition.getRow();
             y = myPosition.getColumn();
-            ChessMove diag1 = exploreBoard(board, myPosition, grid_positions, x - 1, y + 1);
+            Collection<ChessMove> diag1 = exploreBoard(board, myPosition, grid_positions, null,x - 1, y + 1);
             x = myPosition.getRow();
             y = myPosition.getColumn();
-            ChessMove diag2 = exploreBoard(board, myPosition, grid_positions, x - 1, y - 1);
-            moves.add(diag1);
-            moves.add(diag2);
+            Collection<ChessMove> diag2= exploreBoard(board, myPosition, grid_positions, og_piece,x - 1, y - 1);
+            moves.addAll(diag1);
+            moves.addAll(diag2);
         }
 
         moves.removeIf(Objects::isNull);
@@ -439,39 +432,52 @@ public class ChessPiece {
     }
 
 
-    public ChessMove promote(ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, PieceType promotionPiece, int x)
+    public Collection<ChessMove> promote(ChessPosition myPosition, ChessPosition newPosition, ChessPiece piece, int x)
     {
+        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+
         List<PieceType> pieceTypes = Arrays.asList(
                 PieceType.ROOK,
                 PieceType.KNIGHT,
                 PieceType.BISHOP,
                 PieceType.QUEEN);
+
         if(piece.getTeamColor() == WHITE)
         {
             if(x == 8)
             {
-                ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
-                return move;
+                for(ChessPiece.PieceType promotionPiece : pieceTypes)
+                {
+                    ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
+                    moves.add(move);
+                }
+                return moves;
             }
             ChessMove move = new ChessMove(myPosition, newPosition,null);
-            return move;
+            moves.add(move);
+            return moves;
 
         }
         else
         {
             if(x == 1)
             {
-                ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
-                return move;
+                for(ChessPiece.PieceType promotionPiece : pieceTypes)
+                {
+                    ChessMove move = new ChessMove(myPosition, newPosition, promotionPiece);
+                    moves.add(move);
+                }
+                return moves;
             }
             ChessMove move = new ChessMove(myPosition, newPosition,null);
-            return move;
+            moves.add(move);
+            return moves;
         }
     }
 
-    public ChessMove exploreBoard(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions, int x, int y)
+    public Collection<ChessMove> exploreBoard(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid_positions, ChessPiece og_piece, int x, int y)
     {
-
+        Collection<ChessMove> moves = new ArrayList<ChessMove>();
         ChessPosition pos = new ChessPosition(x, y);
 
         if(grid_positions.contains(pos))
@@ -484,25 +490,35 @@ public class ChessPiece {
                 captured = true;
                 if (type == PieceType.PAWN)
                 {
-                    System.out.println("NEED TO IMPLEMENT");
-//                    ChessMove move = promote(myPosition, pos, piece, x);
-//                    return move;
+                    if(x == 1 && pieceColor == BLACK)
+                    {
+                        Collection<ChessMove> promotion_moves = promote(myPosition, pos, og_piece,x);
+                        moves.addAll(promotion_moves);
+                        return moves;
+                    }
+
+                    Collection<ChessMove> promotion_moves = promote(myPosition, pos, piece,x);
+                    moves.addAll(promotion_moves);
+                    return moves;
                 }
             }
             if (piece != null && piece.getTeamColor() == pieceColor) {
-                return null;
+                return moves;
             }
 
             if (type == PieceType.PAWN)
             {
-                return null;
+                return moves;
             }
 
         }
 
         // Initialize Possible Move
-        return new ChessMove(myPosition, pos, null);
+        ChessMove move = new ChessMove(myPosition, pos, null);
+        moves.add(move);
+        return moves;
     }
+
 
     @Override
     public String toString() {
