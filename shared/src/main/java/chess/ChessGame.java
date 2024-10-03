@@ -96,7 +96,23 @@ public class ChessGame
      */
     public void makeMove(ChessMove move) throws InvalidMoveException
     {
-        throw new RuntimeException("Not implemented");
+        // Extract Start Position and End Position
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        // Determine Valid Moves
+        Collection<ChessMove> valid = validMoves(startPosition);
+
+        // Throw Exception if Move is Invalid
+        if(!valid.contains(move))
+        {
+            throw new InvalidMoveException("Invalid Move");
+        }
+
+        // Make Move
+        ChessPiece piece = board.getPiece(startPosition);
+        board.addPiece(endPosition, piece);
+        board.removePiece(startPosition);
     }
 
     /**
@@ -150,6 +166,7 @@ public class ChessGame
 
     public boolean danger()
     {
+        // Do something in ChessPiece Instead???? Note that King can be captured somehow???
         System.out.println("Implement");
         return true;
     }
