@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,7 +51,8 @@ public class ChessGame
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
-    public enum TeamColor {
+    public enum TeamColor
+    {
         WHITE,
         BLACK
     }
@@ -62,8 +64,28 @@ public class ChessGame
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> validMoves(ChessPosition startPosition)
+    {
+        // Initialize Collection to Store Valid Moves
+        Collection<ChessMove> valid = new ArrayList<ChessMove>();
+
+        // Get PieceType at Start Position
+        ChessPiece occupant = board.getPiece(startPosition);
+
+        // Find Possible Move Positions (Without Accounting for Game Logic)
+        Collection<ChessMove> possibleMoves = ChessPiece.pieceMoves(board, startPosition);
+
+        for(ChessMove move: possibleMoves)
+        {
+            // Verify that the King is Not Endangered
+            boolean endangered = danger();
+            if(!endangered)
+            {
+                valid.add(move);
+            }
+        }
+
+        return valid;
     }
 
     /**
@@ -72,7 +94,8 @@ public class ChessGame
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
+    public void makeMove(ChessMove move) throws InvalidMoveException
+    {
         throw new RuntimeException("Not implemented");
     }
 
@@ -84,7 +107,12 @@ public class ChessGame
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-        throw new RuntimeException("Not implemented");
+        // Determine King Position and Valid Moves
+        ChessPosition position = kingLocation(teamColor);
+        Collection<ChessMove> valid = validMoves(position);
+
+        // Check if King is in Under Attack and Able to Escape
+        return !valid.isEmpty() && danger();
     }
 
     /**
@@ -95,7 +123,12 @@ public class ChessGame
      */
     public boolean isInCheckmate(TeamColor teamColor)
     {
-        throw new RuntimeException("Not implemented");
+        // Determine King Position and Valid Moves
+        ChessPosition position = kingLocation(teamColor);
+        Collection<ChessMove> valid = validMoves(position);
+
+        // Check if King is in Under Attack and Able to Escape
+        return valid.isEmpty() && danger();
     }
 
     /**
@@ -105,9 +138,45 @@ public class ChessGame
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInStalemate(TeamColor teamColor)
+    {
+        // Determine King Position and Valid Moves
+        ChessPosition position = kingLocation(teamColor);
+        Collection<ChessMove> valid = validMoves(position);
+
+        // Check if King is in Under Attack and Able to Escape
+        return valid.isEmpty() && !danger();
     }
+
+    public boolean danger()
+    {
+        System.out.println("Implement");
+        return true;
+    }
+
+    public ChessPosition kingLocation(TeamColor teamcolor)
+    {
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece.getPieceType() == ChessPiece.PieceType.KING)
+                {
+                    // Return the Position of the King
+                      if(piece.getTeamColor() == teamcolor)
+                      {
+                          return position;
+                      }
+                }
+
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Sets this game's chessboard with a given board
