@@ -73,12 +73,13 @@ public class ChessGame
         ChessPiece occupant = board.getPiece(startPosition);
 
         // Find Possible Move Positions (Without Accounting for Game Logic)
-        Collection<ChessMove> possibleMoves = ChessPiece.pieceMoves(board, startPosition);
+        Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, startPosition);
+
 
         for(ChessMove move: possibleMoves)
         {
             // Verify that the King is Not Endangered
-            boolean endangered = danger();
+            boolean endangered = danger(occupant.getTeamColor());
             if(!endangered)
             {
                 valid.add(move);
@@ -128,7 +129,7 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return !valid.isEmpty() && danger();
+        return !valid.isEmpty() && danger(teamColor);
     }
 
     /**
@@ -144,7 +145,7 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && danger();
+        return valid.isEmpty() && danger(teamColor);
     }
 
     /**
@@ -161,14 +162,52 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && !danger();
+        return valid.isEmpty() && !danger(teamColor);
     }
 
-    public boolean danger()
+    public boolean danger(TeamColor teamColor)
     {
-        // Do something in ChessPiece Instead???? Note that King can be captured somehow???
-        System.out.println("Implement");
-        return true;
+        TeamColor oppColor;
+        if(teamColor == TeamColor.WHITE)
+        {
+            oppColor = TeamColor.BLACK;
+        }
+        else
+        {
+            oppColor = TeamColor.WHITE;
+        }
+        // Grab Positions of All Opponents
+
+        Collection<ChessPosition> teamPositions = oppTeamLocations(oppColor);
+
+        for(ChessPosition position: teamPositions)
+        {
+            ChessPiece occupant = board.getPiece(position);
+            if(occupant.kingCaptured(board, position))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Collection<ChessPosition> oppTeamLocations(TeamColor teamColor)
+    {
+        Collection<ChessPosition> teamPositions = new ArrayList<ChessPosition>();
+
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() != teamColor)
+                {
+                    teamPositions.add(position);
+                }
+            }
+        }
+        return teamPositions;
     }
 
     public ChessPosition kingLocation(TeamColor teamcolor)

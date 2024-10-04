@@ -11,6 +11,7 @@ public class ChessPiece
 {
     private final ChessGame.TeamColor pieceColor;
     private final ChessPiece.PieceType type;
+    private boolean isKingCaptured = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
     {
@@ -189,6 +190,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -218,6 +224,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -247,6 +258,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -276,6 +292,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -315,6 +336,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -345,6 +371,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -375,6 +406,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -405,6 +441,11 @@ public class ChessPiece
                     // Add New Move
                     ChessMove new_move = new ChessMove(myPosition, newPosition, null);
                     moves.add(new_move);
+
+                    if(occupant.getPieceType() == PieceType.KING)
+                    {
+                        isKingCaptured = true;
+                    }
                 }
                 break;
             }
@@ -421,6 +462,11 @@ public class ChessPiece
         ChessPiece occupant = board.getPiece(newPosition);
         if(occupant != null)
         {
+            if(occupant.getPieceType() == PieceType.KING)
+            {
+                isKingCaptured = true;
+            }
+
             return pieceColor != occupant.getTeamColor();
         }
         return false;
@@ -634,6 +680,20 @@ public class ChessPiece
         }
 
         return moves;
+    }
+
+    public boolean kingCaptured(ChessBoard board, ChessPosition position)
+    {
+        // Call PieceMoves
+        ChessPiece occupant = board.getPiece(position);
+        Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
+
+        if(isKingCaptured)
+        {
+            return true;
+        }
+        return false;
+
     }
 
     @Override
