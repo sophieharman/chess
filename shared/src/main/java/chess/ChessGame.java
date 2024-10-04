@@ -73,17 +73,21 @@ public class ChessGame
         ChessPiece occupant = board.getPiece(startPosition);
 
         // Find Possible Move Positions (Without Accounting for Game Logic)
-        Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, startPosition);
-
-
-        for(ChessMove move: possibleMoves)
+        Collection<ChessMove> possibleMoves;
+        if(occupant != null)
         {
-            // Verify that the King is Not Endangered
-            boolean endangered = danger(occupant.getTeamColor());
-            if(!endangered)
+            possibleMoves = occupant.pieceMoves(board, startPosition);
+
+            for(ChessMove move: possibleMoves)
             {
-                valid.add(move);
+                // Verify that the King is Not Endangered
+                boolean endangered = danger(occupant.getTeamColor());
+                if(!endangered)
+                {
+                    valid.add(move);
+                }
             }
+
         }
 
         return valid;
