@@ -13,6 +13,7 @@ public class ChessGame
 {
     private boolean whiteTurn = true;
     private ChessBoard board = new ChessBoard();
+    private ChessBoard boardCloned = new ChessBoard();
 
     public ChessGame()
     {
@@ -80,8 +81,13 @@ public class ChessGame
 
             for(ChessMove move: possibleMoves)
             {
+                // Make Move on Copy of Board
+                deepBoardCopy();
+                boardCloned.addPiece(move.endPosition, occupant);
+                boardCloned.removePiece(startPosition);
+
                 // Verify that the King is Not Endangered
-                boolean endangered = danger(occupant.getTeamColor());
+                boolean endangered = danger(boardCloned, occupant.getTeamColor());
                 if(!endangered)
                 {
                     valid.add(move);
@@ -114,6 +120,19 @@ public class ChessGame
             throw new InvalidMoveException("Invalid Move");
         }
 
+        // Remove Captured Pieces
+        ChessPiece occupant = board.getPiece(endPosition);
+        if(occupant != null)
+        {
+            board.removePiece(endPosition);
+
+        }
+        TeamColor teamColor = getTeamTurn();
+        if(isInCheckmate(teamColor) || isInStalemate(teamColor))
+        {
+            System.out.println("GAME OVER");
+        }
+
         // Make Move
         ChessPiece piece = board.getPiece(startPosition);
         board.addPiece(endPosition, piece);
@@ -133,7 +152,7 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return !valid.isEmpty() && danger(teamColor);
+        return !valid.isEmpty() && danger(board, teamColor);
     }
 
     /**
@@ -149,7 +168,7 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && danger(teamColor);
+        return valid.isEmpty() && danger(board, teamColor);
     }
 
     /**
@@ -166,10 +185,10 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && !danger(teamColor);
+        return valid.isEmpty() && !danger(board, teamColor);
     }
 
-    public boolean danger(TeamColor teamColor)
+    public boolean danger(ChessBoard board, TeamColor teamColor)
     {
         TeamColor oppColor;
         if(teamColor == TeamColor.WHITE)
@@ -181,8 +200,8 @@ public class ChessGame
             oppColor = TeamColor.WHITE;
         }
         // Grab Positions of All Opponents
-
-        Collection<ChessPosition> teamPositions = oppTeamLocations(oppColor);
+        //CHANGE TO OPPCOLOR!!!!
+        Collection<ChessPosition> teamPositions = oppTeamLocations(teamColor);
 
         for(ChessPosition position: teamPositions)
         {
@@ -235,6 +254,26 @@ public class ChessGame
             }
         }
         return null;
+    }
+
+    public void deepBoardCopy()
+    {
+        ChessBoard boardCopy = new ChessBoard();
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null)
+                {
+                    boardCopy.addPiece(position, piece);
+                }
+
+            }
+        }
+
+        boardCloned = boardCopy;
     }
 
 
