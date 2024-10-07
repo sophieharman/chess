@@ -200,18 +200,8 @@ public class ChessGame
 
     public boolean danger(ChessBoard boardCopy, TeamColor teamColor)
     {
-        // Get Opponent Team Color
-        TeamColor oppColor;
-        if(teamColor == TeamColor.WHITE)
-        {
-            oppColor = TeamColor.BLACK;
-        }
-        else
-        {
-            oppColor = TeamColor.WHITE;
-        }
         // Grab Positions of All Opponents (CHANGE COLOR??)
-        Collection<ChessPosition> teamPositions = oppTeamLocations(teamColor);
+        Collection<ChessPosition> teamPositions = oppTeamLocations(boardCopy, teamColor);
 
         for(ChessPosition position: teamPositions)
         {
@@ -229,7 +219,7 @@ public class ChessGame
         return false;
     }
 
-    public Collection<ChessPosition> oppTeamLocations(TeamColor oppTeamColor)
+    public Collection<ChessPosition> oppTeamLocations(ChessBoard boardCopy, TeamColor oppTeamColor)
     {
         Collection<ChessPosition> teamPositions = new ArrayList<ChessPosition>();
 
@@ -238,7 +228,7 @@ public class ChessGame
             for(int j = 1; j <= 8; j++)
             {
                 ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(position);
+                ChessPiece piece = boardCopy.getPiece(position);
                 if(piece != null && piece.getTeamColor() != oppTeamColor)
                 {
                     teamPositions.add(position);
