@@ -83,6 +83,12 @@ public class ChessGame
             {
                 // Make Move on Copy of Board
                 deepBoardCopy();
+                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
+                // Remove Captured Piece
+                if(checkForOccupant != null)
+                {
+                    boardCloned.removePiece(move.endPosition);
+                }
                 boardCloned.addPiece(move.endPosition, occupant);
                 boardCloned.removePiece(startPosition);
 
@@ -92,6 +98,7 @@ public class ChessGame
                 {
                     valid.add(move);
                 }
+
             }
 
         }
@@ -137,6 +144,9 @@ public class ChessGame
         ChessPiece piece = board.getPiece(startPosition);
         board.addPiece(endPosition, piece);
         board.removePiece(startPosition);
+
+        // If Opponent is Captured, Remove that Piece
+//        (if ) // Do this somewhere else bruhhhhhhh
     }
 
     /**
@@ -188,8 +198,9 @@ public class ChessGame
         return valid.isEmpty() && !danger(board, teamColor);
     }
 
-    public boolean danger(ChessBoard board, TeamColor teamColor)
+    public boolean danger(ChessBoard boardCopy, TeamColor teamColor)
     {
+        // Get Opponent Team Color
         TeamColor oppColor;
         if(teamColor == TeamColor.WHITE)
         {
@@ -199,22 +210,26 @@ public class ChessGame
         {
             oppColor = TeamColor.WHITE;
         }
-        // Grab Positions of All Opponents
-        //CHANGE TO OPPCOLOR!!!!
+        // Grab Positions of All Opponents (CHANGE COLOR??)
         Collection<ChessPosition> teamPositions = oppTeamLocations(teamColor);
 
         for(ChessPosition position: teamPositions)
         {
-            ChessPiece occupant = board.getPiece(position);
-            if(occupant.kingCaptured(board, position))
+            ChessPiece oppOccupant = boardCopy.getPiece(position);
+            // GRABBING THE WHITE ROOK!!! THERE ARE NO BLACK PIECES
+            if (oppOccupant != null)
             {
-                return true;
+                if(oppOccupant.kingCaptured(boardCopy, position))
+                {
+                    return true;
+                }
             }
+
         }
         return false;
     }
 
-    public Collection<ChessPosition> oppTeamLocations(TeamColor teamColor)
+    public Collection<ChessPosition> oppTeamLocations(TeamColor oppTeamColor)
     {
         Collection<ChessPosition> teamPositions = new ArrayList<ChessPosition>();
 
@@ -224,7 +239,7 @@ public class ChessGame
             {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
-                if(piece != null && piece.getTeamColor() != teamColor)
+                if(piece != null && piece.getTeamColor() != oppTeamColor)
                 {
                     teamPositions.add(position);
                 }
@@ -264,9 +279,10 @@ public class ChessGame
             for(int j = 1; j <= 8; j++)
             {
                 ChessPosition position = new ChessPosition(i, j);
-                ChessPiece piece = board.getPiece(position);
-                if(piece != null)
+                ChessPiece oldPiece = board.getPiece(position);
+                if(oldPiece != null)
                 {
+                    ChessPiece piece = new ChessPiece(oldPiece.getTeamColor(), oldPiece.getPieceType());
                     boardCopy.addPiece(position, piece);
                 }
 
