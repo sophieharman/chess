@@ -686,12 +686,53 @@ public class ChessPiece
         ChessPiece occupant = board.getPiece(position);
         Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
 
-        if(isKingCaptured)
+        // Check if King's Location is in PossibleMoves
+        ChessGame.TeamColor teamColor;
+        if(occupant.getTeamColor() == ChessGame.TeamColor.WHITE)
+        {
+            teamColor = ChessGame.TeamColor.BLACK;
+        }
+        else
+        {
+            teamColor = ChessGame.TeamColor.WHITE;
+        }
+        ChessPosition kingLoc = kingLocation(board, teamColor);
+        if(possibleMoves.contains(kingLoc))
         {
             return true;
         }
-        return false;
+//        if(isKingCaptured)
+//        {
+//            return true;
+//        }
+//        return false;
 
+    return false;
+    }
+
+    public ChessPosition kingLocation(ChessBoard board, ChessGame.TeamColor teamcolor)
+    {
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null)
+                {
+                    if(piece.getPieceType() == PieceType.KING)
+                    {
+                        // Return the Position of the King
+                        if(piece.getTeamColor() == teamcolor)
+                        {
+                            return position;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
