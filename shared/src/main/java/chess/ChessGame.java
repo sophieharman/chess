@@ -73,15 +73,15 @@ public class ChessGame
         // Get PieceType at Start Position
         ChessPiece occupant = board.getPiece(startPosition);
 
-        // Get Team Color
-        TeamColor teamColor = occupant.getTeamColor();
-
         // Find Possible Move Positions (Without Accounting for Game Logic)
 
         Collection<ChessMove> possibleMoves;
         boolean endangered = false;
         if(occupant != null)
         {
+            // Get Team Color
+            TeamColor teamColor = occupant.getTeamColor();
+
             possibleMoves = occupant.pieceMoves(board, startPosition);
             for(ChessMove move: possibleMoves)
             {
@@ -141,6 +141,20 @@ public class ChessGame
         {
             throw new InvalidMoveException("Invalid Move");
         }
+
+        // Throw Exception if Move is Empty
+        if(move.startPosition == null)
+        {
+            throw new InvalidMoveException("Invalid Move: No Piece Present");
+        }
+
+        // If color is not equal
+//        if(move == null)
+//        {
+//            throw new InvalidMoveException("Invalid Move");
+//        }
+//
+
 
         // Remove Captured Pieces
         ChessPiece occupant = board.getPiece(endPosition);
