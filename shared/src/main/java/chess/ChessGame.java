@@ -90,6 +90,10 @@ public class ChessGame
                 {
                     boardCloned.removePiece(move.endPosition);
                 }
+                if(move.promotionPiece != null)
+                {
+                    occupant = new ChessPiece(teamColor, move.getPromotionPiece());
+                }
                 boardCloned.addPiece(move.endPosition, occupant);
                 boardCloned.removePiece(startPosition);
 
@@ -157,13 +161,27 @@ public class ChessGame
             board.removePiece(endPosition);
         }
 
+        // Team Color
+        TeamColor teamColor;
+        if(whiteTurn)
+        {
+            teamColor = TeamColor.WHITE;
+        }
+        else
+        {
+            teamColor = TeamColor.BLACK;
+        }
+
         // Make Move
-        ChessPiece piece = board.getPiece(startPosition);
-        board.addPiece(endPosition, piece);
+        occupant = board.getPiece(startPosition);
+        if(move.promotionPiece != null)
+        {
+            occupant = new ChessPiece(teamColor, move.getPromotionPiece());
+        }
+        board.addPiece(endPosition, occupant);
         board.removePiece(startPosition);
 
         // Set Team Turn
-        TeamColor teamColor;
         if(whiteTurn)
         {
             teamColor = TeamColor.BLACK;
