@@ -697,10 +697,14 @@ public class ChessPiece
             teamColor = ChessGame.TeamColor.WHITE;
         }
         ChessPosition kingLoc = kingLocation(board, teamColor);
-        if(possibleMoves.contains(kingLoc))
+        for(ChessMove move: possibleMoves)
         {
-            return true;
+            if(move.endPosition.equals(kingLoc))
+            {
+                return true;
+            }
         }
+
 //        if(isKingCaptured)
 //        {
 //            return true;
