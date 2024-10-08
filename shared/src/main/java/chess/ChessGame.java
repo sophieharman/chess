@@ -73,18 +73,26 @@ public class ChessGame
         // Get PieceType at Start Position
         ChessPiece occupant = board.getPiece(startPosition);
 
+        // Get Team Color
+        TeamColor teamColor = occupant.getTeamColor();
+
         // Find Possible Move Positions (Without Accounting for Game Logic)
+
         Collection<ChessMove> possibleMoves;
+        boolean endangered = false;
         if(occupant != null)
         {
             possibleMoves = occupant.pieceMoves(board, startPosition);
-
             for(ChessMove move: possibleMoves)
             {
-                // Make Move on Copy of Board
+                // Copy ChessBoard
                 deepBoardCopy();
-                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
+
+                // Check if King is Presently in Danger
+                boolean dangerAlready = danger(boardCloned, teamColor);
+
                 // Remove Captured Piece
+                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
                 if(checkForOccupant != null)
                 {
                     boardCloned.removePiece(move.endPosition);
@@ -93,14 +101,21 @@ public class ChessGame
                 boardCloned.removePiece(startPosition);
 
                 // Verify that the King is Not Endangered
-                boolean endangered = danger(boardCloned, occupant.getTeamColor());
+                endangered = danger(boardCloned, teamColor);
+
+                // If Danger Present and Chess Move Does Not Get King out of Danger, Continue
+                if(dangerAlready && endangered)
+                {
+                    continue;
+                }
+
+                // If King is not in Check After Move, Add to Valid Moves
                 if(!endangered)
                 {
                     valid.add(move);
                 }
 
             }
-
         }
 
         return valid;
@@ -145,8 +160,6 @@ public class ChessGame
         board.addPiece(endPosition, piece);
         board.removePiece(startPosition);
 
-        // If Opponent is Captured, Remove that Piece
-//        (if ) // Do this somewhere else bruhhhhhhh
     }
 
     /**
@@ -162,7 +175,7 @@ public class ChessGame
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
-        return !valid.isEmpty() && danger(board, teamColor);
+        return !valid.isEmpty() && danger(boardCloned, teamColor);
     }
 
     /**
@@ -200,13 +213,12 @@ public class ChessGame
 
     public boolean danger(ChessBoard boardCopy, TeamColor teamColor)
     {
-        // Grab Positions of All Opponents (CHANGE COLOR??)
+        // Grab Positions of All Opponents
         Collection<ChessPosition> teamPositions = oppTeamLocations(boardCopy, teamColor);
 
         for(ChessPosition position: teamPositions)
         {
             ChessPiece oppOccupant = boardCopy.getPiece(position);
-            // GRABBING THE WHITE ROOK!!! THERE ARE NO BLACK PIECES
             if (oppOccupant != null)
             {
                 if(oppOccupant.kingCaptured(boardCopy, position))

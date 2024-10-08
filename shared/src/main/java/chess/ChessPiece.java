@@ -95,8 +95,6 @@ public class ChessPiece
             // Explore Possible Positions
             Collection<ChessMove> new_move = exploreBoard(board, myPosition, straight1, grid);
             moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, straight1, grid);
-            moves.addAll(new_move);
             new_move = exploreBoard(board, myPosition, straight2, grid);
             moves.addAll(new_move);
             new_move = exploreBoard(board, myPosition, straight3, grid);
