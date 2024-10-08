@@ -150,10 +150,6 @@ public class ChessGame
 
         }
         TeamColor teamColor = getTeamTurn();
-        if(isInCheckmate(teamColor) || isInStalemate(teamColor))
-        {
-            System.out.println("GAME OVER");
-        }
 
         // Make Move
         ChessPiece piece = board.getPiece(startPosition);
