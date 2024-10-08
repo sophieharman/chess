@@ -203,7 +203,16 @@ public class ChessGame
     public boolean isInCheck(TeamColor teamColor)
     {
         // Determine King Position and Valid Moves
-        ChessPosition position = kingLocation(teamColor);
+        TeamColor oppTeamColor;
+        if(teamColor == TeamColor.WHITE)
+        {
+            oppTeamColor = TeamColor.BLACK;
+        }
+        else
+        {
+            oppTeamColor = TeamColor.WHITE;
+        }
+        ChessPosition position = kingLocation(oppTeamColor);
         Collection<ChessMove> valid = validMoves(position);
 
         // Check if King is in Under Attack and Able to Escape
