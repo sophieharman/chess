@@ -705,12 +705,6 @@ public class ChessPiece
             }
         }
 
-//        if(isKingCaptured)
-//        {
-//            return true;
-//        }
-//        return false;
-
     return false;
     }
 

@@ -291,15 +291,17 @@ public class ChessGame
             {
                 ChessPosition position = new ChessPosition(i, j);
                 ChessPiece piece = board.getPiece(position);
-                if(piece.getPieceType() == ChessPiece.PieceType.KING)
+                if(piece != null)
                 {
-                    // Return the Position of the King
-                      if(piece.getTeamColor() == teamcolor)
-                      {
-                          return position;
-                      }
+                    if(piece.getPieceType() == ChessPiece.PieceType.KING)
+                    {
+                        // Return the Position of the King
+                        if(piece.getTeamColor() == teamcolor)
+                        {
+                            return position;
+                        }
+                    }
                 }
-
             }
         }
         return null;
