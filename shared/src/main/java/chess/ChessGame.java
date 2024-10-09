@@ -223,7 +223,7 @@ public class ChessGame
     {
         // YOU WON'T BE ABLE TO CHECK IF IN CHECK ON THE ACTUAL BOARD!!!!
         // King Location
-        ChessPosition kingLoc =  validKingLocation(teamColor);
+        ChessPosition kingLoc =  kingLocation(teamColor);
         // Iterate through all Board Positions
         for(int i = 1; i <= 8; i++)
         {
