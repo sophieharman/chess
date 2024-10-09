@@ -81,9 +81,6 @@ public class ChessGame
                 // Copy ChessBoard
                 deepBoardCopy();
 
-                // Check if King is Presently in Danger
-                boolean dangerAlready = danger(boardCloned, teamColor);
-
                 // Remove Captured Piece
                 ChessPiece checkForOccupant = board.getPiece(move.endPosition);
                 if(checkForOccupant != null)
@@ -97,22 +94,66 @@ public class ChessGame
                 boardCloned.addPiece(move.endPosition, occupant);
                 boardCloned.removePiece(startPosition);
 
-                // Verify that the King is Not Endangered
+                // If King is Not Endangered, Add to Valid Moves
                 endangered = danger(boardCloned, teamColor);
-
-                // If Danger Present and Chess Move Does Not Get King out of Danger, Continue
-                if(dangerAlready && endangered)
+                if(!endangered)
                 {
-                    continue;
+                    valid.add(move);
                 }
 
-                // If King is not in Check After Move, Add to Valid Moves
+                if(endangered && occupant.getPieceType() == ChessPiece.PieceType.KING)
+                {
+                    Collection<ChessMove> rescueMoves = rescueKing(teamColor);
+                    for(ChessMove rescueMove: rescueMoves)
+                    {
+                        valid.add(rescueMove);
+                    }
+                }
+
+            }
+        }
+
+        return valid;
+    }
+
+    public Collection<ChessMove> rescueKing(TeamColor teamColor)
+    {
+        // Initialize Collection to Store Valid Moves
+        Collection<ChessMove> valid = new ArrayList<ChessMove>();
+
+        // Grab all Team Pieces
+        Collection<ChessPosition> teamPositions =  oppTeamLocations(boardCloned, teamColor);
+        for(ChessPosition position: teamPositions)
+        {
+            // Get Possible Moves for each Piece
+            ChessPiece occupant = board.getPiece(position);
+            Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
+            for(ChessMove move: possibleMoves)
+            {
+                // Perform Move on Copy of ChessBoard
+                deepBoardCopy();
+                // Remove Captured Piece
+                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
+                if(checkForOccupant != null)
+                {
+                    boardCloned.removePiece(move.endPosition);
+                }
+                if(move.promotionPiece != null)
+                {
+                    occupant = new ChessPiece(teamColor, move.getPromotionPiece());
+                }
+                boardCloned.addPiece(move.endPosition, occupant);
+                boardCloned.removePiece(position);
+
+                // If Move Removes King from Check, Add to Valid Moves
+                boolean endangered = danger(boardCloned, teamColor);
                 if(!endangered)
                 {
                     valid.add(move);
                 }
 
             }
+
         }
 
         return valid;
@@ -202,21 +243,8 @@ public class ChessGame
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-        // Determine King Position and Valid Moves
-        TeamColor oppTeamColor;
-        if(teamColor == TeamColor.WHITE)
-        {
-            oppTeamColor = TeamColor.BLACK;
-        }
-        else
-        {
-            oppTeamColor = TeamColor.WHITE;
-        }
-        ChessPosition position = kingLocation(oppTeamColor);
-        Collection<ChessMove> valid = validMoves(position);
-
-        // Check if King is in Under Attack and Able to Escape
-        return !valid.isEmpty() && danger(boardCloned, teamColor);
+        // Determine if King is in Check
+        return danger(board, teamColor);
     }
 
     /**
@@ -245,6 +273,7 @@ public class ChessGame
     public boolean isInStalemate(TeamColor teamColor)
     {
         // Determine King Position and Valid Moves
+        // Look at the moves of all pieces!!!!
         ChessPosition position = kingLocation(teamColor);
         Collection<ChessMove> valid = validMoves(position);
 
