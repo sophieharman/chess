@@ -67,9 +67,7 @@ public class ChessGame
         ChessPiece occupant = board.getPiece(startPosition);
 
         // Find Possible Move Positions (Without Accounting for Game Logic)
-
         Collection<ChessMove> possibleMoves;
-        boolean endangered = false;
         if(occupant != null)
         {
             // Get Team Color
@@ -81,8 +79,8 @@ public class ChessGame
                 // Copy ChessBoard
                 deepBoardCopy();
 
-                // Remove Captured Piece
-                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
+                // Make Move on Copy Chess Board
+                ChessPiece checkForOccupant = boardCloned.getPiece(move.endPosition);
                 if(checkForOccupant != null)
                 {
                     boardCloned.removePiece(move.endPosition);
@@ -95,67 +93,13 @@ public class ChessGame
                 boardCloned.removePiece(startPosition);
 
                 // If King is Not Endangered, Add to Valid Moves
-                endangered = danger(boardCloned, teamColor);
-                if(!endangered)
-                {
-                    valid.add(move);
-                }
-
-                if(endangered && occupant.getPieceType() == ChessPiece.PieceType.KING)
-                {
-                    Collection<ChessMove> rescueMoves = rescueKing(teamColor);
-                    for(ChessMove rescueMove: rescueMoves)
-                    {
-                        valid.add(rescueMove);
-                    }
-                }
-
-            }
-        }
-
-        return valid;
-    }
-
-    public Collection<ChessMove> rescueKing(TeamColor teamColor)
-    {
-        // Initialize Collection to Store Valid Moves
-        Collection<ChessMove> valid = new ArrayList<ChessMove>();
-
-        // Grab all Team Pieces
-        Collection<ChessPosition> teamPositions =  oppTeamLocations(boardCloned, teamColor);
-        for(ChessPosition position: teamPositions)
-        {
-            // Get Possible Moves for each Piece
-            ChessPiece occupant = board.getPiece(position);
-            Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
-            for(ChessMove move: possibleMoves)
-            {
-                // Perform Move on Copy of ChessBoard
-                deepBoardCopy();
-                // Remove Captured Piece
-                ChessPiece checkForOccupant = board.getPiece(move.endPosition);
-                if(checkForOccupant != null)
-                {
-                    boardCloned.removePiece(move.endPosition);
-                }
-                if(move.promotionPiece != null)
-                {
-                    occupant = new ChessPiece(teamColor, move.getPromotionPiece());
-                }
-                boardCloned.addPiece(move.endPosition, occupant);
-                boardCloned.removePiece(position);
-
-                // If Move Removes King from Check, Add to Valid Moves
-                boolean endangered = danger(boardCloned, teamColor);
-                if(!endangered)
+                if(!validIsInCheck(teamColor))
                 {
                     valid.add(move);
                 }
 
             }
-
         }
-
         return valid;
     }
 
@@ -241,10 +185,72 @@ public class ChessGame
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+    public boolean validIsInCheck(TeamColor teamColor)
+    {
+        // King Location
+        ChessPosition kingLoc =  validKingLocation(teamColor);
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece occupant = boardCloned.getPiece(position);
+
+                if(occupant != null)
+                {
+                    Collection<ChessMove> possibleMoves = occupant.pieceMoves(boardCloned, position);
+                    if(occupant.getTeamColor() != teamColor)
+                    {
+                        for(ChessMove move: possibleMoves)
+                        {
+                            if(move.endPosition.equals(kingLoc))
+                            {
+                                return true;
+                            }
+
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+        return false;
+    }
     public boolean isInCheck(TeamColor teamColor)
     {
-        // Determine if King is in Check
-        return danger(board, teamColor);
+        // YOU WON'T BE ABLE TO CHECK IF IN CHECK ON THE ACTUAL BOARD!!!!
+        // King Location
+        ChessPosition kingLoc =  validKingLocation(teamColor);
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece occupant = board.getPiece(position);
+
+                if(occupant != null)
+                {
+                    Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
+                    for(ChessMove move: possibleMoves)
+                    {
+                        if(occupant.getTeamColor() != teamColor)
+                        {
+                            if(move.endPosition.equals(kingLoc))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        }
+        return false;
     }
 
     /**
@@ -255,12 +261,31 @@ public class ChessGame
      */
     public boolean isInCheckmate(TeamColor teamColor)
     {
-        // Determine King Position and Valid Moves
-        ChessPosition position = kingLocation(teamColor);
-        Collection<ChessMove> valid = validMoves(position);
+        Collection<ChessMove> valid = new ArrayList<ChessMove>();
+
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece occupant = board.getPiece(position);
+                if(occupant != null)
+                {
+                    if(occupant.getTeamColor() == teamColor)
+                    {
+                        Collection<ChessMove> moves = validMoves(position);
+                        for(ChessMove move: moves)
+                        {
+                            valid.add(move);
+                        }
+                    }
+                }
+            }
+        }
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && danger(board, teamColor);
+        return valid.isEmpty() && isInCheck(teamColor);
     }
 
     /**
@@ -318,6 +343,31 @@ public class ChessGame
             }
         }
         return teamPositions;
+    }
+
+    public ChessPosition validKingLocation(TeamColor teamcolor)
+    {
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece piece = boardCloned.getPiece(position);
+                if(piece != null)
+                {
+                    if(piece.getPieceType() == ChessPiece.PieceType.KING)
+                    {
+                        // Return the Position of the King
+                        if(piece.getTeamColor() == teamcolor)
+                        {
+                            return position;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public ChessPosition kingLocation(TeamColor teamcolor)
