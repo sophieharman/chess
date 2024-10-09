@@ -297,10 +297,28 @@ public class ChessGame
      */
     public boolean isInStalemate(TeamColor teamColor)
     {
-        // Determine King Position and Valid Moves
-        // Look at the moves of all pieces!!!!
-        ChessPosition position = kingLocation(teamColor);
-        Collection<ChessMove> valid = validMoves(position);
+        Collection<ChessMove> valid = new ArrayList<ChessMove>();
+
+        // Iterate through all Board Positions
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition position = new ChessPosition(i, j);
+                ChessPiece occupant = board.getPiece(position);
+                if(occupant != null)
+                {
+                    if(occupant.getTeamColor() == teamColor)
+                    {
+                        Collection<ChessMove> moves = validMoves(position);
+                        for(ChessMove move: moves)
+                        {
+                            valid.add(move);
+                        }
+                    }
+                }
+            }
+        }
 
         // Check if King is in Under Attack and Able to Escape
         return valid.isEmpty() && !danger(board, teamColor);
