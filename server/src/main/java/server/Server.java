@@ -3,11 +3,12 @@ package server;
 import com.google.gson.Gson;
 import service.Service;
 import spark.*;
+import java.util.*;
 
 public class Server {
 
     private final Gson serializer = new Gson();
-    private final Service service = new Service();
+    private final Service service = new Service(); //LOOK AT THE THREAD IN SLACK
 
     public Server() {
     }
@@ -26,18 +27,23 @@ public class Server {
         return Spark.port();
     }
 
-    public String register(Request req, Response res) {
+    public Object register(Request req, Response res) {
 
-        // Verify Username Does Not Exist
-        //      Call getUser()
-        service.getUser();
-        //
+        String username = req.params(":username");
+        String password = req.params(":password");
+        String email = req.params(":email");
+
+        // Verify the Provided Username Does Not Exist
+        service.getUser(username);
 
         // Create New User
-        //      Call CreateUser()
+        service.createUser(username, password, email);
 
-        return "Implement";
+        // Create Authentication Token
+        String authData = "?????????";
+        String authToken = service.createAuth(authData);
 
+        return new Gson().toJson(Map.of("username", username, "authToken", authToken));
     }
 
     public void stop() {
