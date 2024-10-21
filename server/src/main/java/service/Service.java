@@ -1,34 +1,37 @@
 package service;
 
 import java.util.*;
-import dataaccess.MemoryUserDAO;
+
+import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
+import model.UserData;
+import server.RegisterResult;
 
 public class Service {
 
+    private final AuthDAO authDAO;
     private final UserDAO userDAO;
 
-    public Service(UserDAO userDAO)
+
+    public Service(AuthDAO authDAO, UserDAO userDAO)
     {
+        this.authDAO = authDAO;
         this.userDAO = userDAO;
     }
 
-    public void getUser(String username){
-        // Search for User in Database
-        System.out.println("Implement!");
+    public RegisterResult register(AuthData authData, UserData userInfo)
+    {
+        // Verify the Provided Username Does Not Exist
+        userDAO.getUser(userInfo.username());
+
+        // Create New User
+        userDAO.createUser(userInfo.username(), userInfo.password(), userInfo.email());
+
+        // Create Authentication Token
+        String authToken = authDAO.createAuth(authData);
+
+        return new RegisterResult(userInfo.username(), authToken);
     }
 
-    public void createUser(String username, String password, String email) {
-
-        // Add User Data: Username, Password, Email
-        userDAO.addUser(username, password, email);
-    }
-
-    public void getAuth(String authToken){
-        System.out.println("Implement!");
-    }
-
-    public static String createAuth(String authData) {
-        return UUID.randomUUID().toString();
-    }
 }

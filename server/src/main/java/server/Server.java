@@ -1,6 +1,12 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.UserDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryUserDAO;
+import model.AuthData;
+import model.UserData;
 import service.Service;
 import spark.*;
 import java.util.*;
@@ -8,7 +14,9 @@ import java.util.*;
 public class Server {
 
     private final Gson serializer = new Gson();
-    private final Service service = new Service(); //LOOK AT THE THREAD IN SLACK
+    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final UserDAO userDAO = new MemoryUserDAO();
+    private final Service service = new Service(authDAO, userDAO);
 
     public Server() {
     }
@@ -29,21 +37,15 @@ public class Server {
 
     public Object register(Request req, Response res) {
 
-        String username = req.params(":username");
-        String password = req.params(":password");
-        String email = req.params(":email");
+        UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
+        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
 
-        // Verify the Provided Username Does Not Exist
-        service.getUser(username);
+        RegisterResult result = service.register(authData, userInfo);
 
-        // Create New User
-        service.createUser(username, password, email);
-
-        // Create Authentication Token
-        String authData = "?????????";
-        String authToken = service.createAuth(authData);
-
-        return new Gson().toJson(Map.of("username", username, "authToken", authToken));
+        res.status();
+        String body = new Gson().toJson(result);
+        res.body(body);
+        return body;
     }
 
     public void stop() {

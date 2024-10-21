@@ -2,6 +2,12 @@ package dataaccess;
 
 public interface UserDAO{
 
-    void addUser(String username, String password, String email);
+    void createUser(String username, String password, String email);
+
+    Object getUser(String username);
+
+    void deleteUser(String username);
+
+    void clear();
 
 }
