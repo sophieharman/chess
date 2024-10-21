@@ -1,10 +1,12 @@
 package dataaccess;
 
+import java.util.*;
+
 public interface UserDAO{
 
     void createUser(String username, String password, String email);
 
-    Object getUser(String username);
+    Collection<String> getUser(String username);
 
     void deleteUser(String username);
 

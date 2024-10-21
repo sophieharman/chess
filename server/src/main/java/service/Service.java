@@ -6,7 +6,7 @@ import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
-import server.RegisterResult;
+import server.*;
 
 public class Service {
 
@@ -23,7 +23,11 @@ public class Service {
     public RegisterResult register(AuthData authData, UserData userInfo)
     {
         // Verify the Provided Username Does Not Exist
-        userDAO.getUser(userInfo.username());
+        Collection<String> userData = userDAO.getUser(userInfo.username());
+        if(userData != null)
+        {
+            System.out.println("Throw an Error Here!");
+        }
 
         // Create New User
         userDAO.createUser(userInfo.username(), userInfo.password(), userInfo.email());
@@ -33,5 +37,25 @@ public class Service {
 
         return new RegisterResult(userInfo.username(), authToken);
     }
+
+//    public LoginResult login(AuthData authData, UserData userInfo) {
+//        return new LoginResult();
+//    }
+
+//    public LogoutResult logout() {
+//        return new LogoutResult();
+//    }
+
+//    public ListGamesResult listGames() {
+//        return new ListGamesResult();
+//    }
+
+//    public CreateGameResult createGame() {
+//        return new CreateGameResult();
+//    }
+
+//    public JoinGameResult joinGame() {
+//        return new JoinGameResult();
+//    }
 
 }

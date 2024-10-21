@@ -13,7 +13,7 @@ public class MemoryUserDAO implements UserDAO{
         userInfo.put(username, Arrays.asList(password, email));
     }
 
-    public Object getUser(String username) {
+    public Collection<String> getUser(String username) {
         // Search for User in Database
         return userInfo.get(username);
     }
