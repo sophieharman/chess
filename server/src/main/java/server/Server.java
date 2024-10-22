@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import service.Service;
 import spark.*;
@@ -76,7 +77,22 @@ public class Server {
 
     public Object listGames(Request req, Response res) {
 
-        ListGamesResult result = service.listGames();
+        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
+
+        ListGamesResult result = service.listGames(authData.authToken());
+
+        res.status();
+        String body = new Gson().toJson(result);
+        res.body(body);
+        return body;
+    }
+
+    public Object createGame(Request req, Response res) {
+
+        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
+        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
+
+        CreateGameResult result = service.createGame(gameData.gameName, authData.authToken());
 
         res.status();
         String body = new Gson().toJson(result);

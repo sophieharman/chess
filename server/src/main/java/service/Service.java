@@ -75,15 +75,19 @@ public class Service {
         return new LogoutResult();
     }
 
-    public ListGamesResult listGames() {
+    public ListGamesResult listGames(String authToken) {
 
-        HashMap<String, Collection<String>> games = gameDAO.getGames();
+        HashMap<String, String> games = gameDAO.getGames();
         return new ListGamesResult(games);
     }
 
-//    public CreateGameResult createGame() {
-//        return new CreateGameResult();
-//    }
+    public CreateGameResult createGame(String gameName, String authToken) {
+
+        // Create New Game
+        String gameID = gameDAO.createGame(gameName);
+
+        return new CreateGameResult(gameID);
+    }
 
 //    public JoinGameResult joinGame() {
 //        return new JoinGameResult();

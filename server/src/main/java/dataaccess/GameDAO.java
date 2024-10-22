@@ -5,15 +5,11 @@ import java.util.HashMap;
 
 public interface GameDAO {
 
-    void createGame();
+    String createGame(String gameName);
 
-    HashMap<String, Collection<String>> getGames();
+    HashMap<String, String> getGames();
 
     void updateGame();
-
-    void listGames();
-
-    void deleteGames();
 
     void clear();
 }
