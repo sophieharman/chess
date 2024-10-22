@@ -33,7 +33,10 @@ public class Service {
         userDAO.createUser(userInfo.username(), userInfo.password(), userInfo.email());
 
         // Create Authentication Token
-        String authToken = authDAO.createAuth(authData); // CHANGE TO JUST USERNAME
+        authDAO.createAuth(userInfo.username()); // CHANGE TO JUST USERNAME
+
+        // Retrieve Authentication Token
+        String authToken = authDAO.getAuth(userInfo.username());
 
         return new RegisterResult(userInfo.username(), authToken);
     }

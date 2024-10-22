@@ -8,16 +8,17 @@ import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
 
-    final private HashMap<String, Collection<String>> authInfo = new HashMap<>();
+    final private HashMap<String, String> authInfo = new HashMap<>();
 
-    public String createAuth(AuthData authData){
+    public void createAuth(String username){
         // Insert String
-        return UUID.randomUUID().toString();
+        authInfo.put(username, UUID.randomUUID().toString());
+//        return UUID.randomUUID().toString();
     }
 
-    public Collection<String> getAuth(AuthData authToken){
+    public String getAuth(String username){
         // Search for Authentication Data in Database
-        return authInfo.get(authToken);
+        return authInfo.get(username);
     }
 
     public void deleteAuth(AuthData authToken){
