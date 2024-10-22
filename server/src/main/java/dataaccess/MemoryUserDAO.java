@@ -15,6 +15,9 @@ public class MemoryUserDAO implements UserDAO{
 
     public Collection<String> getUser(String username) {
         // Search for User in Database
+        if(!userInfo.containsKey(username)) {
+            return null;
+        }
         return userInfo.get(username);
     }
 

@@ -11,8 +11,8 @@ public class MemoryGameDAO implements GameDAO{
         System.out.println("Implement");
     }
 
-    public void getGame() {
-        System.out.println("Implement");
+    public HashMap<String, Collection<String>> getGames() {
+        return games;
     }
 
     public void updateGame() {

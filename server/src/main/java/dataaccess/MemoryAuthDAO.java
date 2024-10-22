@@ -11,17 +11,16 @@ public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, String> authInfo = new HashMap<>();
 
     public void createAuth(String username){
-        // Insert String
+        // Add Authentication Data
         authInfo.put(username, UUID.randomUUID().toString());
-//        return UUID.randomUUID().toString();
     }
 
     public String getAuth(String username){
-        // Search for Authentication Data in Database
+        // Search for Authentication Data
         return authInfo.get(username);
     }
 
-    public void deleteAuth(AuthData authToken){
+    public void deleteAuth(String authToken){
         // Remove Specified Authentication Token
         authInfo.remove(authToken);
     }

@@ -1,10 +1,13 @@
 package dataaccess;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 public interface GameDAO {
 
     void createGame();
 
-    void getGame();
+    HashMap<String, Collection<String>> getGames();
 
     void updateGame();
 
