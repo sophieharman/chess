@@ -11,6 +11,7 @@ public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, Collection<String>> authInfo = new HashMap<>();
 
     public String createAuth(AuthData authData){
+        // Insert String
         return UUID.randomUUID().toString();
     }
 

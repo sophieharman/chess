@@ -26,14 +26,14 @@ public class Service {
         Collection<String> userData = userDAO.getUser(userInfo.username());
         if(userData != null)
         {
-            System.out.println("Throw an Error Here!");
+            throw new ServiceException(403, "Error: Username Taken");
         }
 
         // Create New User
         userDAO.createUser(userInfo.username(), userInfo.password(), userInfo.email());
 
         // Create Authentication Token
-        String authToken = authDAO.createAuth(authData);
+        String authToken = authDAO.createAuth(authData); // CHANGE TO JUST USERNAME
 
         return new RegisterResult(userInfo.username(), authToken);
     }
