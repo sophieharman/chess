@@ -100,10 +100,22 @@ public class Server {
         return body;
     }
 
-    public Object joinGame() {
-        // Add playerColor and gameID!!!!!!!!!
-        JoinGameResult result = service.joinGame(gameData.gameName(), authData.authToken());
+//    public Object joinGame(Request req, Response res) {
+//        // Add playerColor and gameID!!!!!!!!!
+//        JoinGameResult result = service.joinGame(gameData.gameName(), authData.authToken());
+//    }
+
+    public Object clear(Request req, Response res) {
+
+        ClearResult result = service.clear();
+
+        res.status();
+        String body = new Gson().toJson(result);
+        res.body(body);
+        return body;
     }
+
+
 
     public void stop() {
         Spark.stop();

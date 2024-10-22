@@ -93,8 +93,18 @@ public class Service {
 //        return new JoinGameResult();
 //    }
 
-    public void clear() {
-        System.out.println("Implement");
+    public ClearResult clear() {
+
+        // Delete Authentication Data
+        authDAO.clear();
+
+        // Delete User Data
+        userDAO.clear();
+
+        // Delete Game Data
+        gameDAO.clear();
+
+        return new ClearResult();
     }
 
 }

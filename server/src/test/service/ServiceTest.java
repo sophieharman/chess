@@ -79,8 +79,7 @@ class ServiceTest {
         // Logout User
         LogoutResult actual = service.logout(loginResult.authToken());
 
-        // Will Memory remember Logouts?
-        // FINISH LOGIN TEST!!!
+        // Will Memory remember Logouts??????????????
     }
 
     @Test
@@ -102,6 +101,7 @@ class ServiceTest {
         service.createGame("Game2WithUpdates", authToken);
 
         // Join Game
+        // TO-DO!!!!!!!!
 
         ListGamesResult listGamesResult = service.listGames(authToken);
         Assertions.assertTrue(!listGamesResult.games().isEmpty());
@@ -171,12 +171,27 @@ class ServiceTest {
 
     @Test
     public void testClear() {
-        System.out.println("Implement");
+        // Add User into System and get Authentication
+        UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
+        RegisterResult registerResult = service.register(userInfo);
+        String authToken = registerResult.authToken();
+
+        // Create Game
+        CreateGameResult createGameResult = service.createGame("Game1", authToken);
+
+        // Clear
+        ClearResult clearResult = service.clear();
+
+        // Assertions?????????????
     }
 
     @Test
     public void testClearNothing() {
-        System.out.println("Implement");
+
+        // Clear
+        ClearResult clearResult = service.clear();
+
+        // Assertions????????????????
     }
 
 }
