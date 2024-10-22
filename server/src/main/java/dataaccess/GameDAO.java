@@ -7,7 +7,7 @@ public interface GameDAO {
 
     String createGame(String gameName);
 
-    HashMap<String, String> getGames();
+    HashMap<String, Collection<String>> getGames();
 
     void updateGame();
 

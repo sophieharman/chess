@@ -92,12 +92,17 @@ public class Server {
         AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 
-        CreateGameResult result = service.createGame(gameData.gameName, authData.authToken());
+        CreateGameResult result = service.createGame(gameData.gameName(), authData.authToken());
 
         res.status();
         String body = new Gson().toJson(result);
         res.body(body);
         return body;
+    }
+
+    public Object joinGame() {
+        // Add playerColor and gameID!!!!!!!!!
+        JoinGameResult result = service.joinGame(gameData.gameName(), authData.authToken());
     }
 
     public void stop() {

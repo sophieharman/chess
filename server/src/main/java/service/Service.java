@@ -77,7 +77,7 @@ public class Service {
 
     public ListGamesResult listGames(String authToken) {
 
-        HashMap<String, String> games = gameDAO.getGames();
+        HashMap<String, Collection<String>> games = gameDAO.getGames();
         return new ListGamesResult(games);
     }
 
@@ -86,7 +86,7 @@ public class Service {
         // Create New Game
         String gameID = gameDAO.createGame(gameName);
 
-        return new CreateGameResult(gameID);
+        return new CreateGameResult(gameID, null, null, gameName);
     }
 
 //    public JoinGameResult joinGame() {
