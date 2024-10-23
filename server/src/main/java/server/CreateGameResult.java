@@ -1,4 +1,4 @@
 package server;
 
-public record CreateGameResult(String gameID, String whiteUsername, String blackUsername, String gameName) {
+public record CreateGameResult(Integer gameID, String whiteUsername, String blackUsername, String gameName) {
 }

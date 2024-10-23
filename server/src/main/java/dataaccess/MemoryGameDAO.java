@@ -1,12 +1,14 @@
 package dataaccess;
 
+import model.GameData;
+
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO{
 
-    final private HashMap<String, Collection<String>> games = new HashMap<>();
+    final private HashMap<String, GameData> games = new HashMap<>();
 
-    public String createGame(String gameName) {
+    public Integer createGame(String gameName) {
 
         // Generate Game ID
         String gameID = "";
@@ -17,17 +19,29 @@ public class MemoryGameDAO implements GameDAO{
         }
 
         // Create Game
-        games.put(gameID, null, null, gameName);
+//        games.put(gameID, Arrays.asList(null, null, gameName));
 
-        return gameID;
+        return Integer.parseInt(gameID);
     }
 
-    public HashMap<String, Collection<String>> getGames() {
+    public HashMap<String, GameData> listGames() {
         return games;
     }
 
-    public void updateGame() {
-        System.out.println("Implement");
+    public void joinGame(String playerColor, String username, String authToken, Integer gameID) {
+
+        GameData game = games.get(gameID);
+
+        String whiteUsername = game.whiteUsername();
+        String blackUsername = game.blackUsername();
+
+        // Update White/Black Usernames
+        if(Objects.equals(playerColor, "WHITE") && whiteUsername == null) {
+            whiteUsername = username;
+        }
+        if(Objects.equals(playerColor, "BLACK") && blackUsername == null) {
+            blackUsername = username;
+        }
     }
 
     public void clear(){

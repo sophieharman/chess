@@ -1,15 +1,17 @@
 package dataaccess;
 
+import model.GameData;
+
 import java.util.Collection;
 import java.util.HashMap;
 
 public interface GameDAO {
 
-    String createGame(String gameName);
+    Integer createGame(String gameName);
 
-    HashMap<String, Collection<String>> getGames();
+    HashMap<String, GameData> listGames();
 
-    void updateGame();
+    void joinGame(String playerColor, String authToken, Integer gameID);
 
     void clear();
 }

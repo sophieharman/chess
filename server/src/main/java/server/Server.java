@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import service.Service;
@@ -31,8 +30,8 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.get("/game", this::listGames);
-//        Spark.post("/game", this::createGame);
-//        Spark.put("/game", this::joinGame);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.delete("/db", (req, response) -> "{}");
 
         Spark.awaitInitialization();
@@ -65,9 +64,9 @@ public class Server {
 
     public Object logout(Request req, Response res) {
 
-        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
+        String authToken = req.headers("Authorization");
 
-        LogoutResult result = service.logout(authData.authToken());
+        LogoutResult result = service.logout(authToken);
 
         res.status();
         String body = new Gson().toJson(result);
@@ -77,9 +76,9 @@ public class Server {
 
     public Object listGames(Request req, Response res) {
 
-        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
+        String authToken = req.headers("Authorization");
 
-        ListGamesResult result = service.listGames(authData.authToken());
+        ListGamesResult result = service.listGames(authToken);
 
         res.status();
         String body = new Gson().toJson(result);
@@ -89,10 +88,11 @@ public class Server {
 
     public Object createGame(Request req, Response res) {
 
-        AuthData authData = new Gson().fromJson(req.body(), AuthData.class);
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 
-        CreateGameResult result = service.createGame(gameData.gameName(), authData.authToken());
+        String authToken = req.headers("Authorization");
+
+        CreateGameResult result = service.createGame(gameData.gameName(), authToken);
 
         res.status();
         String body = new Gson().toJson(result);
@@ -100,10 +100,30 @@ public class Server {
         return body;
     }
 
-//    public Object joinGame(Request req, Response res) {
-//        // Add playerColor and gameID!!!!!!!!!
-//        JoinGameResult result = service.joinGame(gameData.gameName(), authData.authToken());
-//    }
+    public Object joinGame(Request req, Response res) {
+
+        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
+        UserData userData = new Gson().fromJson(req.body(), UserData.class);
+
+        String authToken = req.headers("Authorization");
+
+        // Determine Player Color
+        String playerColor;
+        if(Objects.equals(gameData.whiteUsername(), userData.username())) {
+            playerColor = "WHITE";
+        }
+        else {
+            playerColor = "BLACK";
+        }
+
+        // Join Game
+        JoinGameResult result = service.joinGame(playerColor, authToken, gameData.gameID());
+
+        res.status();
+        String body = new Gson().toJson(result);
+        res.body(body);
+        return body;
+    }
 
     public Object clear(Request req, Response res) {
 
@@ -114,7 +134,6 @@ public class Server {
         res.body(body);
         return body;
     }
-
 
 
     public void stop() {

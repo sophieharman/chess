@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
 
-    final private HashMap<String, String> authInfo = new HashMap<>();
+    final private HashMap<String, AuthData> authInfo = new HashMap<>();
 
     public void createAuth(String username){
         // Add Authentication Data
@@ -23,6 +23,10 @@ public class MemoryAuthDAO implements AuthDAO{
     public void deleteAuth(String authToken){
         // Remove Specified Authentication Token
         authInfo.remove(authToken);
+    }
+
+    public String getUser(String authToken) {
+        System.out.println("Implement");
     }
 
     public void clear(){

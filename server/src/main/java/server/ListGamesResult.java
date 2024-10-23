@@ -1,7 +1,8 @@
 package server;
 
-import java.util.Collection;
-import java.util.HashMap;
+import model.GameData;
+import java.util.*;
 
-public record ListGamesResult(HashMap<String, Collection<String>> games) {
+
+public record ListGamesResult(HashMap<String, GameData> games) {
 }
