@@ -4,6 +4,7 @@ import model.AuthData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
@@ -12,12 +13,13 @@ public class MemoryAuthDAO implements AuthDAO{
 
     public void createAuth(String username){
         // Add Authentication Data
-        authInfo.put(username, UUID.randomUUID().toString());
+        AuthData authData = new AuthData(UUID.randomUUID().toString(), username);
     }
 
     public String getAuth(String username){
         // Search for Authentication Data
-        return authInfo.get(username);
+        AuthData authData = authInfo.get(username);
+        return authData.authToken();
     }
 
     public void deleteAuth(String authToken){
@@ -26,8 +28,15 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     public String getUser(String authToken) {
-        System.out.println("Implement");
+        for(String key: authInfo.keySet()) {
+            AuthData authData = authInfo.get(key);
+            if(Objects.equals(authData.authToken(), authToken)) {
+                return key;
+            }
+        }
+        return null; // Maybe change this?
     }
+
 
     public void clear(){
         // Clear All Users

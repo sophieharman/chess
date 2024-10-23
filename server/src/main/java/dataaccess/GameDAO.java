@@ -11,7 +11,7 @@ public interface GameDAO {
 
     HashMap<String, GameData> listGames();
 
-    void joinGame(String playerColor, String authToken, Integer gameID);
+    void joinGame(String playerColor, String authToken, String username, Integer gameID);
 
     void clear();
 }

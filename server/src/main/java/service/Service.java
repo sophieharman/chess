@@ -116,11 +116,9 @@ public class Service {
             throw new ServiceException(401, "Error: Unauthorized Access");
         }
 
-        String username = "?";
-
         // Join Game
-        gameDAO.joinGame();
-
+        String username = authDAO.getUser(authToken);
+        gameDAO.joinGame(playerColor, username, authToken, gameID);
 
         return new JoinGameResult();
     }

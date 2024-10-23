@@ -11,5 +11,7 @@ public interface AuthDAO {
 
     void deleteAuth(String authToken);
 
+    String getUser(String authToken);
+
     void clear();
 }

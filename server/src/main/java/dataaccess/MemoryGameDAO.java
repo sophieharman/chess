@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO{
 
     public void joinGame(String playerColor, String username, String authToken, Integer gameID) {
 
-        GameData game = games.get(gameID);
+        GameData game = games.get(gameID); // THIS IS PROBABLY AN ISSUE!
 
         String whiteUsername = game.whiteUsername();
         String blackUsername = game.blackUsername();
