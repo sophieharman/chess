@@ -135,7 +135,6 @@ public class Server {
         return body;
     }
 
-
     public void stop() {
         Spark.stop();
         Spark.awaitStop();

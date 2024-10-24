@@ -1,39 +1,58 @@
 package dataaccess;
 
+import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO{
 
-    final private HashMap<String, GameData> games = new HashMap<>();
+    final private HashMap<Integer, GameData> games = new HashMap<>();
 
     public Integer createGame(String gameName) {
 
         // Generate Game ID
-        String gameID = "";
-        for (int i = 1; i <= 7; i++) {
-            Random random = new Random();
-            int randomDigit = random.nextInt(10);
-            gameID += String.valueOf(randomDigit);
-        }
+        Random random = new Random();
+        Integer gameID = random.nextInt(100_000_000, 1_000_000_000);
 
         // Create Game
-//        games.put(gameID, Arrays.asList(null, null, gameName));
+        GameData game = new GameData(gameID, null, null, gameName, null);
 
-        return Integer.parseInt(gameID);
+        // Add Game to Memory
+        games.put(gameID, game);
+
+        return gameID;
     }
 
-    public HashMap<String, GameData> listGames() {
+    public HashMap<Integer, GameData> listGames() {
         return games;
+    }
+
+    public GameData getGame(Integer gameID) {
+
+        // Iterate through Games
+        for (Map.Entry<Integer, GameData> game : games.entrySet()) {
+
+            // Verify GameID Matches Given ID
+            GameData gameInfo = game.getValue();
+            if(gameInfo.gameID() == gameID)
+            {
+                return gameInfo;
+            }
+        }
+        return null;
     }
 
     public void joinGame(String playerColor, String username, String authToken, Integer gameID) {
 
-        GameData game = games.get(gameID); // THIS IS PROBABLY AN ISSUE!
 
-        String whiteUsername = game.whiteUsername();
-        String blackUsername = game.blackUsername();
+        GameData gameInfo = games.get(gameID);
+
+        String whiteUsername = gameInfo.whiteUsername();
+        String blackUsername = gameInfo.blackUsername();
+        String gameName = gameInfo.gameName();
+        ChessGame game = gameInfo.game();
 
         // Update White/Black Usernames
         if(Objects.equals(playerColor, "WHITE") && whiteUsername == null) {
@@ -42,6 +61,12 @@ public class MemoryGameDAO implements GameDAO{
         if(Objects.equals(playerColor, "BLACK") && blackUsername == null) {
             blackUsername = username;
         }
+
+        // Delete Game
+        games.remove(gameID);
+
+        // Add Updated Game
+         GameData updatedGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     public void clear(){

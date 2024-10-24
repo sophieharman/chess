@@ -5,7 +5,6 @@ import java.util.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.*;
@@ -17,18 +16,17 @@ public class Service {
     private final UserDAO userDAO;
 
 
-    public Service(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO)
-    {
+    public Service(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(UserData userInfo)
-    {
-        UserData userData = userDAO.getUser(userInfo.username());
+    public RegisterResult register(UserData userInfo) {
 
         // Verify the Provided Username Does Not Exist
+        UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
             throw new ServiceException(403, "Error: Username Taken");
         }
@@ -36,35 +34,30 @@ public class Service {
         // Create New User
         userDAO.createUser(userInfo.username(), userInfo.password(), userInfo.email());
 
-        // Create Authentication Token
-        authDAO.createAuth(userInfo.username());
+        // Create and Retrieve Authentication Token
+        String authToken = authDAO.createAuth(userInfo.username());
 
-        // Retrieve Authentication Token
-        String authToken = authDAO.getAuth(userInfo.username());
-
+        // Return Username and Authentication Token
         return new RegisterResult(userInfo.username(), authToken);
     }
 
     public LoginResult login(String username, String password) {
 
-        UserData userInfo = userDAO.getUser(username);
-
         // Verify Username Exists
+        UserData userInfo = userDAO.getUser(username);
         if(userInfo == null) {
             throw new ServiceException(404, "Error: Username Not Found");
         }
 
         // Verify Password is Correct
-        if(Objects.equals(userInfo.password(), password)) {
+        if(!Objects.equals(userInfo.password(), password)) {
             throw new ServiceException(401, "Error: Incorrect Password");
         }
 
-        // Create Authentication Token
-        authDAO.createAuth(username);
+        // Create and Retrieve Authentication Token
+        String authToken = authDAO.createAuth(username);
 
-        // Get Authentication Token
-        String authToken = authDAO.getAuth(username);
-
+        // Return Username and Authentication Token
         return new LoginResult(username, authToken);
     }
 
@@ -90,7 +83,8 @@ public class Service {
             throw new ServiceException(401, "Error: Unauthorized Access");
         }
 
-        HashMap<String, GameData> games = gameDAO.listGames();
+        // List of All Games
+        HashMap<Integer, GameData> games = gameDAO.listGames();
         return new ListGamesResult(games);
     }
 
@@ -104,7 +98,6 @@ public class Service {
 
         // Create New Game
         Integer gameID = gameDAO.createGame(gameName);
-
         return new CreateGameResult(gameID, null, null, gameName);
     }
 

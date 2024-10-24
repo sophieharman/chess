@@ -2,10 +2,13 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import server.*;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -18,15 +21,19 @@ class ServiceTest {
 
     @Test
     public void testRegisterUsernameAvailable() {
-        UserData userInfo = new UserData("Bob","pword", "bobwork@email.com");
 
+        // Register User
+        UserData userInfo = new UserData("Bob","pword", "bobwork@email.com");
         RegisterResult actual = service.register(userInfo);
+
+        // Assertions
         Assertions.assertEquals(userInfo.username(), actual.username());
         Assertions.assertNotNull(actual.authToken());
     }
 
     @Test
     public void testRegisterUsernameTaken() {
+
         // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         service.register(userInfo);
@@ -38,18 +45,20 @@ class ServiceTest {
 
     @Test
     public void testLoginCorrectInfo() {
+
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
         service.register(userInfo);
 
         // Login User
-        LoginResult actual = service.login("Lucy", "Fish123");
-        Assertions.assertEquals(userInfo.username(), actual.username());
-        Assertions.assertNotNull(actual.authToken());
+        LoginResult loginResult = service.login("Lucy", "Fish123");
+        Assertions.assertEquals(userInfo.username(), loginResult.username());
+        Assertions.assertNotNull(loginResult.authToken());
     }
 
     @Test
     public void testLoginUsernameNotFound() {
+
         // Register with Taken Username
         assertThrows(ServiceException.class, () -> {
             service.login("Loser", "ThePassword");});
@@ -57,6 +66,7 @@ class ServiceTest {
 
     @Test
     public void testLoginIncorrectPassword() {
+
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
         service.register(userInfo);
@@ -69,26 +79,39 @@ class ServiceTest {
     @Test
     public void testLogoutSuccessful() {
 
-        // Add User into System
+        // Add User Into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
         service.register(userInfo);
 
-        // Login User and get Authentication
+        // Login User and Get Authentication
         LoginResult loginResult = service.login(userInfo.username(), userInfo.password());
 
         // Logout User
-        LogoutResult actual = service.logout(loginResult.authToken());
+        service.logout(loginResult.authToken());
 
-        // Will Memory remember Logouts??????????????
+        // Assert AuthToken is Deleted
+        String newAuthToken = authDAO.getAuth(loginResult.authToken());
+        Assertions.assertNull(newAuthToken);
     }
 
     @Test
-    public void testLogoutFailed() {
-        System.out.println("Implement");
+    public void testLogoutIncorrectAuth() {
+
+        // Add User Into System
+        UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
+        service.register(userInfo);
+
+        // Login User and Get Authentication
+        LoginResult loginResult = service.login(userInfo.username(), userInfo.password());
+
+        // Attempt Logout
+        assertThrows(ServiceException.class, () -> {
+            service.logout("InvalidAuthToken");});
     }
 
     @Test
     public void testListGamesAll() {
+
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         RegisterResult registerResult = service.register(userInfo);
@@ -98,17 +121,19 @@ class ServiceTest {
         service.createGame("Game1NoUpdates", authToken);
 
         // Create Another Game
-        service.createGame("Game2WithUpdates", authToken);
+        CreateGameResult game2Result = service.createGame("Game2WithUpdates", authToken);
 
         // Join Game
-        // TO-DO!!!!!!!!
+        service.joinGame("WHITE", authToken, game2Result.gameID());
 
+        // Assert Games Listed
         ListGamesResult listGamesResult = service.listGames(authToken);
-        Assertions.assertTrue(!listGamesResult.games().isEmpty());
+        Assertions.assertFalse(listGamesResult.games().isEmpty());
     }
 
     @Test
     public void testListGamesNone() {
+
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         RegisterResult registerResult = service.register(userInfo);
@@ -121,6 +146,7 @@ class ServiceTest {
 
     @Test
     public void testCreateGame() {
+
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         RegisterResult registerResult = service.register(userInfo);
@@ -138,6 +164,7 @@ class ServiceTest {
 
     @Test
     public void testCreateGameSameName() {
+
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         RegisterResult registerResult = service.register(userInfo);
@@ -155,23 +182,81 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGameFail() {
-        System.out.println("Implement");
+    public void testCreateGameInvalidAuth() {
+
+        // Assert Invalid Authentication
+        assertThrows(ServiceException.class, () -> {
+            service.createGame("Game1", "invalidAuth");});
     }
 
     @Test
     public void testJoinGameSuccess() {
-        System.out.println("Implement");
+
+        // Add User into System and get Authentication
+        UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
+        RegisterResult registerResult = service.register(userInfo);
+        String authToken = registerResult.authToken();
+
+        // Create New Game
+        CreateGameResult createGameResult = service.createGame("Game1", authToken);
+
+        // Join Game
+        JoinGameResult joinGameResult = service.joinGame("WHITE", authToken, createGameResult.gameID());
+
+        // Grab Game Information
+        GameData game = gameDAO.getGame(createGameResult.gameID());
+
+        //Assertions
+        Assertions.assertEquals("Susan", game.whiteUsername());
     }
 
     @Test
-    public void testJoinGameFail() {
-        System.out.println("Implement");
+    public void testJoinGameWhitePlayerTaken() {
+
+        // Add Users into System and get Authentication
+        UserData userInfo1 = new UserData("User1","pword", "user1@email.com");
+        UserData userInfo2 = new UserData("User2","pword", "user1@email.com");
+        RegisterResult registerResult1 = service.register(userInfo1);
+        RegisterResult registerResult2 = service.register(userInfo2);
+        String authTokenUser1 = registerResult1.authToken();
+        String authTokenUser2 = registerResult2.authToken();
+
+        // Create New Game
+        CreateGameResult createGameResult = service.createGame("Game1", authTokenUser1);
+
+        // User1 Join Game as White
+        JoinGameResult joinGameResult1 = service.joinGame("WHITE", authTokenUser1, createGameResult.gameID());
+
+        // User2 Attempt to Join Game as White
+        JoinGameResult joinGameResult2 = service.joinGame("WHITE", authTokenUser2, createGameResult.gameID());
+
+        // Grab Game Information
+        GameData game = gameDAO.getGame(createGameResult.gameID());
+
+        //Assertions
+        Assertions.assertEquals("User1", game.whiteUsername());
+    }
+
+    @Test
+    public void testJoinGameInvalidAuth() {
+
+        // Add User into System and get Authentication
+        UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
+        RegisterResult registerResult = service.register(userInfo);
+        String authToken = registerResult.authToken();
+
+        // Create New Game
+        CreateGameResult createGameResult = service.createGame("Game1", authToken);
+
+        // Assert Invalid Authentication
+        assertThrows(ServiceException.class, () -> {
+            service.joinGame("WHITE", "InvalidAuth", createGameResult.gameID());});
     }
 
     @Test
     public void testClear() {
-        // Add User into System and get Authentication
+
+        // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
         RegisterResult registerResult = service.register(userInfo);
         String authToken = registerResult.authToken();
@@ -179,10 +264,23 @@ class ServiceTest {
         // Create Game
         CreateGameResult createGameResult = service.createGame("Game1", authToken);
 
-        // Clear
+        // Assert Information Can Be Found
+        String theAuthToken = authDAO.getAuth("Susan");
+        HashMap<Integer, GameData> games = gameDAO.listGames();
+        UserData storedUserInfo = userDAO.getUser("Susan");
+
+        // Clear Information
         ClearResult clearResult = service.clear();
 
-        // Assertions?????????????
+        // Grab Available Information
+        theAuthToken = authDAO.getAuth("Susan");
+        games = gameDAO.listGames();
+        storedUserInfo = userDAO.getUser("Susan");
+
+        // Assert there is No Information
+        Assertions.assertNull(theAuthToken);
+        Assertions.assertNull(games);
+        Assertions.assertNull(storedUserInfo);
     }
 
     @Test
@@ -191,7 +289,15 @@ class ServiceTest {
         // Clear
         ClearResult clearResult = service.clear();
 
-        // Assertions????????????????
+        // Grab Available Information
+        String theAuthToken = authDAO.getAuth("Susan");
+        HashMap<Integer, GameData> games = gameDAO.listGames();
+        UserData storedUserInfo = userDAO.getUser("Susan");
+
+        // Assert there is No Information
+        Assertions.assertNull(theAuthToken);
+        Assertions.assertNull(games);
+        Assertions.assertNull(storedUserInfo);
     }
 
 }
