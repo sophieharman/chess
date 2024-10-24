@@ -5,6 +5,7 @@ import dataaccess.*;
 import model.GameData;
 import model.UserData;
 import service.Service;
+import service.ServiceException;
 import spark.*;
 import java.util.*;
 
@@ -32,61 +33,62 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
-        Spark.delete("/db", (req, response) -> "{}");
+        Spark.delete("/db", this::clear);
+
+        Spark.exception(ServiceException.class, this::serviceExceptionHandler);
+        Spark.exception(Exception.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
     }
 
-    public Object register(Request req, Response res) {
+    public void exceptionHandler(Exception ex, Request req, Response res) {
+        res.status(500);
+        res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
+    }
+
+    public void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
+        res.status(ex.getStatusCode());
+        res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
+    }
+
+    public Object register(Request req, Response res) throws ServiceException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
         RegisterResult result = service.register(userInfo);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
-    public Object login(Request req, Response res) {
+    public Object login(Request req, Response res) throws ServiceException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
         LoginResult result = service.login(userInfo.username(), userInfo.password());
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
-    public Object logout(Request req, Response res) {
+    public Object logout(Request req, Response res) throws ServiceException {
 
         String authToken = req.headers("Authorization");
 
         LogoutResult result = service.logout(authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
-    public Object listGames(Request req, Response res) {
+    public Object listGames(Request req, Response res) throws ServiceException {
 
         String authToken = req.headers("Authorization");
 
         ListGamesResult result = service.listGames(authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
-    public Object createGame(Request req, Response res) {
+    public Object createGame(Request req, Response res) throws ServiceException {
 
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 
@@ -94,13 +96,10 @@ public class Server {
 
         CreateGameResult result = service.createGame(gameData.gameName(), authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
-    public Object joinGame(Request req, Response res) {
+    public Object joinGame(Request req, Response res) throws ServiceException {
 
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
         UserData userData = new Gson().fromJson(req.body(), UserData.class);
@@ -119,20 +118,14 @@ public class Server {
         // Join Game
         JoinGameResult result = service.joinGame(playerColor, authToken, gameData.gameID());
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object clear(Request req, Response res) {
 
         ClearResult result = service.clear();
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public void stop() {
