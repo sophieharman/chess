@@ -35,8 +35,15 @@ public class Server {
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
+        Spark.exception(ServiceException.class, this::exceptionHandler);
+
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    public Object exceptionHandler(ServiceException ex, Request req, Response res) {
+        res.status(ex.getStatusCode());
+        return "{}";
     }
 
     public Object register(Request req, Response res) throws ServiceException {
