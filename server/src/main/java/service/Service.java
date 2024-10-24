@@ -84,7 +84,7 @@ public class Service {
         }
 
         // List of All Games
-        HashMap<Integer, GameData> games = gameDAO.listGames();
+        List<GameData> games = new ArrayList<>(gameDAO.listGames().values());
         return new ListGamesResult(games);
     }
 
