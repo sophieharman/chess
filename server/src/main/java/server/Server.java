@@ -5,6 +5,7 @@ import dataaccess.*;
 import model.GameData;
 import model.UserData;
 import service.Service;
+import service.ServiceException;
 import spark.*;
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class Server {
         return Spark.port();
     }
 
-    public Object register(Request req, Response res) {
+    public Object register(Request req, Response res) throws ServiceException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
@@ -50,7 +51,7 @@ public class Server {
         return body;
     }
 
-    public Object login(Request req, Response res) {
+    public Object login(Request req, Response res) throws ServiceException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
@@ -62,7 +63,7 @@ public class Server {
         return body;
     }
 
-    public Object logout(Request req, Response res) {
+    public Object logout(Request req, Response res) throws ServiceException {
 
         String authToken = req.headers("Authorization");
 
@@ -74,7 +75,7 @@ public class Server {
         return body;
     }
 
-    public Object listGames(Request req, Response res) {
+    public Object listGames(Request req, Response res) throws ServiceException {
 
         String authToken = req.headers("Authorization");
 
@@ -86,7 +87,7 @@ public class Server {
         return body;
     }
 
-    public Object createGame(Request req, Response res) {
+    public Object createGame(Request req, Response res) throws ServiceException {
 
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 
@@ -100,7 +101,7 @@ public class Server {
         return body;
     }
 
-    public Object joinGame(Request req, Response res) {
+    public Object joinGame(Request req, Response res) throws ServiceException {
 
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
         UserData userData = new Gson().fromJson(req.body(), UserData.class);

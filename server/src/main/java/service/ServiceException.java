@@ -1,7 +1,7 @@
 package service;
 
 
-public class ServiceException extends RuntimeException {
+public class ServiceException extends Exception {
 
   final private int statusCode;
 
