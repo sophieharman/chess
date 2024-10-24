@@ -52,10 +52,7 @@ public class Server {
 
         RegisterResult result = service.register(userInfo);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object login(Request req, Response res) throws ServiceException {
@@ -64,10 +61,7 @@ public class Server {
 
         LoginResult result = service.login(userInfo.username(), userInfo.password());
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object logout(Request req, Response res) throws ServiceException {
@@ -76,10 +70,7 @@ public class Server {
 
         LogoutResult result = service.logout(authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object listGames(Request req, Response res) throws ServiceException {
@@ -88,10 +79,7 @@ public class Server {
 
         ListGamesResult result = service.listGames(authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object createGame(Request req, Response res) throws ServiceException {
@@ -102,10 +90,7 @@ public class Server {
 
         CreateGameResult result = service.createGame(gameData.gameName(), authToken);
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object joinGame(Request req, Response res) throws ServiceException {
@@ -127,20 +112,14 @@ public class Server {
         // Join Game
         JoinGameResult result = service.joinGame(playerColor, authToken, gameData.gameID());
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public Object clear(Request req, Response res) {
 
         ClearResult result = service.clear();
 
-        res.status();
-        String body = new Gson().toJson(result);
-        res.body(body);
-        return body;
+        return new Gson().toJson(result);
     }
 
     public void stop() {
