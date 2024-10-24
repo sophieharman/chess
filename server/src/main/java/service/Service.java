@@ -25,6 +25,7 @@ public class Service {
 
     public RegisterResult register(UserData userInfo) throws ServiceException {
 
+        // Unnnecessary Comment
         // Verify the Provided Username Does Not Exist
         UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
