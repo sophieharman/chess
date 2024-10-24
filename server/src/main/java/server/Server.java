@@ -33,7 +33,7 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
-        Spark.delete("/db", (req, response) -> "{}");
+        Spark.delete("/db", this::clear);
 
         Spark.awaitInitialization();
         return Spark.port();
