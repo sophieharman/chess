@@ -35,13 +35,19 @@ public class Server {
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
-        Spark.exception(ServiceException.class, this::exceptionHandler);
+        Spark.exception(ServiceException.class, this::serviceExceptionHandler);
+        Spark.exception(Exception.class, this::exceptionHandler);
 
         Spark.awaitInitialization();
         return Spark.port();
     }
 
-    public void exceptionHandler(ServiceException ex, Request req, Response res) {
+    public void exceptionHandler(Exception ex, Request req, Response res) {
+        res.status(500);
+        res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
+    }
+
+    public void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
         res.status(ex.getStatusCode());
         res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
     }
