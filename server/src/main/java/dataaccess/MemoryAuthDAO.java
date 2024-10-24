@@ -21,13 +21,9 @@ public class MemoryAuthDAO implements AuthDAO{
         return authToken;
     }
 
-    public String getAuth(String username){
+    public AuthData getAuth(String username){
         // Search for Authentication Data
-        AuthData authData = authInfo.get(username);
-        if(authData == null) {
-            return null;
-        }
-        return authData.authToken();
+        return authInfo.get(username);
     }
 
     public void deleteAuth(String authToken){
@@ -36,13 +32,7 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     public String getUser(String authToken) {
-        for(String key: authInfo.keySet()) {
-            AuthData authData = authInfo.get(key);
-            if(Objects.equals(authData.authToken(), authToken)) {
-                return key;
-            }
-        }
-        return null; // Maybe change this?
+        return getAuth(authToken).username();
     }
 
 

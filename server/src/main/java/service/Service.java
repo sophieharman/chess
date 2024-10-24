@@ -5,6 +5,7 @@ import java.util.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.*;
@@ -23,12 +24,12 @@ public class Service {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(UserData userInfo) {
+    public RegisterResult register(UserData userInfo) throws ServiceException {
 
         // Verify the Provided Username Does Not Exist
         UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
-            throw new ServiceException(403, "Error: Username Taken");
+            throw new UnauthorizedException();
         }
 
         // Create New User
@@ -41,17 +42,17 @@ public class Service {
         return new RegisterResult(userInfo.username(), authToken);
     }
 
-    public LoginResult login(String username, String password) {
+    public LoginResult login(String username, String password) throws ServiceException {
 
         // Verify Username Exists
         UserData userInfo = userDAO.getUser(username);
         if(userInfo == null) {
-            throw new ServiceException(404, "Error: Username Not Found");
+            throw new UnauthorizedException();
         }
 
         // Verify Password is Correct
         if(!Objects.equals(userInfo.password(), password)) {
-            throw new ServiceException(401, "Error: Incorrect Password");
+            throw new UnauthorizedException();
         }
 
         // Create and Retrieve Authentication Token
@@ -61,12 +62,12 @@ public class Service {
         return new LoginResult(username, authToken);
     }
 
-    public LogoutResult logout(String authToken) {
+    public LogoutResult logout(String authToken) throws ServiceException {
 
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // Delete Authentication Token
@@ -75,25 +76,25 @@ public class Service {
         return new LogoutResult();
     }
 
-    public ListGamesResult listGames(String authToken) {
+    public ListGamesResult listGames(String authToken) throws ServiceException {
 
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // List of All Games
-        HashMap<Integer, GameData> games = gameDAO.listGames();
+        List<GameData> games = new ArrayList<>(gameDAO.listGames().values());
         return new ListGamesResult(games);
     }
 
-    public CreateGameResult createGame(String gameName, String authToken) {
+    public CreateGameResult createGame(String gameName, String authToken) throws ServiceException {
 
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // Create New Game
@@ -101,16 +102,16 @@ public class Service {
         return new CreateGameResult(gameID, null, null, gameName);
     }
 
-    public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) {
+    public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) throws ServiceException {
 
         // Verify Authentication
-        String validAuth = authDAO.getAuth(authToken);
-        if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+        AuthData auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException();
         }
 
         // Join Game
-        String username = authDAO.getUser(authToken);
+        String username = auth.username();
         gameDAO.joinGame(playerColor, username, authToken, gameID);
 
         return new JoinGameResult();

@@ -20,7 +20,7 @@ class ServiceTest {
     private final Service service = new Service(authDAO, gameDAO, userDAO);
 
     @Test
-    public void testRegisterUsernameAvailable() {
+    public void testRegisterUsernameAvailable() throws ServiceException {
 
         // Register User
         UserData userInfo = new UserData("Bob","pword", "bobwork@email.com");
@@ -32,7 +32,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testRegisterUsernameTaken() {
+    public void testRegisterUsernameTaken() throws ServiceException {
 
         // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -44,7 +44,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLoginCorrectInfo() {
+    public void testLoginCorrectInfo() throws ServiceException {
 
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -57,7 +57,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLoginUsernameNotFound() {
+    public void testLoginUsernameNotFound() throws ServiceException {
 
         // Register with Taken Username
         assertThrows(ServiceException.class, () -> {
@@ -65,7 +65,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLoginIncorrectPassword() {
+    public void testLoginIncorrectPassword() throws ServiceException {
 
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -77,7 +77,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLogoutSuccessful() {
+    public void testLogoutSuccessful() throws ServiceException {
 
         // Add User Into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -95,7 +95,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLogoutIncorrectAuth() {
+    public void testLogoutIncorrectAuth() throws ServiceException {
 
         // Add User Into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -110,7 +110,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testListGamesAll() {
+    public void testListGamesAll() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -132,7 +132,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testListGamesNone() {
+    public void testListGamesNone() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -145,7 +145,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGame() {
+    public void testCreateGame() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -163,7 +163,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGameSameName() {
+    public void testCreateGameSameName() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -182,7 +182,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGameInvalidAuth() {
+    public void testCreateGameInvalidAuth() throws ServiceException {
 
         // Assert Invalid Authentication
         assertThrows(ServiceException.class, () -> {
@@ -190,7 +190,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameSuccess() {
+    public void testJoinGameSuccess() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -211,7 +211,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameWhitePlayerTaken() {
+    public void testJoinGameWhitePlayerTaken() throws ServiceException {
 
         // Add Users into System and get Authentication
         UserData userInfo1 = new UserData("User1","pword", "user1@email.com");
@@ -238,7 +238,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameInvalidAuth() {
+    public void testJoinGameInvalidAuth() throws ServiceException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -254,7 +254,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testClear() {
+    public void testClear() throws ServiceException {
 
         // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -284,7 +284,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testClearNothing() {
+    public void testClearNothing() throws ServiceException {
 
         // Clear
         ClearResult clearResult = service.clear();

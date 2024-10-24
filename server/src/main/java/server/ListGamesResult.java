@@ -4,5 +4,5 @@ import model.GameData;
 import java.util.*;
 
 
-public record ListGamesResult(HashMap<Integer, GameData> games) {
+public record ListGamesResult(List<GameData> games) {
 }
