@@ -28,7 +28,7 @@ public class Service {
         // Verify the Provided Username Does Not Exist
         UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
-            throw new ServiceException(403, "Error: Username Taken");
+            throw new UnauthorizedException();
         }
 
         // Create New User
@@ -51,7 +51,7 @@ public class Service {
 
         // Verify Password is Correct
         if(!Objects.equals(userInfo.password(), password)) {
-            throw new ServiceException(401, "Error: Incorrect Password");
+            throw new UnauthorizedException();
         }
 
         // Create and Retrieve Authentication Token
@@ -66,7 +66,7 @@ public class Service {
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // Delete Authentication Token
@@ -80,7 +80,7 @@ public class Service {
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // List of All Games
@@ -93,7 +93,7 @@ public class Service {
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // Create New Game
@@ -106,7 +106,7 @@ public class Service {
         // Verify Authentication
         String validAuth = authDAO.getAuth(authToken);
         if (!Objects.equals(authToken, validAuth)) {
-            throw new ServiceException(401, "Error: Unauthorized Access");
+            throw new UnauthorizedException();
         }
 
         // Join Game
