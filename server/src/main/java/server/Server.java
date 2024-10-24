@@ -41,9 +41,9 @@ public class Server {
         return Spark.port();
     }
 
-    public Object exceptionHandler(ServiceException ex, Request req, Response res) {
+    public void exceptionHandler(ServiceException ex, Request req, Response res) {
         res.status(ex.getStatusCode());
-        return "{}";
+        res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
     }
 
     public Object register(Request req, Response res) throws ServiceException {
