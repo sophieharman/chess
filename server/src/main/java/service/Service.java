@@ -5,6 +5,7 @@ import java.util.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.*;
@@ -104,13 +105,13 @@ public class Service {
     public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) throws ServiceException {
 
         // Verify Authentication
-        String validAuth = authDAO.getAuth(authToken);
-        if (!Objects.equals(authToken, validAuth)) {
+        AuthData auth = authDAO.getAuth(authToken);
+        if (auth == null) {
             throw new UnauthorizedException();
         }
 
         // Join Game
-        String username = authDAO.getUser(authToken);
+        String username = auth.username();
         gameDAO.joinGame(playerColor, username, authToken, gameID);
 
         return new JoinGameResult();

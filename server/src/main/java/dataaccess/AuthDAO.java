@@ -5,9 +5,9 @@ import java.util.*;
 
 public interface AuthDAO {
 
-    String createAuth(String username);
+    String createAuth(AuthData authData);
 
-    String getAuth(String username);
+    AuthData getAuth(String authToken);
 
     void deleteAuth(String authToken);
 
