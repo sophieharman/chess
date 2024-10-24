@@ -46,7 +46,7 @@ public class Service {
         // Verify Username Exists
         UserData userInfo = userDAO.getUser(username);
         if(userInfo == null) {
-            throw new ServiceException(404, "Error: Username Not Found");
+            throw new UnauthorizedException();
         }
 
         // Verify Password is Correct
