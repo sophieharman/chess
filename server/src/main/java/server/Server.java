@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.GameData;
+import model.JoinGameData;
 import model.UserData;
 import service.Service;
 import service.ServiceException;
@@ -101,22 +102,15 @@ public class Server {
 
     public Object joinGame(Request req, Response res) throws ServiceException {
 
-        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
-        UserData userData = new Gson().fromJson(req.body(), UserData.class);
+//        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
+//        UserData userData = new Gson().fromJson(req.body(), UserData.class);
+
+        JoinGameData joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
 
         String authToken = req.headers("Authorization");
 
-        // Determine Player Color
-        String playerColor;
-        if(Objects.equals(gameData.whiteUsername(), userData.username())) {
-            playerColor = "WHITE";
-        }
-        else {
-            playerColor = "BLACK";
-        }
-
         // Join Game
-        JoinGameResult result = service.joinGame(playerColor, authToken, gameData.gameID());
+        JoinGameResult result = service.joinGame(joinGameData.playerColor(), authToken, joinGameData.gameID());
 
         return new Gson().toJson(result);
     }

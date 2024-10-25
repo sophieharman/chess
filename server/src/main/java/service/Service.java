@@ -115,8 +115,8 @@ public class Service {
             throw new UnauthorizedException();
         }
 
-        // Verify Player Color
-        if(playerColor == null) {
+        // Verify Player Color and GameID or Null
+        if(playerColor == null || gameID == null) {
             throw new BadRequestException();
         }
 
@@ -139,13 +139,16 @@ public class Service {
                 throw new AlreadyTakenException();
             }
             whiteUsername = username;
-        }
 
-        if(Objects.equals(playerColor, "BLACK")) {
+        }
+        else if(Objects.equals(playerColor, "BLACK")) {
             if (blackUsername != null) {
                 throw new AlreadyTakenException();
             }
             blackUsername = username;
+        }
+        else {
+            throw new BadRequestException();
         }
 
         // Remove Game
