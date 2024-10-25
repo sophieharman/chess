@@ -26,6 +26,12 @@ public class Service {
 
     public RegisterResult register(UserData userInfo) throws ServiceException {
 
+        // Verify Username, Password, and Email are not Null
+        if(userInfo.username() == null || userInfo.password() == null|| userInfo.email() == null) {
+            throw new BadRequestException();
+        }
+
+
         // Verify the Provided Username Does Not Exist
         UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
@@ -65,8 +71,8 @@ public class Service {
     public LogoutResult logout(String authToken) throws ServiceException {
 
         // Verify Authentication
-        String validAuth = authDAO.getUser(authToken);
-        if (!Objects.equals(authToken, validAuth)) {
+        String username = authDAO.getUser(authToken);
+        if (username == null) {
             throw new UnauthorizedException();
         }
 
@@ -121,9 +127,15 @@ public class Service {
         if(Objects.equals(playerColor, "WHITE") && whiteUsername == null) {
             whiteUsername = username;
         }
+//        else {
+//            throw new BadRequestException();
+//        }
         if(Objects.equals(playerColor, "BLACK") && blackUsername == null) {
             blackUsername = username;
         }
+//        else {
+//            throw new BadRequestException();
+//        }
 
         // Remove Game
         gameDAO.removeGame(gameID);

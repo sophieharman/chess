@@ -29,6 +29,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     public HashMap<Integer, GameData> listGames() {
+        // Return a Collection instead of map (for future phases) (games.values())
         return games;
     }
 
