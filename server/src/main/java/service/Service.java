@@ -115,6 +115,11 @@ public class Service {
             throw new UnauthorizedException();
         }
 
+        // Verify Player Color
+        if(playerColor == null) {
+            throw new BadRequestException();
+        }
+
         // Verify Game ID
         GameData gameExists = gameDAO.getGame(gameID);
         if (gameExists == null) {
@@ -129,18 +134,19 @@ public class Service {
         ChessGame game = gameInfo.game();
 
         // Update White/Black Usernames
-        if(Objects.equals(playerColor, "WHITE") && whiteUsername == null) {
+        if(Objects.equals(playerColor, "WHITE")) {
+            if(whiteUsername != null) {
+                throw new AlreadyTakenException();
+            }
             whiteUsername = username;
         }
-//        else {
-//            throw new BadRequestException();
-//        }
-        if(Objects.equals(playerColor, "BLACK") && blackUsername == null) {
+
+        if(Objects.equals(playerColor, "BLACK")) {
+            if (blackUsername != null) {
+                throw new AlreadyTakenException();
+            }
             blackUsername = username;
         }
-//        else {
-//            throw new BadRequestException();
-//        }
 
         // Remove Game
         gameDAO.removeGame(gameID);
