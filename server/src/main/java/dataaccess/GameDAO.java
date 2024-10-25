@@ -11,9 +11,11 @@ public interface GameDAO {
 
     HashMap<Integer, GameData> listGames();
 
+    void addGame(GameData game);
+
     GameData getGame(Integer gameID);
 
-    void joinGame(String playerColor, String authToken, String username, Integer gameID);
+    void removeGame(Integer gameID);
 
     void clear();
 }

@@ -21,30 +21,21 @@ public class MemoryAuthDAO implements AuthDAO{
         return authToken;
     }
 
-    public String getAuth(String username){
+
+    public String getUser(String authToken){
         // Search for Authentication Data
-        AuthData authData = authInfo.get(username);
+        AuthData authData = authInfo.get(authToken);
         if(authData == null) {
             return null;
         }
-        return authData.authToken();
+        return authData.username();
     }
 
     public void deleteAuth(String authToken){
         // Remove Specified Authentication Token
-        authInfo.remove(authToken);
+        String username = getUser(authToken);
+        authInfo.remove(username);
     }
-
-    public String getUser(String authToken) {
-        for(String key: authInfo.keySet()) {
-            AuthData authData = authInfo.get(key);
-            if(Objects.equals(authData.authToken(), authToken)) {
-                return key;
-            }
-        }
-        return null; // Maybe change this?
-    }
-
 
     public void clear(){
         // Clear All Users

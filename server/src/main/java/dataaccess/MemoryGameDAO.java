@@ -21,8 +21,11 @@ public class MemoryGameDAO implements GameDAO{
 
         // Add Game to Memory
         games.put(gameID, game);
-
         return gameID;
+    }
+
+    public void addGame(GameData game) {
+        games.put(game.gameID(), game);
     }
 
     public HashMap<Integer, GameData> listGames() {
@@ -44,29 +47,8 @@ public class MemoryGameDAO implements GameDAO{
         return null;
     }
 
-    public void joinGame(String playerColor, String username, String authToken, Integer gameID) {
-
-
-        GameData gameInfo = games.get(gameID);
-
-        String whiteUsername = gameInfo.whiteUsername();
-        String blackUsername = gameInfo.blackUsername();
-        String gameName = gameInfo.gameName();
-        ChessGame game = gameInfo.game();
-
-        // Update White/Black Usernames
-        if(Objects.equals(playerColor, "WHITE") && whiteUsername == null) {
-            whiteUsername = username;
-        }
-        if(Objects.equals(playerColor, "BLACK") && blackUsername == null) {
-            blackUsername = username;
-        }
-
-        // Delete Game
+    public void removeGame(Integer gameID) {
         games.remove(gameID);
-
-        // Add Updated Game
-         GameData updatedGame = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     public void clear(){
