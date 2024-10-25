@@ -31,7 +31,6 @@ public class Service {
             throw new BadRequestException();
         }
 
-
         // Verify the Provided Username Does Not Exist
         UserData userData = userDAO.getUser(userInfo.username());
         if(userData != null) {
@@ -114,6 +113,12 @@ public class Service {
         String username = authDAO.getUser(authToken);
         if (username == null) {
             throw new UnauthorizedException();
+        }
+
+        // Verify Game ID
+        GameData gameExists = gameDAO.getGame(gameID);
+        if (gameExists == null) {
+            throw new BadRequestException();
         }
 
         // Grab Old Game Information
