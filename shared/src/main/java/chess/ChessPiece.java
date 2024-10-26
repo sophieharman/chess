@@ -75,8 +75,8 @@ public class ChessPiece
 
         if(type == PieceType.BISHOP)
         {
-            Collection<ChessMove> possible_moves = diagonal(board, myPosition, grid);
-            moves.addAll(possible_moves);
+            Collection<ChessMove> possibleMoves = diagonal(board, myPosition, grid);
+            moves.addAll(possibleMoves);
 
         }
         else if(type == PieceType.KING)
@@ -93,23 +93,23 @@ public class ChessPiece
             ChessPosition diag4 = new ChessPosition(x + 1, y - 1);
 
             // Explore Possible Positions
-            Collection<ChessMove> new_move = exploreBoard(board, myPosition, straight1, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, straight2, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, straight3, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, straight4, grid);
-            moves.addAll(new_move);
+            Collection<ChessMove> newMove = exploreBoard(board, myPosition, straight1, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, straight2, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, straight3, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, straight4, grid);
+            moves.addAll(newMove);
 
-            new_move = exploreBoard(board, myPosition, diag1, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, diag2, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, diag3, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, diag4, grid);
-            moves.addAll(new_move);
+            newMove = exploreBoard(board, myPosition, diag1, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, diag2, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, diag3, grid);
+            moves.addAll(newMove);
+            newMove = exploreBoard(board, myPosition, diag4, grid);
+            moves.addAll(newMove);
         }
         else if(type == PieceType.KNIGHT)
         {
@@ -123,22 +123,22 @@ public class ChessPiece
             ChessPosition move7 = new ChessPosition(x - 2, y - 1);
             ChessPosition move8 = new ChessPosition(x - 2, y + 1);
 
-            Collection<ChessMove> new_move = exploreBoard(board, myPosition, move1, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move2, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move3, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move4, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move5, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move6, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move7, grid);
-            moves.addAll(new_move);
-            new_move = exploreBoard(board, myPosition, move8, grid);
-            moves.addAll(new_move);
+            Collection<ChessMove> newMoves = exploreBoard(board, myPosition, move1, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move2, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move3, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move4, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move5, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move6, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move7, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, move8, grid);
+            moves.addAll(newMoves);
 
         }
         else if(type == PieceType.PAWN)
@@ -186,8 +186,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -197,8 +197,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -220,8 +220,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -231,8 +231,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -254,8 +254,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -265,8 +265,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -288,8 +288,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -299,8 +299,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         return moves;
@@ -332,8 +332,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -343,8 +343,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -367,8 +367,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -378,8 +378,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -402,8 +402,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -413,8 +413,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         x = myPosition.getRow();
@@ -437,8 +437,8 @@ public class ChessPiece
                 if(captured)
                 {
                     // Add New Move
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
 
                     if(occupant.getPieceType() == PieceType.KING)
                     {
@@ -448,8 +448,8 @@ public class ChessPiece
                 break;
             }
             // Add New Move
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         return moves;
@@ -483,8 +483,8 @@ public class ChessPiece
         ChessPiece occupant = board.getPiece(newPosition);
         if(occupant == null || pieceColor != occupant.getTeamColor())
         {
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
         return moves;
     }
@@ -507,8 +507,8 @@ public class ChessPiece
             moves.addAll(promoMoves);
             if(promoMoves.isEmpty())
             {
-                Collection<ChessMove> new_moves = pawnExploreBoard(board,myPosition, newPosition, grid);
-                moves.addAll(new_moves);
+                Collection<ChessMove> newMoves = pawnExploreBoard(board,myPosition, newPosition, grid);
+                moves.addAll(newMoves);
             }
 
 
@@ -518,18 +518,18 @@ public class ChessPiece
                 if (x == 2)
                 {
                     newPosition = new ChessPosition(x + 2, y);
-                    Collection<ChessMove> new_moves = pawnExploreBoard(board, myPosition, newPosition, grid);
-                    moves.addAll(new_moves);
+                    Collection<ChessMove> newMoves = pawnExploreBoard(board, myPosition, newPosition, grid);
+                    moves.addAll(newMoves);
 
                 }
             }
 
             // Check Diagonals
             newPosition = new ChessPosition(x + 1, y + 1);
-            Collection<ChessMove> diag1_moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
+            Collection<ChessMove> diag1Moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
             newPosition = new ChessPosition(x + 1, y - 1);
             Collection<ChessMove> diag2_moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
-            moves.addAll(diag1_moves);
+            moves.addAll(diag1Moves);
             moves.addAll(diag2_moves);
 
         }
@@ -542,8 +542,8 @@ public class ChessPiece
             moves.addAll(promoMoves);
             if(promoMoves.isEmpty())
             {
-                Collection<ChessMove> new_moves = pawnExploreBoard(board,myPosition, newPosition, grid);
-                moves.addAll(new_moves);
+                Collection<ChessMove> newMoves = pawnExploreBoard(board,myPosition, newPosition, grid);
+                moves.addAll(newMoves);
             }
 
             // Initial Move
@@ -552,18 +552,18 @@ public class ChessPiece
                 if(!moves.isEmpty())
                 {
                     newPosition = new ChessPosition(x - 2, y);
-                    Collection<ChessMove> new_moves = pawnExploreBoard(board, myPosition, newPosition, grid);
-                    moves.addAll(new_moves);
+                    Collection<ChessMove> newMoves = pawnExploreBoard(board, myPosition, newPosition, grid);
+                    moves.addAll(newMoves);
                 }
             }
 
             // Check Diagonals
             newPosition = new ChessPosition(x - 1, y + 1);
-            Collection<ChessMove> diag1_moves = pawnCapture(board, myPosition, newPosition,grid, x,true);
+            Collection<ChessMove> diag1Moves = pawnCapture(board, myPosition, newPosition,grid, x,true);
             newPosition = new ChessPosition(x - 1, y - 1);
-            Collection<ChessMove> diag2_moves = pawnCapture(board, myPosition, newPosition,grid, x,true);
-            moves.addAll(diag1_moves);
-            moves.addAll(diag2_moves);
+            Collection<ChessMove> diag2Moves = pawnCapture(board, myPosition, newPosition,grid, x,true);
+            moves.addAll(diag1Moves);
+            moves.addAll(diag2Moves);
 
         }
 
@@ -590,8 +590,8 @@ public class ChessPiece
             {
                 return moves;
             }
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMoves);
         }
 
         // If Occupant is an Opponent -- Add ChessMove
@@ -607,8 +607,8 @@ public class ChessPiece
                     moves.addAll(promoMoves);
                     if(promoMoves.isEmpty())
                     {
-                        ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-                        moves.add(new_move);
+                        ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                        moves.add(newMoves);
                     }
                 }
                 return moves;
@@ -636,8 +636,8 @@ public class ChessPiece
             {
                 for(ChessPiece.PieceType promoPiece: pieceTypes)
                 {
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, promoPiece);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, promoPiece);
+                    moves.add(newMoves);
                 }
             }
         }
@@ -647,8 +647,8 @@ public class ChessPiece
             {
                 for(ChessPiece.PieceType promoPiece: pieceTypes)
                 {
-                    ChessMove new_move = new ChessMove(myPosition, newPosition, promoPiece);
-                    moves.add(new_move);
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, promoPiece);
+                    moves.add(newMoves);
                 }
             }
         }
@@ -668,8 +668,8 @@ public class ChessPiece
         ChessPiece occupant = board.getPiece(newPosition);
         if(occupant == null)
         {
-            ChessMove new_move = new ChessMove(myPosition, newPosition, null);
-            moves.add(new_move);
+            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
+            moves.add(newMove);
         }
         else
         {
