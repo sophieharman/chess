@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import java.security.SecureRandom;
 import model.AuthData;
 import model.GameData;
 
@@ -13,7 +14,7 @@ public class MemoryGameDAO implements GameDAO{
     public Integer createGame(String gameName) {
 
         // Generate Game ID
-        Random random = new Random();
+        Random random = new SecureRandom();
         Integer gameID = random.nextInt(100_000_000, 1_000_000_000);
 
         // Create Game
