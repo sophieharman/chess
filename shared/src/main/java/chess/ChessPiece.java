@@ -143,20 +143,20 @@ public class ChessPiece
         }
         else if(type == PieceType.PAWN)
         {
-            Collection<ChessMove> possible_moves = pawn(board, myPosition, grid);
-            moves.addAll(possible_moves);
+            Collection<ChessMove> possibleMoves = pawn(board, myPosition, grid);
+            moves.addAll(possibleMoves);
         }
         else if(type == PieceType.QUEEN)
         {
-            Collection<ChessMove> possible_moves = straight(board, myPosition, grid);
-            moves.addAll(possible_moves);
-            possible_moves = diagonal(board, myPosition, grid);
-            moves.addAll(possible_moves);
+            Collection<ChessMove> possibleMoves = straight(board, myPosition, grid);
+            moves.addAll(possibleMoves);
+            possibleMoves = diagonal(board, myPosition, grid);
+            moves.addAll(possibleMoves);
         }
         else if(type == PieceType.ROOK)
         {
-            Collection<ChessMove> possible_moves = straight(board, myPosition, grid);
-            moves.addAll(possible_moves);
+            Collection<ChessMove> possibleMoves = straight(board, myPosition, grid);
+            moves.addAll(possibleMoves);
         }
 
         return moves;
@@ -528,9 +528,9 @@ public class ChessPiece
             newPosition = new ChessPosition(x + 1, y + 1);
             Collection<ChessMove> diag1Moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
             newPosition = new ChessPosition(x + 1, y - 1);
-            Collection<ChessMove> diag2_moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
+            Collection<ChessMove> diag2Moves = pawnCapture(board, myPosition, newPosition,grid, x, true);
             moves.addAll(diag1Moves);
-            moves.addAll(diag2_moves);
+            moves.addAll(diag2Moves);
 
         }
         else

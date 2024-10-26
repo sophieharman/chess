@@ -43,23 +43,6 @@ public class ChessBoard {
         return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
-    /**
-     * Sets the board to the default starting board
-     * (How the game of chess normally starts)
-     */
-    public ChessPiece[][] newBoard()
-    {
-        for(int i = 0; i < squares.length; i++)
-        {
-            for(int j = 0; j < squares[i].length; j++)
-            {
-                squares[i][j] = null;
-            }
-        }
-
-        return squares;
-    }
-
     public void resetBoard()
     {
 
