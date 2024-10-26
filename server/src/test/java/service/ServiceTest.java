@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import server.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -90,8 +91,8 @@ class ServiceTest {
         service.logout(loginResult.authToken());
 
         // Assert AuthToken is Deleted
-//        String newAuthToken = authDAO.getAuth(loginResult.authToken());
-//        Assertions.assertNull(newAuthToken);
+        String username = authDAO.getUser(loginResult.authToken());
+        Assertions.assertNull(username);
     }
 
     @Test
@@ -142,6 +143,15 @@ class ServiceTest {
         // List Games
         ListGamesResult listGamesResult = service.listGames(authToken);
         Assertions.assertTrue(listGamesResult.games().isEmpty());
+    }
+
+    @Test
+    public void testListGamesInvalidAuth() throws ServiceException {
+
+        // Attempt to List Games with Invalid Authentication Token
+        assertThrows(ServiceException.class, () -> {
+            service.listGames("InvalidAuth");});
+
     }
 
     @Test
@@ -228,13 +238,8 @@ class ServiceTest {
         JoinGameResult joinGameResult1 = service.joinGame("WHITE", authTokenUser1, createGameResult.gameID());
 
         // User2 Attempt to Join Game as White
-        JoinGameResult joinGameResult2 = service.joinGame("WHITE", authTokenUser2, createGameResult.gameID());
-
-        // Grab Game Information
-        GameData game = gameDAO.getGame(createGameResult.gameID());
-
-        //Assertions
-        Assertions.assertEquals("User1", game.whiteUsername());
+        assertThrows(AlreadyTakenException.class, () -> {
+            service.joinGame("WHITE", authTokenUser2, createGameResult.gameID());});
     }
 
     @Test
@@ -265,39 +270,24 @@ class ServiceTest {
         CreateGameResult createGameResult = service.createGame("Game1", authToken);
 
         // Assert Information Can Be Found
-//        String theAuthToken = authDAO.getAuth("Susan");
-//        HashMap<Integer, GameData> games = gameDAO.listGames();
-//        UserData storedUserInfo = userDAO.getUser("Susan");
+        userInfo = userDAO.getUser("Susan");
+        String user = authDAO.getUser(authToken);
+        GameData games = gameDAO.getGame(createGameResult.gameID());
+        Assertions.assertNotNull(userInfo);
+        Assertions.assertNotNull(user);
+        Assertions.assertNotNull(games);
 
         // Clear Information
         ClearResult clearResult = service.clear();
 
-        // Grab Available Information
-//        theAuthToken = authDAO.getAuth("Susan");
-//        games = gameDAO.listGames();
-//        storedUserInfo = userDAO.getUser("Susan");
-
         // Assert there is No Information
-//        Assertions.assertNull(theAuthToken);
-//        Assertions.assertNull(games);
-//        Assertions.assertNull(storedUserInfo);
-    }
+        userInfo = userDAO.getUser("Susan");
+        user = authDAO.getUser(authToken);
+        games = gameDAO.getGame(createGameResult.gameID());
+        Assertions.assertNull(userInfo);
+        Assertions.assertNull(user);
+        Assertions.assertNull(games);
 
-    @Test
-    public void testClearNothing() throws ServiceException {
-
-        // Clear
-        ClearResult clearResult = service.clear();
-
-        // Grab Available Information
-//        String theAuthToken = authDAO.getAuth("Susan");
-//        HashMap<Integer, GameData> games = gameDAO.listGames();
-//        UserData storedUserInfo = userDAO.getUser("Susan");
-//
-//        // Assert there is No Information
-//        Assertions.assertNull(theAuthToken);
-//        Assertions.assertNull(games);
-//        Assertions.assertNull(storedUserInfo);
     }
 
 }

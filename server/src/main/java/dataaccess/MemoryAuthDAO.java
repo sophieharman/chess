@@ -21,7 +21,6 @@ public class MemoryAuthDAO implements AuthDAO{
         return authToken;
     }
 
-
     public String getUser(String authToken){
         // Search for Authentication Data
         AuthData authData = authInfo.get(authToken);
