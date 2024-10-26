@@ -221,7 +221,6 @@ public class ChessGame
     }
     public boolean isInCheck(TeamColor teamColor)
     {
-        // YOU WON'T BE ABLE TO CHECK IF IN CHECK ON THE ACTUAL BOARD!!!!
         // King Location
         ChessPosition kingLoc =  kingLocation(teamColor);
         // Iterate through all Board Positions

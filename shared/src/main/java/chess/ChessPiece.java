@@ -81,64 +81,41 @@ public class ChessPiece
         }
         else if(type == PieceType.KING)
         {
-            // Straight Moves
-            ChessPosition straight1 = new ChessPosition(x, y + 1);
-            ChessPosition straight2 = new ChessPosition(x, y - 1);
-            ChessPosition straight3 = new ChessPosition(x - 1, y);
-            ChessPosition straight4 = new ChessPosition(x + 1, y);
-            // Diagonal Moves
-            ChessPosition diag1 = new ChessPosition(x + 1, y + 1);
-            ChessPosition diag2 = new ChessPosition(x - 1, y - 1);
-            ChessPosition diag3 = new ChessPosition(x - 1, y + 1);
-            ChessPosition diag4 = new ChessPosition(x + 1, y - 1);
+            // Coordinates of Neighboring Squares
+            List<List<Integer>> coords = Arrays.asList(
+                    Arrays.asList(x, y + 1),
+                    Arrays.asList(x, y - 1),
+                    Arrays.asList(x + 1, y),
+                    Arrays.asList(x - 1, y),
+                    Arrays.asList(x + 1, y + 1),
+                    Arrays.asList(x - 1, y - 1),
+                    Arrays.asList(x - 1, y + 1),
+                    Arrays.asList(x + 1, y - 1));
 
-            // Explore Possible Positions
-            Collection<ChessMove> newMove = exploreBoard(board, myPosition, straight1, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, straight2, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, straight3, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, straight4, grid);
-            moves.addAll(newMove);
-
-            newMove = exploreBoard(board, myPosition, diag1, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, diag2, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, diag3, grid);
-            moves.addAll(newMove);
-            newMove = exploreBoard(board, myPosition, diag4, grid);
-            moves.addAll(newMove);
+            for(List<Integer> coord: coords) {
+                ChessPosition pos = new ChessPosition(coord.get(0), coord.get(1));
+                Collection<ChessMove> newMove = exploreBoard(board, myPosition, pos, grid);
+                moves.addAll(newMove);
+            }
         }
         else if(type == PieceType.KNIGHT)
         {
-            // Positions to Explore
-            ChessPosition move1 = new ChessPosition(x + 2, y - 1);
-            ChessPosition move2 = new ChessPosition(x + 2, y + 1);
-            ChessPosition move3 = new ChessPosition(x + 1, y - 2);
-            ChessPosition move4 = new ChessPosition(x + 1, y + 2);
-            ChessPosition move5 = new ChessPosition(x - 1, y - 2);
-            ChessPosition move6 = new ChessPosition(x - 1, y + 2);
-            ChessPosition move7 = new ChessPosition(x - 2, y - 1);
-            ChessPosition move8 = new ChessPosition(x - 2, y + 1);
+            // Coordinates of Neighboring Squares
+            List<List<Integer>> coords = Arrays.asList(
+                    Arrays.asList(x + 2, y - 1),
+                    Arrays.asList(x + 2, y + 1),
+                    Arrays.asList(x + 1, y - 2),
+                    Arrays.asList(x + 1, y + 2),
+                    Arrays.asList(x - 1, y - 2),
+                    Arrays.asList(x - 1, y + 2),
+                    Arrays.asList(x - 2, y - 1),
+                    Arrays.asList(x - 2, y + 1));
 
-            Collection<ChessMove> newMoves = exploreBoard(board, myPosition, move1, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move2, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move3, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move4, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move5, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move6, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move7, grid);
-            moves.addAll(newMoves);
-            newMoves = exploreBoard(board, myPosition, move8, grid);
-            moves.addAll(newMoves);
+            for(List<Integer> coord: coords) {
+                ChessPosition pos = new ChessPosition(coord.get(0), coord.get(1));
+                Collection<ChessMove> newMove = exploreBoard(board, myPosition, pos, grid);
+                moves.addAll(newMove);
+            }
 
         }
         else if(type == PieceType.PAWN)
