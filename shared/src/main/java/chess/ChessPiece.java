@@ -418,13 +418,10 @@ public class ChessPiece
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null)
                 {
-                    if(piece.getPieceType() == PieceType.KING)
+                    if(piece.getPieceType() == PieceType.KING && piece.getTeamColor() == teamcolor)
                     {
                         // Return the Position of the King
-                        if(piece.getTeamColor() == teamcolor)
-                        {
-                            return position;
-                        }
+                        return position;
                     }
                 }
             }

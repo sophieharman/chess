@@ -203,6 +203,7 @@ public class ChessGame
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+
     public boolean validIsInCheck(TeamColor teamColor)
     {
         // King Location
@@ -229,6 +230,7 @@ public class ChessGame
         }
         return false;
     }
+
     public boolean isInCheck(TeamColor teamColor)
     {
         Collection<ChessPosition> grid = gridPositions();
