@@ -138,21 +138,6 @@ public class ChessPiece
         return moves;
     }
 
-    public boolean capture(ChessBoard board, ChessPosition newPosition)
-    {
-        ChessPiece occupant = board.getPiece(newPosition);
-        if(occupant != null)
-        {
-            if(occupant.getPieceType() == PieceType.KING)
-            {
-                isKingCaptured = true;
-            }
-
-            return pieceColor != occupant.getTeamColor();
-        }
-        return false;
-    }
-
     public Collection<ChessMove> exploreBoard(ChessBoard board, ChessPosition myPosition, List<List<Integer>> coords, Collection<ChessPosition> grid)
     {
         // Initialize List of Possible Moves
