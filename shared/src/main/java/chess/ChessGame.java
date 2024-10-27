@@ -214,21 +214,17 @@ public class ChessGame
         {
             ChessPiece occupant = boardCloned.getPiece(position);
 
-            if(occupant != null)
+            if(occupant != null && occupant.getTeamColor() != teamColor)
             {
                 Collection<ChessMove> possibleMoves = occupant.pieceMoves(boardCloned, position);
-                if(occupant.getTeamColor() != teamColor)
+                for(ChessMove move: possibleMoves)
                 {
-                    for(ChessMove move: possibleMoves)
+                    if(move.endPosition.equals(kingLoc))
                     {
-                        if(move.endPosition.equals(kingLoc))
-                        {
-                            return true;
-                        }
-
+                        return true;
                     }
-                }
 
+                }
             }
         }
         return false;
@@ -248,12 +244,9 @@ public class ChessGame
                 Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, position);
                 for(ChessMove move: possibleMoves)
                 {
-                    if(occupant.getTeamColor() != teamColor)
+                    if(occupant.getTeamColor() != teamColor && move.endPosition.equals(kingLoc))
                     {
-                        if(move.endPosition.equals(kingLoc))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
