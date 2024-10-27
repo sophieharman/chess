@@ -301,7 +301,7 @@ public class ChessGame
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        
+
         Collection<ChessMove> valid = collectValidMoves(teamColor);
 
         // Check if King is in Under Attack and Able to Escape

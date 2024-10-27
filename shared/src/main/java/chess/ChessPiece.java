@@ -270,7 +270,8 @@ public class ChessPiece
         return moves;
     }
 
-    public Collection<ChessMove> pawnCapture(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, Collection<ChessPosition> grid, int x, boolean diagonal)
+    public Collection<ChessMove> pawnCapture(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                                             Collection<ChessPosition> grid, int x, boolean diagonal)
     {
         // Initialize List of Possible Moves
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
@@ -354,7 +355,8 @@ public class ChessPiece
         return moves;
     }
 
-    public Collection<ChessMove> pawnExploreBoard(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, Collection<ChessPosition> grid)
+    public Collection<ChessMove> pawnExploreBoard(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                                                  Collection<ChessPosition> grid)
     {
         // Initialize List of Possible Moves
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
