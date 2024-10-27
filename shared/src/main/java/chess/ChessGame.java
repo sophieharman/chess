@@ -197,6 +197,28 @@ public class ChessGame
         return grid;
     }
 
+    public Collection<ChessMove > collectValidMoves(TeamColor teamColor) {
+
+        Collection<ChessPosition> grid = gridPositions();
+        Collection<ChessMove> valid = new ArrayList<ChessMove>();
+
+        for(ChessPosition position: grid) {
+            ChessPiece occupant = board.getPiece(position);
+            if(occupant != null)
+            {
+                if(occupant.getTeamColor() == teamColor)
+                {
+                    Collection<ChessMove> moves = validMoves(position);
+                    for(ChessMove move: moves)
+                    {
+                        valid.add(move);
+                    }
+                }
+            }
+        }
+        return valid;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -265,25 +287,8 @@ public class ChessGame
     public boolean isInCheckmate(TeamColor teamColor)
     {
 
-        Collection<ChessPosition> grid = gridPositions();
+        Collection<ChessMove> valid = collectValidMoves(teamColor);
 
-        Collection<ChessMove> valid = new ArrayList<ChessMove>();
-
-        for(ChessPosition position: grid) {
-            ChessPiece occupant = board.getPiece(position);
-            if(occupant != null)
-            {
-                if(occupant.getTeamColor() == teamColor)
-                {
-                    Collection<ChessMove> moves = validMoves(position);
-                    for(ChessMove move: moves)
-                    {
-                        valid.add(move);
-                    }
-                }
-            }
-
-        }
         // Check if King is in Under Attack and Able to Escape
         return valid.isEmpty() && isInCheck(teamColor);
     }
@@ -295,27 +300,10 @@ public class ChessGame
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor)
-    {
+    public boolean isInStalemate(TeamColor teamColor) {
+        
+        Collection<ChessMove> valid = collectValidMoves(teamColor);
 
-        Collection<ChessPosition> grid = gridPositions();
-
-        Collection<ChessMove> valid = new ArrayList<ChessMove>();
-
-        for(ChessPosition position: grid) {
-            ChessPiece occupant = board.getPiece(position);
-            if(occupant != null)
-            {
-                if(occupant.getTeamColor() == teamColor)
-                {
-                    Collection<ChessMove> moves = validMoves(position);
-                    for(ChessMove move: moves)
-                    {
-                        valid.add(move);
-                    }
-                }
-            }
-        }
         // Check if King is in Under Attack and Able to Escape
         return valid.isEmpty() && !danger(board, teamColor);
     }
