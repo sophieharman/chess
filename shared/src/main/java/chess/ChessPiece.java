@@ -56,6 +56,16 @@ public class ChessPiece
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition)
     {
+        List<List<Integer>> straightVectors = Arrays.asList(
+                Arrays.asList(0, 1), Arrays.asList(0, -1),
+                Arrays.asList(-1, 0), Arrays.asList(1, 0));
+
+        List<List<Integer>> diagonalVectors = Arrays.asList(
+                Arrays.asList(1, 1),
+                Arrays.asList(-1, 1),
+                Arrays.asList(1, -1),
+                Arrays.asList(-1, -1));
+
         // Valid Grid Positions
         Collection<ChessPosition> grid = new HashSet<ChessPosition>();
         for(int i = 1; i <= 8; i++)
@@ -73,49 +83,38 @@ public class ChessPiece
         int x = myPosition.getRow();
         int y = myPosition.getColumn();
 
-        if(type == PieceType.BISHOP)
-        {
-            Collection<ChessMove> possibleMoves = diagonal(board, myPosition, grid);
+        if(type == PieceType.BISHOP) {
+            Collection<ChessMove> possibleMoves = exploreBoard(board, myPosition, diagonalVectors, grid);
             moves.addAll(possibleMoves);
-
         }
-        else if(type == PieceType.KING)
-        {
+        else if(type == PieceType.KING) {
             // Coordinates of Neighboring Squares
             List<List<Integer>> coords = Arrays.asList(
-                    Arrays.asList(x, y + 1),
-                    Arrays.asList(x, y - 1),
-                    Arrays.asList(x + 1, y),
-                    Arrays.asList(x - 1, y),
-                    Arrays.asList(x + 1, y + 1),
-                    Arrays.asList(x - 1, y - 1),
-                    Arrays.asList(x - 1, y + 1),
-                    Arrays.asList(x + 1, y - 1));
+                    Arrays.asList(0, 1),
+                    Arrays.asList(0, -1),
+                    Arrays.asList(1, 0),
+                    Arrays.asList(-1, 0),
+                    Arrays.asList(1, 1),
+                    Arrays.asList(-1, -1),
+                    Arrays.asList(-1, 1),
+                    Arrays.asList(1, -1));
 
-            for(List<Integer> coord: coords) {
-                ChessPosition pos = new ChessPosition(coord.get(0), coord.get(1));
-                Collection<ChessMove> newMove = exploreBoard(board, myPosition, pos, grid);
-                moves.addAll(newMove);
-            }
+            Collection<ChessMove> possibleMoves = exploreBoard(board, myPosition, coords, grid);
+            moves.addAll(possibleMoves);
         }
-        else if(type == PieceType.KNIGHT)
-        {
-            // Coordinates of Neighboring Squares
+        else if(type == PieceType.KNIGHT) {
             List<List<Integer>> coords = Arrays.asList(
-                    Arrays.asList(x + 2, y - 1),
-                    Arrays.asList(x + 2, y + 1),
-                    Arrays.asList(x + 1, y - 2),
-                    Arrays.asList(x + 1, y + 2),
-                    Arrays.asList(x - 1, y - 2),
-                    Arrays.asList(x - 1, y + 2),
-                    Arrays.asList(x - 2, y - 1),
-                    Arrays.asList(x - 2, y + 1));
+                    Arrays.asList(2, -1),
+                    Arrays.asList(2, 1),
+                    Arrays.asList(1, -2),
+                    Arrays.asList(1, 2),
+                    Arrays.asList(-1, -2),
+                    Arrays.asList(-1, 2),
+                    Arrays.asList(-2, -1),
+                    Arrays.asList(-2, 1));
 
-            for(List<Integer> coord: coords) {
-                ChessPosition pos = new ChessPosition(coord.get(0), coord.get(1));
-                Collection<ChessMove> newMove = exploreBoard(board, myPosition, pos, grid);
-                moves.addAll(newMove);
-            }
+            Collection<ChessMove> newMoves = exploreBoard(board, myPosition, coords, grid);
+            moves.addAll(newMoves);
 
         }
         else if(type == PieceType.PAWN)
@@ -125,308 +124,15 @@ public class ChessPiece
         }
         else if(type == PieceType.QUEEN)
         {
-            Collection<ChessMove> possibleMoves = straight(board, myPosition, grid);
-            moves.addAll(possibleMoves);
-            possibleMoves = diagonal(board, myPosition, grid);
-            moves.addAll(possibleMoves);
+            Collection<ChessMove> newMoves = exploreBoard(board, myPosition, straightVectors, grid);
+            moves.addAll(newMoves);
+            newMoves = exploreBoard(board, myPosition, diagonalVectors, grid);
+            moves.addAll(newMoves);
         }
         else if(type == PieceType.ROOK)
         {
-            Collection<ChessMove> possibleMoves = straight(board, myPosition, grid);
-            moves.addAll(possibleMoves);
-        }
-
-        return moves;
-    }
-
-    public Collection<ChessMove> straight(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid)
-    {
-        // Initialize List of Possible Moves
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
-
-        int x = myPosition.getRow();
-        int y = myPosition.getColumn();
-        while(true)
-        {
-            x++;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            y++;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            x--;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            y--;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        return moves;
-    }
-
-
-    public Collection<ChessMove> diagonal(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid)
-    {
-        // Initialize List of Possible Moves
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
-
-        int x = myPosition.getRow();
-        int y = myPosition.getColumn();
-        while(true)
-        {
-            x++;
-            y++;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            x--;
-            y--;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            x++;
-            y--;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
-        }
-
-        x = myPosition.getRow();
-        y = myPosition.getColumn();
-        while(true)
-        {
-            x--;
-            y++;
-            ChessPosition newPosition = new ChessPosition(x, y);
-            // Verify New Position is in Grid
-            if(!grid.contains(newPosition))
-            {
-                break;
-            }
-            // Verify Position is Not Blocked
-            ChessPiece occupant = board.getPiece(newPosition);
-            if(occupant != null)
-            {
-                boolean captured = capture(board, newPosition);
-                if(captured)
-                {
-                    // Add New Move
-                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-                    moves.add(newMoves);
-
-                    if(occupant.getPieceType() == PieceType.KING)
-                    {
-                        isKingCaptured = true;
-                    }
-                }
-                break;
-            }
-            // Add New Move
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
+            Collection<ChessMove> newMoves = exploreBoard(board, myPosition, straightVectors, grid);
+            moves.addAll(newMoves);
         }
 
         return moves;
@@ -447,23 +153,54 @@ public class ChessPiece
         return false;
     }
 
-    public Collection<ChessMove> exploreBoard(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, Collection<ChessPosition> grid)
+    public Collection<ChessMove> exploreBoard(ChessBoard board, ChessPosition myPosition, List<List<Integer>> coords, Collection<ChessPosition> grid)
     {
         // Initialize List of Possible Moves
         Collection<ChessMove> moves = new ArrayList<ChessMove>();
 
-        if(!grid.contains(newPosition))
-        {
-            return moves;
-        }
+        int x = myPosition.getRow();
+        int y = myPosition.getColumn();
+        ChessPiece myPiece = board.getPiece(myPosition);
 
-        ChessPiece occupant = board.getPiece(newPosition);
-        if(occupant == null || pieceColor != occupant.getTeamColor())
-        {
-            ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
-            moves.add(newMoves);
+
+        for(List<Integer> coord: coords) {
+            x = myPosition.getRow();
+            y = myPosition.getColumn();
+            while(true){
+                ChessPosition newPosition = new ChessPosition(x + coord.get(0), y + coord.get(1));
+
+                if(!grid.contains(newPosition))
+                {
+                    break;
+                }
+
+                ChessPiece occupant = board.getPiece(newPosition);
+                if(occupant == null || pieceColor != occupant.getTeamColor())
+                {
+                    ChessMove newMoves = new ChessMove(myPosition, newPosition, null);
+                    moves.add(newMoves);
+                    // Break if Captured
+                    if (occupant != null) {
+                        break;
+                    }
+
+                    if(myPiece.getPieceType() == PieceType.KING || myPiece.getPieceType() == PieceType.KNIGHT)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+                // Update x and y
+                x = x + coord.get(0);
+                y = y + coord.get(1);
+            }
+
         }
-        return moves;
+    return moves;
     }
 
     public Collection<ChessMove> pawn(ChessBoard board, ChessPosition myPosition, Collection<ChessPosition> grid)
