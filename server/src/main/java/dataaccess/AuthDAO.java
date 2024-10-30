@@ -3,13 +3,13 @@ package dataaccess;
 import model.AuthData;
 import java.util.*;
 
-public interface AuthDAO {
+public interface AuthDAO{
 
-    String createAuth(String username);
+    String createAuth(String username) throws DataAccessException;
 
-    void deleteAuth(String authToken);
+    void deleteAuth(String authToken) throws DataAccessException;
 
-    String getUser(String authToken);
+    String getUser(String authToken) throws DataAccessException;
 
-    void clear();
+    void clear() throws DataAccessException;
 }

@@ -48,6 +48,37 @@ public class DatabaseManager {
         }
     }
 
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user (
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(320) NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`username`),
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`authToken`),
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  game (
+              `gameID` int NOT NULL,
+              `whiteUsername` varchar(256) NOT NULL,
+              `blackUsername` varchar(256) NOT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `game` ChessGame NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`),
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -69,4 +100,9 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+
+    // Do I want to keep this?
+//    public static void main(String[] args) throws DataAccessException {
+//        createDatabase();
+//    }
 }
