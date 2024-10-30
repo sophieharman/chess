@@ -15,7 +15,7 @@ public class MySqlAuthDAO implements AuthDAO{
 
     public String createAuth(String username) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO chess (authToken, username) VALUES (?, ?, ?)";
+            var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
             try (var ps = conn.prepareStatement(statement)) {
                 String authToken = UUID.randomUUID().toString();
                 ps.setString(1, authToken);
@@ -30,7 +30,7 @@ public class MySqlAuthDAO implements AuthDAO{
 
     public void deleteAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "DELETE FROM chess WHERE authToken=?";
+            var statement = "DELETE FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 ps.executeUpdate();
@@ -42,18 +42,19 @@ public class MySqlAuthDAO implements AuthDAO{
 
     public String getUser(String authToken) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM chess WHERE username=?";
+            var statement = "SELECT username FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(2, username);
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        System.out.println("Implement");
+                        return rs.getString("username");
                     }
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     public void clear() throws DataAccessException{
@@ -77,7 +78,7 @@ public class MySqlAuthDAO implements AuthDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException{
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
