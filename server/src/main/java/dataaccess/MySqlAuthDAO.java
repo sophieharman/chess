@@ -20,34 +20,51 @@ public class MySqlAuthDAO implements AuthDAO{
                 String authToken = UUID.randomUUID().toString();
                 ps.setString(1, authToken);
                 ps.setString(2, username);
-
                 ps.executeUpdate();
-
                 return authToken;
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
-
     }
 
-    public void deleteAuth(String authToken) {
-        var statement = "DELETE FROM chess WHERE authToken=?";
-
-        System.out.println("Implement");
+    public void deleteAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM chess WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
-    public String getUser(String authToken) {
-        var statement = "SELECT username FROM pet WHERE username=?";
-
-        System.out.println("Implement");
-        return "";
+    public String getUser(String authToken) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username FROM chess WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(2, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("Implement");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
-    public void clear() {
-        var statement = "TRUNCATE TABLE auth";
-
-        System.out.println("Implement");
+    public void clear() throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "TRUNCATE TABLE auth";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     private final String[] createStatements = {
@@ -60,14 +77,14 @@ public class MySqlAuthDAO implements AuthDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException{
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 System.out.println("Implement");
             }
         } catch (SQLException ex) {
-            new DataAccessException(ex.getMessage());
+            throw new DataAccessException(ex.getMessage());
         }
     }
 }
