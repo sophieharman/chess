@@ -5,7 +5,7 @@ import model.UserData;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class MySqlUserDAO {
+public class MySqlUserDAO implements UserDAO {
 
     public MySqlUserDAO() throws DataAccessException {
         configureDatabase();

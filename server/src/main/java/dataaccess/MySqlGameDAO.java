@@ -12,7 +12,7 @@ import java.util.*;
 import java.sql.SQLException;
 
 
-public class MySqlGameDAO {
+public class MySqlGameDAO implements GameDAO {
 
     public MySqlGameDAO() throws DataAccessException{
         configureDatabase();
