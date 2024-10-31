@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.*;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +20,7 @@ class ServiceTest {
     private final Service service = new Service(authDAO, gameDAO, userDAO);
 
     @Test
-    public void testRegisterUsernameAvailable() throws ServiceException {
+    public void testRegisterUsernameAvailable() throws ServiceException, DataAccessException {
 
         // Register User
         UserData userInfo = new UserData("Bob","pword", "bobwork@email.com");
@@ -33,7 +32,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testRegisterUsernameTaken() throws ServiceException {
+    public void testRegisterUsernameTaken() throws ServiceException, DataAccessException {
 
         // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -45,7 +44,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLoginCorrectInfo() throws ServiceException {
+    public void testLoginCorrectInfo() throws ServiceException, DataAccessException {
 
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -66,7 +65,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLoginIncorrectPassword() throws ServiceException {
+    public void testLoginIncorrectPassword() throws ServiceException, DataAccessException {
 
         // Add User into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -78,7 +77,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLogoutSuccessful() throws ServiceException {
+    public void testLogoutSuccessful() throws ServiceException, DataAccessException {
 
         // Add User Into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -96,7 +95,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testLogoutIncorrectAuth() throws ServiceException {
+    public void testLogoutIncorrectAuth() throws ServiceException, DataAccessException {
 
         // Add User Into System
         UserData userInfo = new UserData("Lucy","Fish123", "Lucywork@email.com");
@@ -111,7 +110,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testListGamesAll() throws ServiceException {
+    public void testListGamesAll() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -133,7 +132,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testListGamesNone() throws ServiceException {
+    public void testListGamesNone() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -155,7 +154,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGame() throws ServiceException {
+    public void testCreateGame() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -173,7 +172,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testCreateGameSameName() throws ServiceException {
+    public void testCreateGameSameName() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -200,7 +199,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameSuccess() throws ServiceException {
+    public void testJoinGameSuccess() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -221,7 +220,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameWhitePlayerTaken() throws ServiceException {
+    public void testJoinGameWhitePlayerTaken() throws ServiceException, DataAccessException {
 
         // Add Users into System and get Authentication
         UserData userInfo1 = new UserData("User1","pword", "user1@email.com");
@@ -243,7 +242,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testJoinGameInvalidAuth() throws ServiceException {
+    public void testJoinGameInvalidAuth() throws ServiceException, DataAccessException {
 
         // Add User into System and get Authentication
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");
@@ -259,7 +258,7 @@ class ServiceTest {
     }
 
     @Test
-    public void testClear() throws ServiceException {
+    public void testClear() throws ServiceException, DataAccessException {
 
         // Add User into System
         UserData userInfo = new UserData("Susan","pword", "susanwork@email.com");

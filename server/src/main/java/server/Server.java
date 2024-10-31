@@ -12,13 +12,20 @@ import java.util.*;
 
 public class Server {
 
-    private final Gson serializer = new Gson();
-    private final AuthDAO authDAO = new MySqlAuthDAO();
-    private final GameDAO gameDAO = new MySqlGameDAO();
-    private final UserDAO userDAO = new MySqlUserDAO();
-    private final Service service = new Service(authDAO, gameDAO, userDAO);
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
+    private UserDAO userDAO;
+    private Service service;
 
     public Server() {
+        try{
+            authDAO = new MySqlAuthDAO();
+            gameDAO = new MemoryGameDAO(); // CHANGE TO SQL
+            userDAO = new MemoryUserDAO(); // CHANGE TO SQL
+            service = new Service(authDAO, gameDAO, userDAO);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int run(int desiredPort) {
@@ -36,6 +43,7 @@ public class Server {
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
+        Spark.exception(DataAccessException.class, this::dataAccessExceptionHandler);
         Spark.exception(ServiceException.class, this::serviceExceptionHandler);
         Spark.exception(Exception.class, this::exceptionHandler);
 
@@ -48,12 +56,17 @@ public class Server {
         res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
     }
 
+    public void dataAccessExceptionHandler(Exception ex, Request req, Response res) {
+        res.status(500);
+        res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
+    }
+
     public void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
         res.status(ex.getStatusCode());
         res.body("{'message': '%s'}".formatted("Error: " + ex.getMessage()));
     }
 
-    public Object register(Request req, Response res) throws ServiceException {
+    public Object register(Request req, Response res) throws ServiceException, DataAccessException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
@@ -62,7 +75,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object login(Request req, Response res) throws ServiceException {
+    public Object login(Request req, Response res) throws ServiceException, DataAccessException {
 
         UserData userInfo = new Gson().fromJson(req.body(), UserData.class);
 
@@ -71,7 +84,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object logout(Request req, Response res) throws ServiceException {
+    public Object logout(Request req, Response res) throws ServiceException, DataAccessException {
 
         String authToken = req.headers("Authorization");
 
@@ -80,7 +93,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object listGames(Request req, Response res) throws ServiceException {
+    public Object listGames(Request req, Response res) throws ServiceException, DataAccessException {
 
         String authToken = req.headers("Authorization");
 
@@ -89,7 +102,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object createGame(Request req, Response res) throws ServiceException {
+    public Object createGame(Request req, Response res) throws ServiceException, DataAccessException {
 
         GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 
@@ -100,7 +113,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object joinGame(Request req, Response res) throws ServiceException {
+    public Object joinGame(Request req, Response res) throws ServiceException, DataAccessException {
 
 //        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
 //        UserData userData = new Gson().fromJson(req.body(), UserData.class);
@@ -115,7 +128,7 @@ public class Server {
         return new Gson().toJson(result);
     }
 
-    public Object clear(Request req, Response res) {
+    public Object clear(Request req, Response res) throws DataAccessException {
 
         ClearResult result = service.clear();
 

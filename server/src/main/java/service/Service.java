@@ -25,7 +25,7 @@ public class Service {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(UserData userInfo) throws ServiceException {
+    public RegisterResult register(UserData userInfo) throws ServiceException, DataAccessException {
 
         // Verify Username, Password, and Email are not Null
         if(userInfo.username() == null || userInfo.password() == null|| userInfo.email() == null) {
@@ -48,7 +48,7 @@ public class Service {
         return new RegisterResult(userInfo.username(), authToken);
     }
 
-    public LoginResult login(String username, String password) throws DataAccessException {
+    public LoginResult login(String username, String password) throws ServiceException, DataAccessException {
 
         // Verify Username Exists
         UserData userInfo = userDAO.getUser(username);
@@ -68,7 +68,7 @@ public class Service {
         return new LoginResult(username, authToken);
     }
 
-    public LogoutResult logout(String authToken) throws ServiceException {
+    public LogoutResult logout(String authToken) throws ServiceException, DataAccessException {
 
         // Verify Authentication
         String username = authDAO.getUser(authToken);
@@ -82,7 +82,7 @@ public class Service {
         return new LogoutResult();
     }
 
-    public ListGamesResult listGames(String authToken) throws ServiceException {
+    public ListGamesResult listGames(String authToken) throws ServiceException, DataAccessException {
 
         // Verify Authentication
         String username = authDAO.getUser(authToken);
@@ -95,7 +95,7 @@ public class Service {
         return new ListGamesResult(games);
     }
 
-    public CreateGameResult createGame(String gameName, String authToken) throws ServiceException {
+    public CreateGameResult createGame(String gameName, String authToken) throws ServiceException, DataAccessException {
 
         // Verify Authentication
         String username = authDAO.getUser(authToken);
@@ -108,7 +108,7 @@ public class Service {
         return new CreateGameResult(gameID, null, null, gameName);
     }
 
-    public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) throws ServiceException {
+    public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) throws ServiceException, DataAccessException {
 
         // Verify Authentication
         String username = authDAO.getUser(authToken);
@@ -162,7 +162,7 @@ public class Service {
         return new JoinGameResult();
     }
 
-    public ClearResult clear() {
+    public ClearResult clear() throws DataAccessException {
 
         // Delete Authentication Data
         authDAO.clear();

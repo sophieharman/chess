@@ -48,7 +48,8 @@ public class MySqlGameDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        allGames.add(readPet(rs));
+                        System.out.println("Implement!!!");
+//                        allGames.add(readPet(rs));
                     }
                 }
             }
