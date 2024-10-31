@@ -14,6 +14,7 @@ import service.ServiceException;
 import spark.utils.Assert;
 
 import java.sql.SQLOutput;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -51,6 +52,7 @@ public class DataAccessTest {
 
     @Test
     public void testDeleteAuthSuccess() throws DataAccessException {
+
         // Create User
         userDAO.createUser("Bob", "password", "work@gmail.com");
 
@@ -90,6 +92,7 @@ public class DataAccessTest {
 
     @Test
     public void testAuthGetUserFail() throws DataAccessException {
+
         // Create User
         userDAO.createUser("Bob", "password", "work@gmail.com");
 
@@ -161,6 +164,7 @@ public class DataAccessTest {
 
     @Test
     public void testUserGetUserFail() {
+
         // Attempt to Create User with No Password
         assertThrows(BadRequestException.class, () -> {
             userDAO.getUser("NonExistentUser");});
@@ -168,6 +172,7 @@ public class DataAccessTest {
 
     @Test
     public void testClearUser() throws DataAccessException {
+
         // Create User
         userDAO.createUser("Bob", "password", "work@gmail.com");
 
@@ -202,54 +207,119 @@ public class DataAccessTest {
 
     @Test
     public void testCreateGameFail() {
+
         // Attempt to Create Game with No Name
         assertThrows(BadRequestException.class, () -> {
             gameDAO.createGame("Game1");});
     }
 
     @Test
-    public void testListGamesSuccess() {
+    public void testListGamesSuccess() throws DataAccessException {
+
+        // Create Game
+        gameDAO.createGame("Game1");
+
+        // List Games
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertNotNull(games);
+    }
+
+    @Test
+    public void testListGamesFail() throws DataAccessException {
+
         throw new UnsupportedOperationException("Implement!");
     }
 
     @Test
-    public void testListGamesFail() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testAddGameSuccess() throws DataAccessException {
+
+        // Create User
+        userDAO.createUser("Bob", "password1", "work1@gmail.com");
+
+        // Create Game
+        Integer gameID = gameDAO.createGame("Game1");
+
+        // Update Game
+        GameData newGameInfo = new GameData(gameID, "Bob", null, "Game1", null);
+        gameDAO.addGame(newGameInfo);
+
+        // List Games
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertNotNull(games);
     }
 
     @Test
-    public void testAddGameSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testAddGameFail() throws DataAccessException {
+
+        // Update Game with Invalid GameID
+        GameData newGameInfo = new GameData(123, "Bob", null, "Game1", null);
+        assertThrows(BadRequestException.class, () -> {
+            gameDAO.addGame(newGameInfo);});
     }
 
     @Test
-    public void testAddGameFail() {
-        throw new UnsupportedOperationException("Implement!");
-    }
+    public void testGetGameSuccess() throws DataAccessException {
 
-    @Test
-    public void testGetGameSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+        // Create Game
+        Integer gameID = gameDAO.createGame("Game1");
+
+        // Get Game
+        GameData gameInfo = gameDAO.getGame(gameID);
+
+        // Assertions
+        Assertions.assertEquals(gameID, gameInfo.gameID());
+        Assertions.assertNull(gameInfo.whiteUsername());
+        Assertions.assertNull(gameInfo.blackUsername());
+        Assertions.assertEquals("Game1", gameInfo.gameName());
+        Assertions.assertNull(gameInfo.game());
     }
 
     @Test
     public void testGetGameFail() {
-        throw new UnsupportedOperationException("Implement!");
+
+        // Get Game with Invalid GameID
+        assertThrows(BadRequestException.class, () -> {
+            gameDAO.getGame(123);});
     }
 
     @Test
-    public void testRemoveGameSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testRemoveGameSuccess() throws DataAccessException {
+
+        // Create Game
+        Integer gameID = gameDAO.createGame("Game1");
+
+        // Remove Game
+        gameDAO.removeGame(gameID);
+
+        // Verify Game is No Longer in Table
+        assertThrows(BadRequestException.class, () -> {
+            gameDAO.getGame(gameID);});
     }
 
     @Test
     public void testRemoveGameFail() {
-        throw new UnsupportedOperationException("Implement!");
+
+        // Remove Nonexistent Game
+        assertThrows(BadRequestException.class, () -> {
+            gameDAO.getGame(456);});
     }
 
     @Test
-    public void testClearGame() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testClearGame() throws DataAccessException {
+
+        // Create Game
+        Integer gameID = gameDAO.createGame("Game1");
+
+        // Verify Game Information Exists
+        GameData gameInfo = gameDAO.getGame(gameID);
+        Assertions.assertNotNull(gameInfo);
+
+        // Clear Games
+        gameDAO.clear();
+
+        // Verify Game Information No Longer Exists
+        gameInfo = gameDAO.getGame(gameID);
+        Assertions.assertNull(gameInfo);
     }
 
 }
