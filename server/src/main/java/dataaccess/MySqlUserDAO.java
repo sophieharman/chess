@@ -32,8 +32,7 @@ public class MySqlUserDAO implements UserDAO {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        System.out.println("Implement");
-//                        return rs.getString("username");
+                        return new UserData(username, rs.getString("password"), rs.getString("email"));
                     }
                 }
             }
