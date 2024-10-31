@@ -21,7 +21,7 @@ public class MySqlGameDAO implements GameDAO {
 
     public Integer createGame(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+            var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
             try (var ps = conn.prepareStatement(statement)) {
 
                 // Generate Game ID
@@ -42,22 +42,24 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
-    public HashMap<Integer, GameData> listGames() throws DataAccessException {
+    public Collection<GameData> listGames() throws DataAccessException {
         var allGames = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID FROM game";
+            var statement = "SELECT * FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        System.out.println("Implement!!!");
-//                        allGames.add(readPet(rs));
+                        ChessGame game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                        GameData gameStored = new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"),
+                                rs.getString("blackUsername"), rs.getString("gameName"), game);
+                        allGames.add(gameStored);
                     }
+                    return allGames;
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
-        return null;
     }
 
     public void addGame(GameData gameInfo) throws DataAccessException {

@@ -91,7 +91,7 @@ public class Service {
         }
 
         // List All Games
-        List<GameData> games = new ArrayList<>(gameDAO.listGames().values());
+        Collection<GameData> games = gameDAO.listGames();
         return new ListGamesResult(games);
     }
 

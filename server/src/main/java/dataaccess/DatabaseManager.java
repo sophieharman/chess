@@ -90,10 +90,10 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) NULL,
+              `blackUsername` varchar(256) NULL,
               `gameName` varchar(256) NOT NULL,
-              `game` TEXT NOT NULL,
+              `game` TEXT NULL,
               PRIMARY KEY (`gameID`)
             )
             """

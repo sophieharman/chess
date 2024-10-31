@@ -10,7 +10,7 @@ public interface GameDAO {
 
     Integer createGame(String gameName) throws DataAccessException;
 
-    HashMap<Integer, GameData> listGames() throws DataAccessException;
+    Collection<GameData> listGames() throws DataAccessException;
 
     void addGame(GameData game) throws DataAccessException;
 
