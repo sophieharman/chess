@@ -123,38 +123,88 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testCreateUserSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testCreateUserSuccess() throws DataAccessException {
+
+        // Create User
+        userDAO.createUser("Bob", "password", "work@gmail.com");
+
+        // Create Authentication Data
+        String authToken = authDAO.createAuth("Bob");
+
+        // Get User
+        String username = authDAO.getUser(authToken);
+        Assertions.assertEquals("Bob", username);
     }
 
     @Test
     public void testCreateUserFail() {
-        throw new UnsupportedOperationException("Implement!");
+
+        // Attempt to Create User with No Password
+        assertThrows(BadRequestException.class, () -> {
+            userDAO.createUser("Bob", null, "work@gmail.com");});
     }
 
     @Test
-    public void testUserGetUserSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testUserGetUserSuccess() throws DataAccessException {
+
+        // Create User
+        userDAO.createUser("Bob", "password", "work@gmail.com");
+
+        // Get User Information
+        UserData userInfo = userDAO.getUser("Bob");
+
+        // Assertions
+        Assertions.assertEquals("Bob", userInfo.username());
+        Assertions.assertEquals("password", userInfo.password());
+        Assertions.assertEquals("work@gmail.com", userInfo.email());
     }
 
     @Test
     public void testUserGetUserFail() {
-        throw new UnsupportedOperationException("Implement!");
+        // Attempt to Create User with No Password
+        assertThrows(BadRequestException.class, () -> {
+            userDAO.getUser("NonExistentUser");});
     }
 
     @Test
-    public void testClearUser() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testClearUser() throws DataAccessException {
+        // Create User
+        userDAO.createUser("Bob", "password", "work@gmail.com");
+
+        // Verify User Information Exists
+        UserData userInfo = userDAO.getUser("Bob");
+        Assertions.assertNotNull(userInfo);
+
+        // Clear User Table
+        userDAO.clear();
+
+        // Verify AuthData No Longer Exists
+        userInfo = userDAO.getUser("Bob");
+        Assertions.assertNull(userInfo);
     }
 
     @Test
-    public void testCreateGameSuccess() {
-        throw new UnsupportedOperationException("Implement!");
+    public void testCreateGameSuccess() throws DataAccessException {
+
+        // Create Game
+        Integer gameID = gameDAO.createGame("Game1");
+
+        // Get Game Data
+        GameData gameInfo = gameDAO.getGame(gameID);
+
+        // Assertions
+        Assertions.assertEquals(gameID, gameInfo.gameID());
+        Assertions.assertNull(gameInfo.whiteUsername());
+        Assertions.assertNull(gameInfo.blackUsername());
+        Assertions.assertEquals("Game1", gameInfo.gameName());
+        Assertions.assertNull(gameInfo.game());
     }
 
     @Test
     public void testCreateGameFail() {
-        throw new UnsupportedOperationException("Implement!");
+        // Attempt to Create Game with No Name
+        assertThrows(BadRequestException.class, () -> {
+            gameDAO.createGame("Game1");});
     }
 
     @Test
