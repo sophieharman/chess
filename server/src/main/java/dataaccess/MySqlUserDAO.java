@@ -8,7 +8,7 @@ import java.util.UUID;
 public class MySqlUserDAO implements UserDAO {
 
     public MySqlUserDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase();
     }
 
     public void createUser(String username, String password, String email) throws DataAccessException {
@@ -50,28 +50,6 @@ public class MySqlUserDAO implements UserDAO {
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
-        }
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  user (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(320) NOT NULL,
-              PRIMARY KEY (`username`),
-            )
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException{
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                System.out.println("Implement");
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
         }
     }
 

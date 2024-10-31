@@ -20,8 +20,8 @@ public class Server {
     public Server() {
         try{
             authDAO = new MySqlAuthDAO();
-            gameDAO = new MemoryGameDAO(); // CHANGE TO SQL
-            userDAO = new MemoryUserDAO(); // CHANGE TO SQL
+            gameDAO = new MySqlGameDAO();
+            userDAO = new MySqlUserDAO();
             service = new Service(authDAO, gameDAO, userDAO);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);

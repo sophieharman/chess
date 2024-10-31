@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 import model.JoinGameData;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 public class MySqlGameDAO implements GameDAO {
 
     public MySqlGameDAO() throws DataAccessException{
-        configureDatabase();
+        DatabaseManager.configureDatabase();
     }
 
     public Integer createGame(String gameName) throws DataAccessException {
@@ -119,31 +120,4 @@ public class MySqlGameDAO implements GameDAO {
             throw new DataAccessException(e.getMessage());
         }
     }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  game (
-              `gameID` int NOT NULL,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `game` ChessGame NOT NULL,
-              PRIMARY KEY (`gameID`),
-            )
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                System.out.println("Implement");
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(ex.getMessage());
-        }
-    }
-
-
-
 }
