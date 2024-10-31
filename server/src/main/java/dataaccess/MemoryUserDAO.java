@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO{
         if(!userInfo.containsKey(username)) {
             return null;
         }
-        return userInfo.get(username);
+        return userInfo.get(username); // Change to just return userInfo
     }
 
     public void clear() {

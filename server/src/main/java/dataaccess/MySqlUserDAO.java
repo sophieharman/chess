@@ -27,7 +27,7 @@ public class MySqlUserDAO implements UserDAO {
 
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM auth WHERE username=?";
+            var statement = "SELECT * FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
