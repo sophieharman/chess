@@ -36,7 +36,7 @@ public class DataAccessTest {
     // ADD TRY CATCH BLOCKS TO ALL TEST METHODS
 
     @Test
-    public void testRegisterUsernameAvailable(){
+    public void testRegisterUsernameAvailable() {
 
         try{
             // Register User

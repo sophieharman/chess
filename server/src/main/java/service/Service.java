@@ -4,6 +4,7 @@ import java.util.*;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameData;
@@ -47,7 +48,7 @@ public class Service {
         return new RegisterResult(userInfo.username(), authToken);
     }
 
-    public LoginResult login(String username, String password) throws ServiceException {
+    public LoginResult login(String username, String password) throws DataAccessException {
 
         // Verify Username Exists
         UserData userInfo = userDAO.getUser(username);

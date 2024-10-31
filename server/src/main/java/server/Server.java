@@ -13,9 +13,9 @@ import java.util.*;
 public class Server {
 
     private final Gson serializer = new Gson();
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
+    private final AuthDAO authDAO = new MySqlAuthDAO();
+    private final GameDAO gameDAO = new MySqlGameDAO();
+    private final UserDAO userDAO = new MySqlUserDAO();
     private final Service service = new Service(authDAO, gameDAO, userDAO);
 
     public Server() {

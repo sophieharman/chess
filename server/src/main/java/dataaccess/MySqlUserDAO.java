@@ -26,7 +26,21 @@ public class MySqlUserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
-        System.out.println("Implement");
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username FROM auth WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("Implement");
+//                        return rs.getString("username");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return null;
     }
 
     public void clear() throws DataAccessException {

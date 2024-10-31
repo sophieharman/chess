@@ -1,7 +1,13 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
+import model.JoinGameData;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 import java.sql.SQLException;
 
@@ -36,28 +42,34 @@ public class MySqlGameDAO {
     }
 
     public HashMap<Integer, GameData> listGames() throws DataAccessException {
+        var allGames = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id FROM game";
+            var statement = "SELECT gameID FROM game";
             try (var ps = conn.prepareStatement(statement)) {
-                System.out.println("Implement!");
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        allGames.add(readPet(rs));
+                    }
+                }
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
-    public void addGame(GameData game) throws DataAccessException {
+    public void addGame(GameData gameInfo) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
             try (var ps = conn.prepareStatement(statement)) {
-                String authToken = UUID.randomUUID().toString();
 
                 // Add Game Data
-                ps.setInt(1, gameID);
-                ps.setString(2, whiteUsername);
-                ps.setString(3, blackUsername);
-                ps.setString(4, gameName);
-                ps.setString(5, game); //ChessGame ??
+                ps.setInt(1, gameInfo.gameID());
+                ps.setString(2, gameInfo.whiteUsername());
+                ps.setString(3, gameInfo.blackUsername());
+                ps.setString(4, gameInfo.gameName());
+                // Serialize Chess Game
+                ps.setString(5, new Gson().toJson(gameInfo.game()));
                 ps.executeUpdate();
             }
         } catch (Exception e) {
@@ -66,14 +78,22 @@ public class MySqlGameDAO {
     }
 
     public GameData getGame(Integer gameID) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id FROM game WHERE gameID=?";
-            try (var ps = conn.prepareStatement(statement)) {
-                System.out.println("Implement!");
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT * FROM game WHERE gameID=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        ChessGame game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                        return new GameData(gameID, rs.getString("whiteUsername"),
+                                rs.getString("blackUsername"), rs.getString("gameName"), game);
+                    }
+                }
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     public void removeGame(Integer gameID) throws DataAccessException {
