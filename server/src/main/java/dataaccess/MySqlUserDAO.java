@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class MySqlUserDAO implements UserDAO {
             var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
-                ps.setString(2, password);
+                ps.setString(2, hashedPassword(username, password));
                 ps.setString(3, email);
                 ps.executeUpdate();
             }
@@ -32,7 +33,9 @@ public class MySqlUserDAO implements UserDAO {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return new UserData(username, rs.getString("password"), rs.getString("email"));
+                        if (verifyUser(username, rs.getString("password"))) {
+                            return new UserData(username, rs.getString("password"), rs.getString("email"));
+                        }
                     }
                 }
             }
@@ -40,6 +43,17 @@ public class MySqlUserDAO implements UserDAO {
             throw new DataAccessException(e.getMessage());
         }
         return null;
+    }
+
+    public String hashedPassword(String username, String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
+
+    public boolean verifyUser(String username, String providedClearTextPassword) throws DataAccessException {
+        // Read Hashed Password from Database
+        UserData userInfo = getUser(username);
+        String hashedPassword = userInfo.password();
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
 
     public void clear() throws DataAccessException {
