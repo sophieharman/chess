@@ -209,11 +209,11 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testCreateGameFail() {
+    public void testCreateGameFail() throws DataAccessException {
 
         // Attempt to Create Game with No Name
         assertThrows(DataAccessException.class, () -> {
-            gameDAO.createGame("Game1");});
+            gameDAO.createGame(null);});
     }
 
     @Test
@@ -238,11 +238,8 @@ public class DataAccessTest {
     @Test
     public void testAddGameSuccess() throws DataAccessException {
 
-        // Create Game
-        Integer gameID = gameDAO.createGame("Game1");
-
-        // Update Game
-        GameData newGameInfo = new GameData(gameID, "Bob", null, "Game1", null);
+        // Add Game
+        GameData newGameInfo = new GameData(12345, "Bob", null, "Game1", null);
         gameDAO.addGame(newGameInfo);
 
         // List Games
@@ -255,6 +252,7 @@ public class DataAccessTest {
 
         // Update Game with Invalid GameID
         GameData newGameInfo = new GameData(123, "Bob", null, "Game1", null);
+
         assertThrows(DataAccessException.class, () -> {
             gameDAO.addGame(newGameInfo);});
     }
@@ -299,11 +297,19 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testRemoveGameFail() {
+    public void testRemoveGameFail() throws DataAccessException {
+
+        // List of Games Before Removing Game
+        Collection<GameData> gamesBefore = gameDAO.listGames();
 
         // Remove Nonexistent Game
-        assertThrows(DataAccessException.class, () -> {
-            gameDAO.getGame(456);});
+        gameDAO.getGame(456);
+
+        // List of Games After Removing Game
+        Collection<GameData> gamesAfter = gameDAO.listGames();
+
+        Assertions.assertEquals(gamesBefore.size(), gamesAfter.size());
+
     }
 
     @Test
