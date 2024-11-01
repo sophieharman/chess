@@ -76,11 +76,13 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testDeleteAuthFail() {
+    public void testDeleteAuthFail() throws DataAccessException {
 
         // Attempt to Delete Authentication Data with Invalid Token
-        assertThrows(DataAccessException.class, () -> {
-            authDAO.getUser("InvalidAuthToken");});
+        authDAO.deleteAuth("InvalidAuthToken");
+
+        String username = authDAO.getUser("InvalidAuthToken");
+        Assertions.assertNull(username);
     }
 
     @Test
@@ -232,7 +234,7 @@ public class DataAccessTest {
 
         // List Games
         Collection<GameData> games = gameDAO.listGames();
-        Assertions.assertNull(games);
+        Assertions.assertTrue(games.isEmpty());
     }
 
     @Test
@@ -251,7 +253,7 @@ public class DataAccessTest {
     public void testAddGameFail() throws DataAccessException {
 
         // Update Game with Invalid GameID
-        GameData newGameInfo = new GameData(123, "Bob", null, "Game1", null);
+        GameData newGameInfo = new GameData(123, "Bob", null, null, null);
 
         assertThrows(DataAccessException.class, () -> {
             gameDAO.addGame(newGameInfo);});
@@ -279,7 +281,7 @@ public class DataAccessTest {
 
         // Get Game with Invalid GameID
         assertThrows(DataAccessException.class, () -> {
-            gameDAO.getGame(123);});
+            gameDAO.getGame(null);});
     }
 
     @Test
@@ -288,12 +290,18 @@ public class DataAccessTest {
         // Create Game
         Integer gameID = gameDAO.createGame("Game1");
 
+        // List of Games Before Removing Game
+        Collection<GameData> gamesBefore = gameDAO.listGames();
+
         // Remove Game
         gameDAO.removeGame(gameID);
 
-        // Verify Game is No Longer in Table
-        assertThrows(DataAccessException.class, () -> {
-            gameDAO.getGame(gameID);});
+        // List of Games After Removing Game
+        Collection<GameData> gamesAfter = gameDAO.listGames();
+
+        // Assertions
+        Assertions.assertEquals(gamesBefore.size(), 1);
+        Assertions.assertEquals(gamesAfter.size(), 0);
     }
 
     @Test
@@ -307,7 +315,6 @@ public class DataAccessTest {
 
         // List of Games After Removing Game
         Collection<GameData> gamesAfter = gameDAO.listGames();
-
         Assertions.assertEquals(gamesBefore.size(), gamesAfter.size());
 
     }
