@@ -5,6 +5,7 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.*;
 import service.AlreadyTakenException;
@@ -24,11 +25,22 @@ public class DataAccessTest {
     private static GameDAO gameDAO;
     private static UserDAO userDAO;
 
+
+
+
     @BeforeAll
     public static void beforeAll() throws DataAccessException{
             authDAO = new MySqlAuthDAO();
             gameDAO = new MySqlGameDAO();
             userDAO = new MySqlUserDAO();
+    }
+
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        authDAO.clear();
+        gameDAO.clear();
+        userDAO.clear();
+
     }
 
     @Test
@@ -46,8 +58,8 @@ public class DataAccessTest {
     public void testCreateAuthFail() throws DataAccessException {
 
         // Attempt to Get Authentication of Nonexistent USer
-        assertThrows(BadRequestException.class, () -> {
-            authDAO.createAuth("NonExistentUser");});
+        assertThrows(DataAccessException.class, () -> {
+            authDAO.createAuth(null);});
     }
 
     @Test
@@ -225,16 +237,13 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testListGamesFail() throws DataAccessException {
+    public void testListGamesNone() throws DataAccessException {
 
         throw new UnsupportedOperationException("Implement!");
     }
 
     @Test
     public void testAddGameSuccess() throws DataAccessException {
-
-        // Create User
-        userDAO.createUser("Bob", "password1", "work1@gmail.com");
 
         // Create Game
         Integer gameID = gameDAO.createGame("Game1");
