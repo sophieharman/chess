@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.*;
 
@@ -14,10 +15,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServiceTest {
 
-    private AuthDAO authDAO = new MemoryAuthDAO();
-    private GameDAO gameDAO = new MemoryGameDAO();
-    private UserDAO userDAO = new MemoryUserDAO();
+    private AuthDAO authDAO = new MySqlAuthDAO();
+    private GameDAO gameDAO = new MySqlGameDAO();
+    private UserDAO userDAO = new MySqlUserDAO();
     private final Service service = new Service(authDAO, gameDAO, userDAO);
+
+    ServiceTest() throws DataAccessException {
+    }
+
+    @BeforeEach
+    public void setUp() throws DataAccessException {
+        authDAO.clear();
+        gameDAO.clear();
+        userDAO.clear();
+    }
 
     @Test
     public void testRegisterUsernameAvailable() throws ServiceException, DataAccessException {
