@@ -100,15 +100,12 @@ public class DataAccessTest {
     @Test
     public void testAuthGetUserFail() throws DataAccessException {
 
-        // Create User
-        userDAO.createUser("Bob", "password", "work@gmail.com");
-
         // Create Auth
         authDAO.createAuth("Bob");
 
         // Attempt to Get User with Invalid AuthToken
-        assertThrows(DataAccessException.class, () -> {
-            authDAO.getUser("Invalid AuthToken");});
+        String username = authDAO.getUser("Invalid AuthToken");
+        Assertions.assertNull(username);
     }
 
     @Test
