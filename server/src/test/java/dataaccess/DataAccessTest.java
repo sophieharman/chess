@@ -89,14 +89,11 @@ public class DataAccessTest {
     public void testAuthGetUserSuccess() throws DataAccessException {
 
         // Create User
-        userDAO.createUser("Bob", "password", "work@gmail.com");
-
-        // Create Auth
-        String authToken = authDAO.createAuth("Bob");
+        userDAO.createUser("Susan", "password", "mywork@gmail.com");
 
         // Get User
-        String username = authDAO.getUser(authToken);
-        Assertions.assertEquals("Bob", username);
+        String username = authDAO.getUser(authDAO.createAuth("Susan"));
+        Assertions.assertEquals("Susan", username);
     }
 
     @Test
