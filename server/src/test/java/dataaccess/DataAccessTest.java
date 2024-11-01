@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.*;
-import service.AlreadyTakenException;
-import service.BadRequestException;
 import service.Service;
 import service.ServiceException;
 import spark.utils.Assert;
@@ -65,9 +63,6 @@ public class DataAccessTest {
     @Test
     public void testDeleteAuthSuccess() throws DataAccessException {
 
-        // Create User
-        userDAO.createUser("Bob", "password", "work@gmail.com");
-
         // Create Authentication Data and Verify Existence
         String authToken = authDAO.createAuth("Bob");
         authDAO.getUser(authToken);
@@ -76,15 +71,15 @@ public class DataAccessTest {
         authDAO.deleteAuth(authToken);
 
         // Verify Authentication Data No Longer Exists
-        assertThrows(BadRequestException.class, () -> {
-            authDAO.getUser(authToken);});
+        String username = authDAO.getUser(authToken);
+        Assertions.assertNull(username);
     }
 
     @Test
     public void testDeleteAuthFail() {
 
         // Attempt to Delete Authentication Data with Invalid Token
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             authDAO.getUser("InvalidAuthToken");});
     }
 
@@ -112,7 +107,7 @@ public class DataAccessTest {
         authDAO.createAuth("Bob");
 
         // Attempt to Get User with Invalid AuthToken
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             authDAO.getUser("Invalid AuthToken");});
     }
 
@@ -155,7 +150,7 @@ public class DataAccessTest {
     public void testCreateUserFail() {
 
         // Attempt to Create User with No Password
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             userDAO.createUser("Bob", null, "work@gmail.com");});
     }
 
@@ -178,7 +173,7 @@ public class DataAccessTest {
     public void testUserGetUserFail() {
 
         // Attempt to Create User with No Password
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             userDAO.getUser("NonExistentUser");});
     }
 
@@ -221,7 +216,7 @@ public class DataAccessTest {
     public void testCreateGameFail() {
 
         // Attempt to Create Game with No Name
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDAO.createGame("Game1");});
     }
 
@@ -239,7 +234,9 @@ public class DataAccessTest {
     @Test
     public void testListGamesNone() throws DataAccessException {
 
-        throw new UnsupportedOperationException("Implement!");
+        // List Games
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertNull(games);
     }
 
     @Test
@@ -262,7 +259,7 @@ public class DataAccessTest {
 
         // Update Game with Invalid GameID
         GameData newGameInfo = new GameData(123, "Bob", null, "Game1", null);
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDAO.addGame(newGameInfo);});
     }
 
@@ -287,7 +284,7 @@ public class DataAccessTest {
     public void testGetGameFail() {
 
         // Get Game with Invalid GameID
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDAO.getGame(123);});
     }
 
@@ -301,7 +298,7 @@ public class DataAccessTest {
         gameDAO.removeGame(gameID);
 
         // Verify Game is No Longer in Table
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDAO.getGame(gameID);});
     }
 
@@ -309,7 +306,7 @@ public class DataAccessTest {
     public void testRemoveGameFail() {
 
         // Remove Nonexistent Game
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(DataAccessException.class, () -> {
             gameDAO.getGame(456);});
     }
 
