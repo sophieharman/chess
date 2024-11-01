@@ -9,6 +9,7 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.*;
 
 public class Service {
@@ -57,7 +58,7 @@ public class Service {
         }
 
         // Verify Password is Correct
-        if(!Objects.equals(userInfo.password(), password)) {
+        if (!verifyUser(username, password))  {
             throw new UnauthorizedException();
         }
 
@@ -160,6 +161,13 @@ public class Service {
         gameDAO.addGame(updatedGame);
 
         return new JoinGameResult();
+    }
+
+    public boolean verifyUser(String username, String providedClearTextPassword) throws DataAccessException {
+        // Read Hashed Password from Database
+        UserData userInfo = userDAO.getUser(username);
+        String hashedPassword = userInfo.password();
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
 
     public ClearResult clear() throws DataAccessException {

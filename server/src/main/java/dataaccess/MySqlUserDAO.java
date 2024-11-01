@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
+import service.UnauthorizedException;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -33,9 +34,7 @@ public class MySqlUserDAO implements UserDAO {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        if (verifyUser(username, rs.getString("password"))) {
-                            return new UserData(username, rs.getString("password"), rs.getString("email"));
-                        }
+                        return new UserData(username, rs.getString("password"), rs.getString("email"));
                     }
                 }
             }
@@ -49,12 +48,7 @@ public class MySqlUserDAO implements UserDAO {
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
-    public boolean verifyUser(String username, String providedClearTextPassword) throws DataAccessException {
-        // Read Hashed Password from Database
-        UserData userInfo = getUser(username);
-        String hashedPassword = userInfo.password();
-        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-    }
+
 
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
