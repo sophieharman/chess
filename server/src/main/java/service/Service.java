@@ -54,7 +54,7 @@ public class Service {
         // Verify Username Exists
         UserData userInfo = userDAO.getUser(username);
         if(userInfo == null) {
-            throw new UnauthorizedException();
+            throw new ServiceException(401, "Error: Unauthorized Access");
         }
 
         // Verify Password is Correct

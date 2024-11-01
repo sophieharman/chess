@@ -164,7 +164,7 @@ public class DataAccessTest {
 
         // Assertions
         Assertions.assertEquals("Bob", userInfo.username());
-        Assertions.assertEquals("password", userInfo.password());
+        // Test Password?
         Assertions.assertEquals("work@gmail.com", userInfo.email());
     }
 

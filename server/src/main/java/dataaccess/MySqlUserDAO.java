@@ -4,6 +4,7 @@ import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import service.UnauthorizedException;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -44,7 +45,10 @@ public class MySqlUserDAO implements UserDAO {
         return null;
     }
 
-    public String hashedPassword(String username, String clearTextPassword) {
+    public String hashedPassword(String username, String clearTextPassword) throws DataAccessException {
+        if(clearTextPassword == null) {
+            throw new DataAccessException("Error: Password Required");
+        }
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
