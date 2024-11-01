@@ -167,11 +167,10 @@ public class DataAccessTest {
     }
 
     @Test
-    public void testUserGetUserFail() {
+    public void testUserGetUserFail() throws DataAccessException {
 
-        // Attempt to Create User with No Password
-        assertThrows(DataAccessException.class, () -> {
-            userDAO.getUser("NonExistentUser");});
+        UserData userInfo = userDAO.getUser("NonExistentUser");
+        Assertions.assertNull(userInfo);
     }
 
     @Test
