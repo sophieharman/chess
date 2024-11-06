@@ -7,10 +7,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import model.GameData;
-import model.UserData;
+import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import server.*;
 
 public class Service {
 

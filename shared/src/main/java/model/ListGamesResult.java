@@ -1,6 +1,5 @@
-package server;
+package model;
 
-import model.GameData;
 import java.util.*;
 
 
