@@ -24,8 +24,6 @@ public class DataAccessTest {
     private static UserDAO userDAO;
 
 
-
-
     @BeforeAll
     public static void beforeAll() throws DataAccessException{
             authDAO = new MySqlAuthDAO();
