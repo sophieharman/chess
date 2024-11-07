@@ -27,10 +27,10 @@ public class ServerFacade {
         return result;
     }
 
-//    public void login(String username, String password) throws ResponseException {
+//    public LoginResult login(String username, String password) throws ResponseException {
 //        var path = "/session";
-//        this.makeRequest("POST", path, ?, LoginResult.class);
-//        System.out.println("Implement!");
+//        LoginResult result = this.makeRequest("POST", path, ?, LoginResult.class);
+//        return result;
 //    }
 
     public void logout(String authToken) throws ResponseException {

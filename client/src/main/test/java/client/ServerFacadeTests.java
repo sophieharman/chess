@@ -6,9 +6,11 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
+import service.ServiceException;
 import ui.Client;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class ServerFacadeTests {
@@ -25,8 +27,9 @@ public class ServerFacadeTests {
     }
 
      @BeforeEach
-     public void setUp(){
-        // Clear Database
+     public void setUp() throws ResponseException {
+        // Clear ServerFacade
+         serverFacade.clear();
      }
 
     @AfterAll
@@ -42,8 +45,17 @@ public class ServerFacadeTests {
 
         // Register User
         RegisterResult result = serverFacade.register(userInfo);
-
         Assertions.assertEquals(result.username(), "username");
+    }
+
+    @Test
+    public void registerFail() throws ResponseException {
+        // User Information
+        UserData userInfo = new UserData("username",null, "my@email.com");
+
+        // Register User with No Password
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.register(userInfo);});
     }
 
 }
