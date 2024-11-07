@@ -27,22 +27,22 @@ public class ServerFacade {
         return result;
     }
 
-//    public LoginResult login(String username, String password) throws ResponseException {
-//        var path = "/session";
-//        LoginResult result = this.makeRequest("POST", path, ?, LoginResult.class);
-//        return result;
-//    }
+    public LoginResult login(String username, String password) throws ResponseException {
+        var path = "/session";
+        LoginResult result = this.makeRequest("POST", path, '?', LoginResult.class);
+        return result;
+    }
 
     public void logout(String authToken) throws ResponseException {
         var path = "/session";
         this.makeRequest("DELETE", path, null, LogoutResult.class);
     }
 
-    public Integer createGame(String gameName) throws ResponseException {
+    public CreateGameResult createGame(String gameName) throws ResponseException {
         var path = "/game";
         GameData game = new GameData(-1, null, null, gameName, null);
-        CreateGameResult newGame = this.makeRequest("POST", path, game, CreateGameResult.class);
-        return newGame.gameID();
+        CreateGameResult result = this.makeRequest("POST", path, game, CreateGameResult.class);
+        return result;
     }
 
     public Collection<GameData> listGames() throws ResponseException {

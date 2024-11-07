@@ -1,8 +1,7 @@
 package client;
 
 import exception.ResponseException;
-import model.RegisterResult;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
@@ -57,5 +56,92 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> {
             serverFacade.register(userInfo);});
     }
+
+    @Test
+    public void loginSuccess() throws ResponseException {
+        // Register a User
+        UserData userInfo = new UserData("username", "password", "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Login
+        LoginResult result = serverFacade.login("username", "password");
+        Assertions.assertNotNull(result.authToken());
+        Assertions.assertEquals(result.username(), "username");
+    }
+
+    @Test
+    public void loginFail() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username",null, "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Login User with No Password
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.login("username", null);});
+    }
+
+    @Test
+    public void logoutSuccess() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username",null, "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Logout User
+        String authToken = "???????";
+        serverFacade.logout(authToken);
+
+        // Assert AuthToken is Deleted
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void logoutFail() {
+        // Logout Non-Existent User
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.logout("InvalidAuth");});
+    }
+
+    @Test
+    public void createGameSuccess() throws ResponseException {
+        // Create Game
+        CreateGameResult result = serverFacade.createGame("Game1");
+
+        // Assertions
+        Assertions.assertNotNull(result.gameID());
+        Assertions.assertNull(result.whiteUsername());
+        Assertions.assertNull(result.blackUsername());
+        Assertions.assertEquals("Game1", result.gameName());
+    }
+
+    @Test
+    public void createGameFail() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void listGamesSuccess() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void listGamesFail() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void joinGameSuccess() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void joinGameFail() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Test
+    public void clear() {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
 
 }
