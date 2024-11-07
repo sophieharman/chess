@@ -115,8 +115,11 @@ public class ServerFacadeTests {
 
     @Test
     public void createGameFail() {
-        throw new UnsupportedOperationException("Not Implemented");
+        // Create Game with No Name
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.createGame(null);});
     }
+
 
     @Test
     public void listGamesSuccess() {
