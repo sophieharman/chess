@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 import service.ServiceException;
+import service.UnauthorizedException;
 import ui.Client;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -73,9 +74,8 @@ public class ServerFacadeTests {
     public void loginFail() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username",null, "my@email.com");
-        serverFacade.register(userInfo);
 
-        // Login User with No Password
+        // Login Non-existent User
         assertThrows(ResponseException.class, () -> {
             serverFacade.login(userInfo);});
     }
@@ -92,8 +92,9 @@ public class ServerFacadeTests {
         // Logout User
         serverFacade.logout(result.authToken());
 
-        // Assert AuthToken is Deleted
-        throw new UnsupportedOperationException("Not Implemented");
+        // Attempt to Log Out again
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.logout(result.authToken());});
     }
 
     @Test
@@ -105,8 +106,11 @@ public class ServerFacadeTests {
 
     @Test
     public void createGameSuccess() throws ResponseException {
-        // Login User
+        // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Login User
         serverFacade.login(userInfo);
 
         // Create Game
@@ -129,6 +133,13 @@ public class ServerFacadeTests {
 
     @Test
     public void listGamesSuccess() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Login User
+        serverFacade.login(userInfo);
+
         // Create Game
         serverFacade.createGame("Game1");
 
@@ -152,11 +163,11 @@ public class ServerFacadeTests {
         UserData userInfo = new UserData("username","password", "my@email.com");
         serverFacade.register(userInfo);
 
-        // Create Game
-        CreateGameResult game = serverFacade.createGame("Game1");
-
         // Login
         LoginResult result = serverFacade.login(userInfo);
+
+        // Create Game
+        CreateGameResult game = serverFacade.createGame("Game1");
 
         // Join Game
         serverFacade.joinGame("WHITE", result.authToken(), game.gameID());
@@ -174,6 +185,13 @@ public class ServerFacadeTests {
 
     @Test
     public void clear() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Login
+        serverFacade.login(userInfo);
+
         // Create Game
         serverFacade.createGame("Game1");
 
