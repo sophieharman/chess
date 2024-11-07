@@ -122,23 +122,48 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void listGamesSuccess() {
+    public void listGamesSuccess() throws ResponseException {
+        // Create Game
+        serverFacade.createGame("Game1");
+
+        // List Games
+        ListGamesResult result = serverFacade.listGames();
+
+        // Verify Game is Listed
+        Assertions.assertEquals(result.games().size(), 1);
+    }
+
+    @Test
+    public void listGamesFail() throws ResponseException {
+        // List Games (None)
+        ListGamesResult result = serverFacade.listGames();
+        Assertions.assertNull(result.games());
+    }
+
+    @Test
+    public void joinGameSuccess() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        serverFacade.register(userInfo);
+
+        // Create Game
+        CreateGameResult game = serverFacade.createGame("Game1");
+
+        // Login
+        LoginResult result = serverFacade.login("username", "password");
+
+        // Join Game
+        serverFacade.joinGame("WHITE", result.authToken(), game.gameID());
+
+        // Assertions
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Test
-    public void listGamesFail() {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Test
-    public void joinGameSuccess() {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Test
-    public void joinGameFail() {
-        throw new UnsupportedOperationException("Not Implemented");
+    public void joinGameFail() throws ResponseException {
+        // Join Game with Invalid AuthData/GameID
+        assertThrows(ResponseException.class, () -> {
+            serverFacade.joinGame("WHITE", "InvalidAuth", 12345);});
     }
 
     @Test

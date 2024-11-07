@@ -45,10 +45,10 @@ public class ServerFacade {
         return result;
     }
 
-    public Collection<GameData> listGames() throws ResponseException {
+    public ListGamesResult listGames() throws ResponseException {
         var path = "/game";
         ListGamesResult gameList = this.makeRequest("GET", path, null, ListGamesResult.class);
-        return gameList.games();
+        return gameList;
     }
 
     public void joinGame(String playerColor, String authToken, Integer gameID) throws ResponseException {
