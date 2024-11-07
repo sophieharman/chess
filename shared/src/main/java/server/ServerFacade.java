@@ -27,9 +27,9 @@ public class ServerFacade {
         return result;
     }
 
-    public LoginResult login(String username, String password) throws ResponseException {
+    public LoginResult login(UserData userInfo) throws ResponseException {
         var path = "/session";
-        LoginResult result = this.makeRequest("POST", path, '?', LoginResult.class);
+        LoginResult result = this.makeRequest("POST", path, userInfo, LoginResult.class);
         return result;
     }
 

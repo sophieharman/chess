@@ -64,7 +64,7 @@ public class ServerFacadeTests {
         serverFacade.register(userInfo);
 
         // Login
-        LoginResult result = serverFacade.login("username", "password");
+        LoginResult result = serverFacade.login(userInfo);
         Assertions.assertNotNull(result.authToken());
         Assertions.assertEquals(result.username(), "username");
     }
@@ -77,18 +77,20 @@ public class ServerFacadeTests {
 
         // Login User with No Password
         assertThrows(ResponseException.class, () -> {
-            serverFacade.login("username", null);});
+            serverFacade.login(userInfo);});
     }
 
     @Test
     public void logoutSuccess() throws ResponseException {
         // Register User
-        UserData userInfo = new UserData("username",null, "my@email.com");
+        UserData userInfo = new UserData("username","password", "my@email.com");
         serverFacade.register(userInfo);
 
+        // Login User
+        LoginResult result = serverFacade.login(userInfo);
+
         // Logout User
-        String authToken = "???????";
-        serverFacade.logout(authToken);
+        serverFacade.logout(result.authToken());
 
         // Assert AuthToken is Deleted
         throw new UnsupportedOperationException("Not Implemented");
@@ -103,6 +105,10 @@ public class ServerFacadeTests {
 
     @Test
     public void createGameSuccess() throws ResponseException {
+        // Login User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        serverFacade.login(userInfo);
+
         // Create Game
         CreateGameResult result = serverFacade.createGame("Game1");
 
@@ -150,7 +156,7 @@ public class ServerFacadeTests {
         CreateGameResult game = serverFacade.createGame("Game1");
 
         // Login
-        LoginResult result = serverFacade.login("username", "password");
+        LoginResult result = serverFacade.login(userInfo);
 
         // Join Game
         serverFacade.joinGame("WHITE", result.authToken(), game.gameID());
@@ -167,8 +173,20 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void clear() {
-        throw new UnsupportedOperationException("Not Implemented");
+    public void clear() throws ResponseException {
+        // Create Game
+        serverFacade.createGame("Game1");
+
+        // Assert List of Games is Not Null
+        ListGamesResult result = serverFacade.listGames();
+        Assertions.assertNotNull(result.games());
+
+        // Clear
+        serverFacade.clear();
+
+        // Assert List of Games is Null
+        result = serverFacade.listGames();
+        Assertions.assertNull(result.games());
     }
 
 
