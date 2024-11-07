@@ -21,17 +21,17 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void register(UserData userInfo) {
+    public RegisterResult register(UserData userInfo) throws ResponseException {
         var path = "/user";
-        this.makeRequest("POST", path, ?, RegisterResult.class);
-        System.out.println("Implement!");
+        RegisterResult result = this.makeRequest("POST", path, userInfo, RegisterResult.class);
+        return result;
     }
 
-    public void login(String username, String password) throws ResponseException {
-        var path = "/session";
-        this.makeRequest("POST", path, ?, LoginResult.class);
-        System.out.println("Implement");
-    }
+//    public void login(String username, String password) throws ResponseException {
+//        var path = "/session";
+//        this.makeRequest("POST", path, ?, LoginResult.class);
+//        System.out.println("Implement!");
+//    }
 
     public void logout(String authToken) throws ResponseException {
         var path = "/session";
@@ -90,18 +90,17 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            throw new ResponseException(status, "Error: " + status); // EDIT THIS (Get the Message)
+            // (May not want to display the status code)
         }
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader reader = new InputStreamReader(respBody);
+            if (responseClass != null) {
+                response = new Gson().fromJson(reader, responseClass);
             }
         }
         return response;
