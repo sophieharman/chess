@@ -62,10 +62,10 @@ public class ServerFacadeTests {
     public void loginSuccess() throws ResponseException {
         // Register a User
         UserData userInfo = new UserData("username", "password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login
-        LoginResult result = serverFacade.login(userInfo);
+        LoginResult result = serverFacade.login(userInfo, registerResult.authToken());
         Assertions.assertNotNull(result.authToken());
         Assertions.assertEquals(result.username(), "username");
     }
@@ -77,17 +77,17 @@ public class ServerFacadeTests {
 
         // Login Non-existent User
         assertThrows(ResponseException.class, () -> {
-            serverFacade.login(userInfo);});
+            serverFacade.login(userInfo, "InvalidAuth");});
     }
 
     @Test
     public void logoutSuccess() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login User
-        LoginResult result = serverFacade.login(userInfo);
+        LoginResult result = serverFacade.login(userInfo, registerResult.authToken());
 
         // Logout User
         serverFacade.logout(result.authToken());
@@ -108,13 +108,13 @@ public class ServerFacadeTests {
     public void createGameSuccess() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login User
-        serverFacade.login(userInfo);
+        serverFacade.login(userInfo, registerResult.authToken());
 
         // Create Game
-        CreateGameResult result = serverFacade.createGame("Game1");
+        CreateGameResult result = serverFacade.createGame("Game1", registerResult.authToken());
 
         // Assertions
         Assertions.assertNotNull(result.gameID());
@@ -124,10 +124,17 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void createGameFail() {
+    public void createGameFail() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        RegisterResult registerResult = serverFacade.register(userInfo);
+
+        // Login User
+        serverFacade.login(userInfo, registerResult.authToken());
+
         // Create Game with No Name
         assertThrows(ResponseException.class, () -> {
-            serverFacade.createGame(null);});
+            serverFacade.createGame(null, registerResult.authToken());});
     }
 
 
@@ -135,16 +142,16 @@ public class ServerFacadeTests {
     public void listGamesSuccess() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login User
-        serverFacade.login(userInfo);
+        serverFacade.login(userInfo, registerResult.authToken());
 
         // Create Game
-        serverFacade.createGame("Game1");
+        serverFacade.createGame("Game1", registerResult.authToken());
 
         // List Games
-        ListGamesResult result = serverFacade.listGames();
+        ListGamesResult result = serverFacade.listGames(registerResult.authToken());
 
         // Verify Game is Listed
         Assertions.assertEquals(result.games().size(), 1);
@@ -152,8 +159,15 @@ public class ServerFacadeTests {
 
     @Test
     public void listGamesFail() throws ResponseException {
+        // Register User
+        UserData userInfo = new UserData("username","password", "my@email.com");
+        RegisterResult registerResult = serverFacade.register(userInfo);
+
+        // Login User
+        serverFacade.login(userInfo, registerResult.authToken());
+
         // List Games (None)
-        ListGamesResult result = serverFacade.listGames();
+        ListGamesResult result = serverFacade.listGames(registerResult.authToken());
         Assertions.assertNull(result.games());
     }
 
@@ -161,13 +175,13 @@ public class ServerFacadeTests {
     public void joinGameSuccess() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login
-        LoginResult result = serverFacade.login(userInfo);
+        LoginResult result = serverFacade.login(userInfo, registerResult.authToken());
 
         // Create Game
-        CreateGameResult game = serverFacade.createGame("Game1");
+        CreateGameResult game = serverFacade.createGame("Game1", registerResult.authToken());
 
         // Join Game
         serverFacade.joinGame("WHITE", result.authToken(), game.gameID());
@@ -187,23 +201,23 @@ public class ServerFacadeTests {
     public void clear() throws ResponseException {
         // Register User
         UserData userInfo = new UserData("username","password", "my@email.com");
-        serverFacade.register(userInfo);
+        RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login
-        serverFacade.login(userInfo);
+        serverFacade.login(userInfo, registerResult.authToken());
 
         // Create Game
-        serverFacade.createGame("Game1");
+        serverFacade.createGame("Game1", registerResult.authToken());
 
         // Assert List of Games is Not Null
-        ListGamesResult result = serverFacade.listGames();
+        ListGamesResult result = serverFacade.listGames(registerResult.authToken());
         Assertions.assertNotNull(result.games());
 
         // Clear
         serverFacade.clear();
 
         // Assert List of Games is Null
-        result = serverFacade.listGames();
+        result = serverFacade.listGames(registerResult.authToken());
         Assertions.assertNull(result.games());
     }
 
