@@ -4,10 +4,7 @@ import exception.ResponseException;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
-import service.ServiceException;
-import service.UnauthorizedException;
-import ui.Client;
+import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -168,7 +165,7 @@ public class ServerFacadeTests {
 
         // List Games (None)
         ListGamesResult result = serverFacade.listGames(registerResult.authToken());
-        Assertions.assertNull(result.games());
+        Assertions.assertEquals(result.games().size(), 0);
     }
 
     @Test
@@ -178,16 +175,19 @@ public class ServerFacadeTests {
         RegisterResult registerResult = serverFacade.register(userInfo);
 
         // Login
-        LoginResult result = serverFacade.login(userInfo, registerResult.authToken());
+        serverFacade.login(userInfo, registerResult.authToken());
 
         // Create Game
         CreateGameResult game = serverFacade.createGame("Game1", registerResult.authToken());
 
         // Join Game
-        serverFacade.joinGame("WHITE", result.authToken(), game.gameID());
+        serverFacade.joinGame("WHITE", registerResult.authToken(), game.gameID());
+
+        // List Game
+        ListGamesResult result = serverFacade.listGames(registerResult.authToken());
 
         // Assertions
-        throw new UnsupportedOperationException("Not Implemented");
+        Assertions.assertEquals(result.games().size(), 1);
     }
 
     @Test
@@ -211,14 +211,18 @@ public class ServerFacadeTests {
 
         // Assert List of Games is Not Null
         ListGamesResult result = serverFacade.listGames(registerResult.authToken());
-        Assertions.assertNotNull(result.games());
+        Assertions.assertEquals(result.games().size(), 1);
 
         // Clear
         serverFacade.clear();
 
+        // Register User
+        userInfo = new UserData("username","password", "my@email.com");
+        RegisterResult registerResult1 = serverFacade.register(userInfo);
+
         // Assert List of Games is Null
-        result = serverFacade.listGames(registerResult.authToken());
-        Assertions.assertNull(result.games());
+        result = serverFacade.listGames(registerResult1.authToken());
+        Assertions.assertEquals(result.games().size(), 0);
     }
 
 

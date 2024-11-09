@@ -1,4 +1,4 @@
-package server;
+package ui;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 
 public class ServerFacade {
 
@@ -53,7 +52,8 @@ public class ServerFacade {
 
     public void joinGame(String playerColor, String authToken, Integer gameID) throws ResponseException {
         var path = "/game";
-        this.makeRequest("PUT", path, null, authToken, JoinGameResult.class);
+        JoinGameData newGame = new JoinGameData(playerColor, gameID);
+        this.makeRequest("PUT", path, newGame, authToken, JoinGameResult.class);
     }
 
     public void clear() throws ResponseException {
@@ -66,10 +66,14 @@ public class ServerFacade {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setRequestProperty("Authorization", authToken);
+            if (authToken!=null) {
+                http.setRequestProperty("Authorization", authToken);
+            }
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            if (request != null) {
+                writeBody(request, http);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

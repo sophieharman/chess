@@ -1,5 +1,7 @@
 package ui;
 
+import exception.ResponseException;
+
 import java.util.Scanner;
 
 public class Repl {
@@ -11,14 +13,16 @@ public class Repl {
         client = new Client(serverUrl);
     }
 
-    public void run() {
+    public void run() throws ResponseException {
+
+        System.out.println("Welcome to chess! Log in to start.");
+        System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
-            System.out.println("Implement");
+            String line = scanner.nextLine();
+            result = client.eval(line);
         }
-
-
     }
 }

@@ -36,7 +36,6 @@ public class DataAccessTest {
         authDAO.clear();
         gameDAO.clear();
         userDAO.clear();
-
     }
 
     @Test
