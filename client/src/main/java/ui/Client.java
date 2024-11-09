@@ -1,12 +1,15 @@
 package ui;
 
 import exception.ResponseException;
+import model.ListGamesResult;
+import model.RegisterResult;
 import model.UserData;
 
 import java.util.Arrays;
 
 public class Client {
 
+    private String authToken;
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
@@ -50,53 +53,92 @@ public class Client {
     public String register(String... params) throws ResponseException {
         if (params.length == 3) {
             UserData userInfo = new UserData(params[0], params[1], params[2]);
-            server.register(userInfo);
+            RegisterResult result = server.register(userInfo);
+            authToken = result.authToken();
             return String.format("You have successfully registered as %s.", params[0]);
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
     }
 
     public String login(String... params) throws ResponseException {
-//        if (state == State.SIGNEDIN) {
-//            throw new ResponseException(400, "You must be logged out in order to log in.");
-//        }
-//        if (params.length == 2) {
-//            state = State.SIGNEDIN;
-//            UserData userInfo = "????????";
-//            server.login(userInfo, params[1]);
-            return String.format("You have successfully logged in as %s.", "?");
-//        }
-//        throw new ResponseException(400, "Expected: <username> <password>");
+        if (state == State.SIGNEDIN) {
+            throw new ResponseException(400, "You must be logged out in order to log in.");
+        }
+        if (params.length == 2) {
+            state = State.SIGNEDIN;
+            UserData userInfo = new UserData(params[0], params[1], null);
+            server.login(userInfo, params[1]);
+            return String.format("You have successfully logged in as %s.", userInfo.username());
+        }
+        throw new ResponseException(400, "Expected: <username> <password>");
     }
 
     public String logout() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must be logged in in order to log out.");
         }
-        String authToken = "??????????";
         server.logout(authToken);
         return "You have successfully logged out";
     }
 
-    public String createGame(String... params){
-        return "";
+    public String createGame(String... params) throws ResponseException {
+        if (params.length == 1) {
+            server.createGame(params[0], authToken);
+            return String.format("New Game Created: %s", params[0]);
+        }
+        throw new ResponseException(400, "Expected: <GameName>");
     }
 
-    public String listGames(String... params){
-        return "";
+    public String listGames(String... params) throws ResponseException {
+        if (params.length == 0) {
+            ListGamesResult result = server.listGames(authToken);
+            return result.toString();
+        }
+        throw new ResponseException(400, "Expected: <>");
     }
 
-    public String joinGame(String... params){
-        return "";
+    public String joinGame(Object... params) throws ResponseException {
+        if (params.length == 2) {
+
+            String playerColor;
+            Integer gameID;
+            if (params[0] instanceof String && params[1] instanceof Integer) {
+                playerColor = params[0].toString();
+                gameID = (Integer) params[1];
+            }
+            else
+            {
+                throw new ResponseException(400, "Player color must consist of characters, and the gameID must be an integer");
+            }
+            server.joinGame(playerColor, authToken, gameID);
+            return "";
+        }
+        throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
     }
 
-    public String observeGame(String... params){
-        return "";
+    public String observeGame(String... params) throws ResponseException {
+        if (params.length == 1) {
+            // Account for params[0] not being valid Integer!!!!
+            server.joinGame(null, authToken, Integer.valueOf(params[0]));
+        }
+        throw new ResponseException(400, "Expected: <GameID>");
     }
 
     public String help() {
-        System.out.println("Implement!");
-        return "";
+        if (state == State.SIGNEDOUT) {
+            return """
+                    - register <username> <password> <email>
+                    - login <username> <password>
+                    - quit
+                    """;
+        }
+        return """
+                - listGames
+                - joinGame <PlayerColor> <GameID>
+                - observeGame <GameID>
+                - createGame <GameName>
+                - logout
+                """;
     }
 
 }
