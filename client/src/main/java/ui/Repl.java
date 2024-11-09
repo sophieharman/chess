@@ -22,6 +22,7 @@ public class Repl {
         var result = "";
         while (!result.equals("quit")) {
             String line = scanner.nextLine();
+
             result = client.eval(line);
         }
     }
