@@ -2,6 +2,9 @@ package ui;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import chess.ChessBoard;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import static ui.EscapeSequences.*;
 
@@ -9,8 +12,6 @@ public class BoardDisplay {
 
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 2;
-    private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
 
     // Padded characters.
     private static final String EMPTY = "   ";
@@ -30,14 +31,14 @@ public class BoardDisplay {
     }
 
     private static void drawHeader(PrintStream out) {
-        String headers = "    b  c  d  e  f  g  h ";
+        String headers = "    a  b  c  d  e  f  g  h ";
         printHeaderText(out, headers);
         out.println();
     }
 
     private static void printHeaderText(PrintStream out, String player) {
         out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_TEXT_COLOR_WHITE);
 
         out.print(player);
 
@@ -48,31 +49,41 @@ public class BoardDisplay {
 
         boolean colAlt = true;
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(" " + (boardRow + 1) + " ");
             drawRowOfSquares(out, colAlt);
             colAlt = !colAlt;
         }
     }
 
     private static void drawRowOfSquares(PrintStream out, boolean colAlt) {
-        out.print(1);
+
         for (int squareRow = 0; squareRow < 8; ++squareRow) {
 
-                if(colAlt) {
-                    setLightBrown(out);
-                }
-                else {
-                    setDarkBrown(out);
-                }
+            if(colAlt) {
+                setLightBrown(out);
+            }
+            else {
+                setDarkBrown(out);
+            }
 
-                out.print(EMPTY.repeat(1));
+            out.print(EMPTY.repeat(1));
 
-                setBlack(out);
-                colAlt = !colAlt;
-
-
+            setBlack(out);
+            colAlt = !colAlt;
         }
-        out.print(2);
         out.println();
+    }
+
+    public static void printPieces() {
+        for(int i = 1; i <= 8; i++)
+        {
+            for(int j = 1; j <= 8; j++)
+            {
+                ChessPosition pos = new ChessPosition(i, j);
+//                ChessPiece piece = board.getPiece();
+            }
+        }
     }
 
     private static void setBlack(PrintStream out) {

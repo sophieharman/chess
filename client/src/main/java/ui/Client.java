@@ -2,6 +2,7 @@ package ui;
 
 import exception.ResponseException;
 import model.ListGamesResult;
+import model.LoginResult;
 import model.RegisterResult;
 import model.UserData;
 
@@ -45,7 +46,7 @@ public class Client {
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return "";
+            return ex.getMessage();
         }
 
     }
@@ -67,7 +68,8 @@ public class Client {
         if (params.length == 2) {
             state = State.SIGNEDIN;
             UserData userInfo = new UserData(params[0], params[1], null);
-            server.login(userInfo, params[1]);
+            LoginResult result = server.login(userInfo, params[1]);
+            authToken = result.authToken();
             return String.format("You have successfully logged in as %s.", userInfo.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -78,6 +80,7 @@ public class Client {
             throw new ResponseException(400, "You must be logged in in order to log out.");
         }
         server.logout(authToken);
+        state = State.SIGNEDOUT;
         return "You have successfully logged out";
     }
 
