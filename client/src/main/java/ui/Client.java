@@ -1,15 +1,16 @@
 package ui;
 
 import exception.ResponseException;
-import model.ListGamesResult;
-import model.LoginResult;
-import model.RegisterResult;
-import model.UserData;
+import model.*;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Client {
 
+    GameIDs ids = new GameIDs();
+    GameInfo gameInfo = new GameInfo();
+    private String username;
+    private int idCount = 100;
     private String authToken;
     private final ServerFacade server;
     private final String serverUrl;
@@ -31,7 +32,7 @@ public class Client {
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split(" ");
+            var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
@@ -41,7 +42,7 @@ public class Client {
                 case "createGame" -> createGame(params);
                 case "listGames" -> listGames(params);
                 case "joinGame" -> joinGame(params);
-                case "observeGame" -> observeGame(params);
+                case "observeGame" -> observeGame();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -70,6 +71,7 @@ public class Client {
             UserData userInfo = new UserData(params[0], params[1], null);
             LoginResult result = server.login(userInfo, params[1]);
             authToken = result.authToken();
+            username = params[0];
             return String.format("You have successfully logged in as %s.", userInfo.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -86,7 +88,15 @@ public class Client {
 
     public String createGame(String... params) throws ResponseException {
         if (params.length == 1) {
-            server.createGame(params[0], authToken);
+            CreateGameResult game = server.createGame(params[0], authToken);
+
+            // Record Game IDs in Client
+            ids.addID(game.gameID(), idCount);
+            idCount++;
+            
+            // Record Game Information in Client
+            gameInfo.addInfo(game.gameID(), null, null);
+
             return String.format("New Game Created: %s", params[0]);
         }
         throw new ResponseException(400, "Expected: <GameName>");
@@ -95,7 +105,13 @@ public class Client {
     public String listGames(String... params) throws ResponseException {
         if (params.length == 0) {
             ListGamesResult result = server.listGames(authToken);
-            return result.toString();
+
+            System.out.printf("%-10s %-10s %-10s %-10s%n", "GameID", "GameName", "White", "Black");
+            for(GameData game: result.games()) {
+                Integer userID = ids.getUserGameID(game.gameID());
+                System.out.printf("%-10s %-10s %-10s %-10s%n", userID, game.gameName(), game.whiteUsername(), game.blackUsername());
+            }
+            return "";
         }
         throw new ResponseException(400, "Expected: <>");
     }
@@ -103,16 +119,35 @@ public class Client {
     public String joinGame(Object... params) throws ResponseException {
         if (params.length == 2) {
 
-            String playerColor;
-            Integer gameID;
-            if (params[0] instanceof String && params[1] instanceof Integer) {
-                playerColor = params[0].toString();
-                gameID = (Integer) params[1];
+            // Verify 2nd Parameter is an Integer
+            try {
+                Integer.valueOf(params[1].toString());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Error: GameID must be an Integer");
             }
-            else
-            {
-                throw new ResponseException(400, "Player color must consist of characters, and the gameID must be an integer");
+
+            // Unpack Parameters
+            String playerColor = params[0].toString().toUpperCase();
+            Integer gameID = Integer.valueOf(params[1].toString());
+
+            // Grab Game Data
+            Integer primaryID = ids.getPrimaryGameID(gameID);
+            String whiteUser = gameInfo.getWhiteUser(primaryID);
+            String blackUser = gameInfo.getBlackUser(primaryID);
+
+            // Verify Position is Open
+            if (playerColor.equals("WHITE") && whiteUser != null || playerColor.equals("BLACK") && blackUser != null) {
+                throw new ResponseException(400, "Error: Player Color Occupied");
             }
+
+            // Update Game Information
+            if (playerColor.equals("WHITE")) {
+                gameInfo.updateInfo(primaryID, username, blackUser);
+            }
+            else {
+                gameInfo.updateInfo(primaryID, whiteUser, username);
+            }
+
             server.joinGame(playerColor, authToken, gameID);
             return "";
         }
@@ -121,8 +156,8 @@ public class Client {
 
     public String observeGame(String... params) throws ResponseException {
         if (params.length == 1) {
-            // Account for params[0] not being valid Integer!!!!
-            server.joinGame(null, authToken, Integer.valueOf(params[0]));
+            BoardDisplay.main(null);
+            return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");
     }
