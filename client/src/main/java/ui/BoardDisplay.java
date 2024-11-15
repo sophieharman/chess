@@ -1,10 +1,12 @@
 package ui;
 
+import java.util.*;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import chess.ChessBoard;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import chess.ChessPiece.PieceType;
 
 import static ui.EscapeSequences.*;
 
@@ -75,15 +77,38 @@ public class BoardDisplay {
         out.println();
     }
 
-    public static void printPieces() {
+    public List<String> printPieces() {
+
+        // New Chess Board
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+
+        // Piece Mappings
+        Map<PieceType, String> pieceMapping = new HashMap<>();
+        pieceMapping.put(PieceType.KING, "K");
+        pieceMapping.put(PieceType.QUEEN, "Q");
+        pieceMapping.put(PieceType.ROOK, "R");
+        pieceMapping.put(PieceType.BISHOP, "B");
+        pieceMapping.put(PieceType.KNIGHT, "N");
+        pieceMapping.put(PieceType.PAWN, "P");
+
+        // Iterate through Board
+        List<String> rows = new ArrayList<>();
         for(int i = 1; i <= 8; i++)
         {
+            List<String> row = new ArrayList<>();
             for(int j = 1; j <= 8; j++)
             {
+                // Add Pieces for Row
                 ChessPosition pos = new ChessPosition(i, j);
-//                ChessPiece piece = board.getPiece();
+                ChessPiece chessPiece = board.getPiece(pos);
+                String piece = pieceMapping.get(chessPiece);
+                row.add(piece);
             }
+            String rowPieces = String.join(" ", row);
+            rows.add(rowPieces);
         }
+    return rows;
     }
 
     private static void setBlack(PrintStream out) {

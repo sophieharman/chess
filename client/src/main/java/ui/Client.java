@@ -90,26 +90,27 @@ public class Client {
         if (params.length == 1) {
             CreateGameResult game = server.createGame(params[0], authToken);
 
-            // Record Game IDs in Client
-            ids.addID(game.gameID(), idCount);
-            idCount++;
-            
-            // Record Game Information in Client
-            gameInfo.addInfo(game.gameID(), null, null);
-
             return String.format("New Game Created: %s", params[0]);
         }
         throw new ResponseException(400, "Expected: <GameName>");
     }
 
     public String listGames(String... params) throws ResponseException {
+        idCount = 100;
         if (params.length == 0) {
             ListGamesResult result = server.listGames(authToken);
 
             System.out.printf("%-10s %-10s %-10s %-10s%n", "GameID", "GameName", "White", "Black");
             for(GameData game: result.games()) {
-                Integer userID = ids.getUserGameID(game.gameID());
-                System.out.printf("%-10s %-10s %-10s %-10s%n", userID, game.gameName(), game.whiteUsername(), game.blackUsername());
+
+                // Record Game IDs in Client
+                idCount++;
+                ids.addID(game.gameID(), idCount);
+
+                // Record Game Information in Client
+                gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+
+                System.out.printf("%-10s %-10s %-10s %-10s%n", idCount, game.gameName(), game.whiteUsername(), game.blackUsername());
             }
             return "";
         }
@@ -140,15 +141,7 @@ public class Client {
                 throw new ResponseException(400, "Error: Player Color Occupied");
             }
 
-            // Update Game Information
-            if (playerColor.equals("WHITE")) {
-                gameInfo.updateInfo(primaryID, username, blackUser);
-            }
-            else {
-                gameInfo.updateInfo(primaryID, whiteUser, username);
-            }
-
-            server.joinGame(playerColor, authToken, gameID);
+            server.joinGame(playerColor, authToken, primaryID);
             return "";
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
