@@ -27,12 +27,14 @@ public class BoardDisplay {
 
         drawBoard(out, teamColor);
 
+        drawHeader(out);
+
         out.print(RESET_TEXT_COLOR);
         out.print(RESET_BG_COLOR);
     }
 
     private static void drawHeader(PrintStream out) {
-        String headers = "    a  b  c  d  e  f  g  h ";
+        String headers = "    h  g  f  e  d  c  b  a ";
         printHeaderText(out, headers);
         out.println();
     }
@@ -48,10 +50,11 @@ public class BoardDisplay {
 
     private static void drawBoard(PrintStream out, String teamColor) {
 
+        int sideHeader = 8;
         boolean colAlt = false;
         for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(" " + (i + 1) + " ");
+            out.print(" " + (sideHeader) + " ");
             colAlt = !colAlt;
             for (int j = 0; j < 8; ++j) {
 
@@ -69,6 +72,9 @@ public class BoardDisplay {
                 setBlack(out);
                 colAlt = !colAlt;
             }
+            out.print(SET_TEXT_COLOR_WHITE);
+            out.print(" " + (sideHeader) + " ");
+            sideHeader -= 1;
             out.println();
         }
 

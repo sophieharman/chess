@@ -101,7 +101,7 @@ public class Client {
     }
 
     public String listGames(String... params) throws ResponseException {
-        int idCount = 100;
+        int idCount = 0;
         if (params.length == 0) {
             ListGamesResult result = server.listGames(authToken);
 
