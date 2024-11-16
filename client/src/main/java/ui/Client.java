@@ -7,11 +7,10 @@ import java.util.*;
 
 public class Client {
 
-
+    boolean listGamesCalled = false;
     GameIDs ids = new GameIDs();
     GameInfo gameInfo = new GameInfo();
     private String username;
-    private int gameIDCount = 100;
     private String authToken;
     private final ServerFacade server;
     private final String serverUrl;
@@ -115,6 +114,7 @@ public class Client {
 
                 // Record Game Information in Client
                 gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+                listGamesCalled = true;
 
                 System.out.printf("%-10s %-10s %-10s %-10s%n", idCount, game.gameName(), game.whiteUsername(), game.blackUsername());
             }
@@ -124,13 +124,22 @@ public class Client {
     }
 
     public String joinGame(Object... params) throws ResponseException {
+        if (!listGamesCalled) {
+            throw new ResponseException(500, "Error: Please list games before attempting to join a game");
+        }
         if (params.length == 2) {
 
             // Verify 2nd Parameter is an Integer
             try {
                 Integer.valueOf(params[1].toString());
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Error: GameID must be an Integer");
+                throw new ResponseException(400, "Error: GameID must be an Integer");
+            }
+
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
             }
 
             // Unpack Parameters
@@ -138,7 +147,6 @@ public class Client {
             Integer gameID = Integer.valueOf(params[1].toString());
 
             // Grab Game Data
-            Integer primaryID = ids.getPrimaryGameID(gameID);
             String whiteUser = gameInfo.getWhiteUser(primaryID);
             String blackUser = gameInfo.getBlackUser(primaryID);
 
@@ -157,6 +165,20 @@ public class Client {
 
     public String observeGame(String... params) throws ResponseException {
         if (params.length == 1) {
+
+            // Verify Parameter is an Integer
+            try {
+                Integer.valueOf(params[0].toString());
+            } catch (NumberFormatException e) {
+                throw new ResponseException(400, "Error: GameID must be an Integer");
+            }
+
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[0].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
+            }
+
             BoardDisplay.main("black");
             BoardDisplay.main("white");
             return "You have successfully joined the game as an observer";
