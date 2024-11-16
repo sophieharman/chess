@@ -7,10 +7,11 @@ import java.util.*;
 
 public class Client {
 
+
     GameIDs ids = new GameIDs();
     GameInfo gameInfo = new GameInfo();
     private String username;
-    private int idCount = 100;
+    private int gameIDCount = 100;
     private String authToken;
     private final ServerFacade server;
     private final String serverUrl;
@@ -90,13 +91,15 @@ public class Client {
         if (params.length == 1) {
             CreateGameResult game = server.createGame(params[0], authToken);
 
+            gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+
             return String.format("New Game Created: %s", params[0]);
         }
         throw new ResponseException(400, "Expected: <GameName>");
     }
 
     public String listGames(String... params) throws ResponseException {
-        idCount = 100;
+        int idCount = 100;
         if (params.length == 0) {
             ListGamesResult result = server.listGames(authToken);
 
@@ -142,14 +145,15 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
-            return "";
+            BoardDisplay.main("white");
+            return "You have successfully joined Game " + gameID;
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
     }
 
     public String observeGame(String... params) throws ResponseException {
         if (params.length == 1) {
-            BoardDisplay.main(null);
+            BoardDisplay.main("white");
             return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");

@@ -7,19 +7,18 @@ import chess.ChessBoard;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.ChessPiece.PieceType;
+import exception.ResponseException;
 
 import static ui.EscapeSequences.*;
 
 public class BoardDisplay {
 
-    // Board dimensions.
-    private static final int BOARD_SIZE_IN_SQUARES = 8;
+    private static String teamColor;
+    private static final String EMPTY = " "; // Padded Characters
+    private static final int BOARD_SIZE_IN_SQUARES = 8; // Board Dimensions
 
-    // Padded characters.
-    private static final String EMPTY = "   ";
+    public static void main(String teamColor) throws ResponseException {
 
-
-    public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
@@ -28,8 +27,8 @@ public class BoardDisplay {
 
         drawBoard(out);
 
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
+        out.print(RESET_TEXT_COLOR);
+        out.print(RESET_BG_COLOR);
     }
 
     private static void drawHeader(PrintStream out) {
@@ -50,35 +49,32 @@ public class BoardDisplay {
     private static void drawBoard(PrintStream out) {
 
         boolean colAlt = true;
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
             out.print(SET_TEXT_COLOR_WHITE);
-            out.print(" " + (boardRow + 1) + " ");
-            drawRowOfSquares(out, colAlt);
+            out.print(" " + (i + 1) + " ");
             colAlt = !colAlt;
+            for (int j = 0; j < 8; ++j) {
+
+                if(colAlt) {
+                    setLightBrown(out);
+                }
+                else {
+                    setDarkBrown(out);
+                }
+
+                out.print(EMPTY.repeat(1));
+                printPlayer(out, i, j);
+                out.print(EMPTY.repeat(1));
+
+                setBlack(out);
+                colAlt = !colAlt;
+            }
+            out.println();
         }
+
     }
 
-    private static void drawRowOfSquares(PrintStream out, boolean colAlt) {
-
-        for (int squareRow = 0; squareRow < 8; ++squareRow) {
-
-            if(colAlt) {
-                setLightBrown(out);
-            }
-            else {
-                setDarkBrown(out);
-            }
-
-            out.print(EMPTY.repeat(1));
-
-            setBlack(out);
-            colAlt = !colAlt;
-        }
-        out.println();
-    }
-
-    public List<String> printPieces() {
-
+    private static void printPlayer(PrintStream out, int i, int j) {
         // New Chess Board
         ChessBoard board = new ChessBoard();
         board.resetBoard();
@@ -92,23 +88,30 @@ public class BoardDisplay {
         pieceMapping.put(PieceType.KNIGHT, "N");
         pieceMapping.put(PieceType.PAWN, "P");
 
-        // Iterate through Board
-        List<String> rows = new ArrayList<>();
-        for(int i = 1; i <= 8; i++)
-        {
-            List<String> row = new ArrayList<>();
-            for(int j = 1; j <= 8; j++)
-            {
-                // Add Pieces for Row
-                ChessPosition pos = new ChessPosition(i, j);
-                ChessPiece chessPiece = board.getPiece(pos);
-                String piece = pieceMapping.get(chessPiece);
-                row.add(piece);
-            }
-            String rowPieces = String.join(" ", row);
-            rows.add(rowPieces);
+        // Add Pieces for Row
+        ChessPosition pos = new ChessPosition(i+1, j+1);
+        ChessPiece chessPiece = board.getPiece(pos);
+
+        if (chessPiece == null) {
+            out.print(" ");
         }
-    return rows;
+        else {
+            String piece = pieceMapping.get(chessPiece.getPieceType());
+            if (Objects.equals(teamColor, "white")) {
+                out.print(SET_TEXT_COLOR_WHITE);
+            }
+            else {
+                out.print(SET_TEXT_COLOR_BLACK);
+                if (Objects.equals(piece, "K")) {
+                    piece = "Q";
+                }
+                if (Objects.equals(piece, "Q")) {
+                    piece = "K";
+                }
+
+            }
+            out.print(piece);
+        }
     }
 
     private static void setBlack(PrintStream out) {
