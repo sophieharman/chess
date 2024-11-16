@@ -145,7 +145,7 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
-            BoardDisplay.main("white");
+            BoardDisplay.main("white"); //CHANGE THIS!!!!
             return "You have successfully joined Game " + gameID;
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");

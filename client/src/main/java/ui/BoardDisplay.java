@@ -25,7 +25,7 @@ public class BoardDisplay {
 
         drawHeader(out);
 
-        drawBoard(out);
+        drawBoard(out, teamColor);
 
         out.print(RESET_TEXT_COLOR);
         out.print(RESET_BG_COLOR);
@@ -46,7 +46,7 @@ public class BoardDisplay {
         setBlack(out);
     }
 
-    private static void drawBoard(PrintStream out) {
+    private static void drawBoard(PrintStream out, String teamColor) {
 
         boolean colAlt = true;
         for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
@@ -63,7 +63,7 @@ public class BoardDisplay {
                 }
 
                 out.print(EMPTY.repeat(1));
-                printPlayer(out, i, j);
+                printPlayer(out, i, j, teamColor);
                 out.print(EMPTY.repeat(1));
 
                 setBlack(out);
@@ -74,7 +74,7 @@ public class BoardDisplay {
 
     }
 
-    private static void printPlayer(PrintStream out, int i, int j) {
+    private static void printPlayer(PrintStream out, int i, int j, String teamColor) {
         // New Chess Board
         ChessBoard board = new ChessBoard();
         board.resetBoard();
@@ -98,7 +98,12 @@ public class BoardDisplay {
         else {
             String piece = pieceMapping.get(chessPiece.getPieceType());
             if (Objects.equals(teamColor, "white")) {
-                out.print(SET_TEXT_COLOR_WHITE);
+                if (i == 6 || i == 7) {
+                    out.print(SET_TEXT_COLOR_WHITE);
+                }
+                else {
+                    out.print(SET_TEXT_COLOR_BLACK);
+                }
             }
             else {
                 out.print(SET_TEXT_COLOR_BLACK);
