@@ -23,19 +23,26 @@ public class BoardDisplay {
 
         out.print(ERASE_SCREEN);
 
-        drawHeader(out);
+        drawHeader(out, teamColor);
 
         drawBoard(out, teamColor);
 
-        drawHeader(out);
+        drawHeader(out, teamColor);
 
         out.print(RESET_TEXT_COLOR);
         out.print(RESET_BG_COLOR);
     }
 
-    private static void drawHeader(PrintStream out) {
-        String headers = "    h  g  f  e  d  c  b  a ";
-        printHeaderText(out, headers);
+    private static void drawHeader(PrintStream out, String teamColor) {
+        String headers1 = "    a  b  c  d  e  f  g  h ";
+        String headers2 = "    h  g  f  e  d  c  b  a ";
+
+        if (teamColor == "white") {
+            printHeaderText(out, headers1);
+        }
+        else {
+            printHeaderText(out, headers2);
+        }
         out.println();
     }
 
@@ -49,8 +56,14 @@ public class BoardDisplay {
     }
 
     private static void drawBoard(PrintStream out, String teamColor) {
+        int sideHeader;
+        if (Objects.equals(teamColor, "white")) {
+            sideHeader = 8;
+        }
+        else {
+            sideHeader = 1;
+        }
 
-        int sideHeader = 8;
         boolean colAlt = false;
         for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
             out.print(SET_TEXT_COLOR_WHITE);
@@ -74,7 +87,13 @@ public class BoardDisplay {
             }
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(" " + (sideHeader) + " ");
-            sideHeader -= 1;
+            if (teamColor == "white") {
+                sideHeader -= 1;
+            }
+            else {
+                sideHeader += 1;
+            }
+
             out.println();
         }
 
