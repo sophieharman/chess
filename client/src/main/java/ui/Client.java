@@ -39,11 +39,11 @@ public class Client {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "logout" -> logout();
+                case "logout" -> logout(params);
                 case "createGame" -> createGame(params);
                 case "listGames" -> listGames(params);
                 case "joinGame" -> joinGame(params);
-                case "observeGame" -> observeGame();
+                case "observeGame" -> observeGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -68,9 +68,9 @@ public class Client {
             throw new ResponseException(400, "You must be logged out in order to log in.");
         }
         if (params.length == 2) {
-            state = State.SIGNEDIN;
             UserData userInfo = new UserData(params[0], params[1], null);
             LoginResult result = server.login(userInfo, params[1]);
+            state = State.SIGNEDIN;
             authToken = result.authToken();
             username = params[0];
             return String.format("You have successfully logged in as %s.", userInfo.username());
@@ -78,13 +78,16 @@ public class Client {
         throw new ResponseException(400, "Expected: <username> <password>");
     }
 
-    public String logout() throws ResponseException {
+    public String logout(String... params) throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must be logged in in order to log out.");
         }
-        server.logout(authToken);
-        state = State.SIGNEDOUT;
-        return "You have successfully logged out";
+        if (params.length == 0) {
+            server.logout(authToken);
+            state = State.SIGNEDOUT;
+            return "You have successfully logged out";
+        }
+        throw new ResponseException(400, "Expected: logout <>");
     }
 
     public String createGame(String... params) throws ResponseException {
@@ -145,7 +148,8 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
-            BoardDisplay.main("white"); //CHANGE THIS!!!!
+            BoardDisplay.main("black");
+            BoardDisplay.main("white");
             return "You have successfully joined Game " + gameID;
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
@@ -153,6 +157,7 @@ public class Client {
 
     public String observeGame(String... params) throws ResponseException {
         if (params.length == 1) {
+            BoardDisplay.main("black");
             BoardDisplay.main("white");
             return "You have successfully joined the game as an observer";
         }

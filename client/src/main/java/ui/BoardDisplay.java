@@ -48,7 +48,7 @@ public class BoardDisplay {
 
     private static void drawBoard(PrintStream out, String teamColor) {
 
-        boolean colAlt = true;
+        boolean colAlt = false;
         for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(" " + (i + 1) + " ");
@@ -107,11 +107,20 @@ public class BoardDisplay {
             }
             else {
                 out.print(SET_TEXT_COLOR_BLACK);
-                if (Objects.equals(piece, "K")) {
-                    piece = "Q";
+                if (Objects.equals(piece, "K")||Objects.equals(piece, "Q")) {
+                    if(Objects.equals(piece, "K")) {
+                        piece = "Q";
+                    }
+                    else {
+                        piece = "K";
+                    }
                 }
-                if (Objects.equals(piece, "Q")) {
-                    piece = "K";
+
+                if (i == 6 || i == 7) {
+                    out.print(SET_TEXT_COLOR_BLACK);
+                }
+                else {
+                    out.print(SET_TEXT_COLOR_WHITE);
                 }
 
             }
