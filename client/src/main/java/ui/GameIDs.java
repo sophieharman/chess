@@ -11,10 +11,6 @@ public class GameIDs {
         userConvert.put(gameID, userID);
     }
 
-    public Integer getUserGameID(Integer primaryID) {
-        return userConvert.get(primaryID);
-    }
-
     public Integer getPrimaryGameID(Integer userID) {
         for (Map.Entry<Integer, Integer> ids: userConvert.entrySet()) {
             if (Objects.equals(ids.getValue(), userID)) {
