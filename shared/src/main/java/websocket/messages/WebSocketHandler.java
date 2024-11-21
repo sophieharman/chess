@@ -8,7 +8,7 @@ public class WebSocketHandler {
     private final ConnectionsManager connections = new ConnectionsManager();
 
     private void join(String user, String authToken, String gameName, Integer gameID) {
-        connections.add();
+        connections.add(user);
         String message = String.format("%s joined %s", user, gameName);
         var notification = new UserGameCommand(CommandType.CONNECT, authToken, gameID);
         connections.broadcast();
