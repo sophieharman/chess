@@ -43,6 +43,11 @@ public class Client {
                 case "listGames" -> listGames(params);
                 case "joinGame" -> joinGame(params);
                 case "observeGame" -> observeGame(params);
+                case "redrawBoard" -> redrawBoard(params);
+                case "leave" -> leave(params);
+                case "makeMove" -> makeMove(params);
+                case "resign" -> resign(params);
+                case "showLegalMoves" -> showLegalMoves(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -184,6 +189,31 @@ public class Client {
             return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");
+    }
+
+    public String redrawBoard(String... params) {
+        System.out.println("Implement");
+        return "";
+    }
+
+    public String leave(String... params) {
+        System.out.println("Implement");
+        return "";
+    }
+
+    public String makeMove(String... params) {
+        System.out.println("Implement");
+        return "";
+    }
+
+    public String resign(String... params) {
+        System.out.println("Implement");
+        return "";
+    }
+
+    public String showLegalMoves(String... params) {
+        System.out.println("Implement");
+        return "";
     }
 
     public String help() {

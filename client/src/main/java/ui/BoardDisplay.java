@@ -17,6 +17,7 @@ public class BoardDisplay {
     private static final String EMPTY = " "; // Padded Characters
     private static final int BOARD_SIZE_IN_SQUARES = 8; // Board Dimensions
 
+
     public static void main(String teamColor) throws ResponseException {
 
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
@@ -34,14 +35,14 @@ public class BoardDisplay {
     }
 
     private static void drawHeader(PrintStream out, String teamColor) {
-        String headers1 = "    a  b  c  d  e  f  g  h ";
-        String headers2 = "    h  g  f  e  d  c  b  a ";
+        String whiteHeader = "    a  b  c  d  e  f  g  h ";
+        String blackHeader = "    h  g  f  e  d  c  b  a ";
 
-        if (teamColor == "white") {
-            printHeaderText(out, headers1);
+        if (Objects.equals(teamColor, "white")) {
+            printHeaderText(out, whiteHeader);
         }
         else {
-            printHeaderText(out, headers2);
+            printHeaderText(out, blackHeader);
         }
         out.println();
     }
