@@ -1,13 +1,12 @@
-package websocket.messages;
-
+package server;
 import org.eclipse.jetty.websocket.api.Session;
 
 public class Connections {
 
     public Session session;
 
-    public void Connections() {
-        System.out.println("Implement");
+    public Connections(Session session) {
+        this.session = session;
     }
 
     public void send() {
