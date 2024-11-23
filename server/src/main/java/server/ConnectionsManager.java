@@ -2,7 +2,10 @@ package server;
 
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import websocket.messages.ServerMessage;
 
 public class ConnectionsManager {
 
@@ -17,9 +20,9 @@ public class ConnectionsManager {
         connections.remove(user);
     }
 
-    public void broadcast() {
+    public void broadcast(ServerMessage msg) throws IOException {
         for(var c: connections.values()) {
-            c.send();
+            c.send(msg.toString());
         }
     }
 }
