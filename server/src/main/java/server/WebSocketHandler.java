@@ -3,8 +3,6 @@ package server;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import websocket.commands.UserGameCommand;
-import websocket.commands.UserGameCommand.CommandType;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -27,6 +25,3 @@ public class WebSocketHandler {
         System.out.println(msg);
     }
 }
-
-
-

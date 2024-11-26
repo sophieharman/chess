@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import exception.ResponseException;
 import model.*;
 
@@ -7,6 +8,8 @@ import java.util.*;
 
 public class Client {
 
+    BoardDisplay display = new BoardDisplay();
+    ChessBoard board = new ChessBoard();
     boolean listGamesCalled = false;
     GameIDs ids = new GameIDs();
     GameInfo gameInfo = new GameInfo();
@@ -161,8 +164,8 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
-            BoardDisplay.main("black");
-            BoardDisplay.main("white");
+            display.main(board, "black");
+            display.main(board,"white");
             return "You have successfully joined Game " + gameID;
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
@@ -183,9 +186,9 @@ public class Client {
             if (primaryID == null) {
                 throw new ResponseException(404, "Error: Game ID not found");
             }
-
-            BoardDisplay.main("black");
-            BoardDisplay.main("white");
+            board.resetBoard();
+            display.main(board, "black");
+            display.main(board,"white");
             return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");
@@ -198,7 +201,7 @@ public class Client {
 
     public String leave(String... params) {
         System.out.println("Implement");
-        return "";
+        return "You've left the game.";
     }
 
     public String makeMove(String... params) {
@@ -208,7 +211,7 @@ public class Client {
 
     public String resign(String... params) {
         System.out.println("Implement");
-        return "";
+        return "Game Over. You’ve forfeited the game.";
     }
 
     public String showLegalMoves(String... params) {

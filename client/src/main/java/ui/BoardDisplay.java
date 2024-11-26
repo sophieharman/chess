@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.ChessPiece.PieceType;
@@ -13,12 +14,25 @@ import static ui.EscapeSequences.*;
 
 public class BoardDisplay {
 
+    private boolean white;
     private static String teamColor;
     private static final String EMPTY = " "; // Padded Characters
     private static final int BOARD_SIZE_IN_SQUARES = 8; // Board Dimensions
+    public ChessBoard board = new ChessBoard();
 
 
-    public static void main(String teamColor) throws ResponseException {
+    public void main(ChessBoard newBoard, String teamColor) throws ResponseException {
+
+        // Update Board
+        board = newBoard;
+
+        if (Objects.equals(teamColor, "white")) {
+            this.white = true;
+        }
+        else{
+            this.white = false;
+        }
+
 
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -56,7 +70,7 @@ public class BoardDisplay {
         setBlack(out);
     }
 
-    private static void drawBoard(PrintStream out, String teamColor) {
+    private void drawBoard(PrintStream out, String teamColor) {
         int sideHeader;
         if (Objects.equals(teamColor, "white")) {
             sideHeader = 8;
@@ -65,12 +79,17 @@ public class BoardDisplay {
             sideHeader = 1;
         }
 
+        int start = white ? 1 : 8;
+        int stop = white ? 9 : 0;
+        int step = white ? 1 : -1;
+        white = !white;
+
         boolean colAlt = false;
-        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
+        for (int i = start; i != stop; i += step) {
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(" " + (sideHeader) + " ");
             colAlt = !colAlt;
-            for (int j = 0; j < 8; ++j) {
+            for (int j = start; j != stop; j += step) {
 
                 if(colAlt) {
                     setLightBrown(out);
@@ -80,7 +99,7 @@ public class BoardDisplay {
                 }
 
                 out.print(EMPTY.repeat(1));
-                printPlayer(out, i, j, teamColor);
+                printPlayer(out, i, j);
                 out.print(EMPTY.repeat(1));
 
                 setBlack(out);
@@ -88,22 +107,14 @@ public class BoardDisplay {
             }
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(" " + (sideHeader) + " ");
-            if (teamColor == "white") {
-                sideHeader -= 1;
-            }
-            else {
-                sideHeader += 1;
-            }
+            sideHeader -= step;
 
             out.println();
         }
 
     }
 
-    private static void printPlayer(PrintStream out, int i, int j, String teamColor) {
-        // New Chess Board
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
+    private void printPlayer(PrintStream out, int i, int j) {
 
         // Piece Mappings
         Map<PieceType, String> pieceMapping = new HashMap<>();
@@ -115,40 +126,21 @@ public class BoardDisplay {
         pieceMapping.put(PieceType.PAWN, "P");
 
         // Add Pieces for Row
-        ChessPosition pos = new ChessPosition(i+1, j+1);
+        ChessPosition pos = new ChessPosition(i, j);
         ChessPiece chessPiece = board.getPiece(pos);
+
 
         if (chessPiece == null) {
             out.print(" ");
         }
         else {
             String piece = pieceMapping.get(chessPiece.getPieceType());
-            if (Objects.equals(teamColor, "white")) {
-                if (i == 6 || i == 7) {
-                    out.print(SET_TEXT_COLOR_WHITE);
-                }
-                else {
-                    out.print(SET_TEXT_COLOR_BLACK);
-                }
+            ChessGame.TeamColor pieceColor = chessPiece.getTeamColor();
+            if (pieceColor == ChessGame.TeamColor.WHITE) {
+                out.print(SET_TEXT_COLOR_WHITE);
             }
             else {
                 out.print(SET_TEXT_COLOR_BLACK);
-                if (Objects.equals(piece, "K")||Objects.equals(piece, "Q")) {
-                    if(Objects.equals(piece, "K")) {
-                        piece = "Q";
-                    }
-                    else {
-                        piece = "K";
-                    }
-                }
-
-                if (i == 6 || i == 7) {
-                    out.print(SET_TEXT_COLOR_BLACK);
-                }
-                else {
-                    out.print(SET_TEXT_COLOR_WHITE);
-                }
-
             }
             out.print(piece);
         }
