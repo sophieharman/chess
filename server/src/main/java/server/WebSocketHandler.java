@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.messages.LoadGame;
 import websocket.messages.ServerMessage;
 import static websocket.messages.ServerMessage.ServerMessageType;
 import static websocket.messages.ServerMessage.ServerMessageType.LOAD_GAME;
@@ -68,7 +70,7 @@ public class WebSocketHandler {
         }
     }
 
-    public void connect(String user, GameData game, Session session) throws IOException {
+    public void connect(String user, GameData gameData, Session session) throws IOException {
 
         // Determine Player v. Observer (LATER)
 
@@ -77,10 +79,12 @@ public class WebSocketHandler {
         connections.add(user, session);
 
         // Send Root Message
-        connections.sendRootMessage(LOAD_GAME, user, game, session);
+
+        LoadGame loadGameMessage = new LoadGame(LOAD_GAME, new ChessGame());
+        connections.sendRootMessage(loadGameMessage, user, gameData, session);
 
         // Send Other Players Message
-        connections.sendOthersMessage(NOTIFICATION, user, game, session);
+        connections.sendOthersMessage(NOTIFICATION, user, gameData, session);
     }
 
 }
