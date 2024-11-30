@@ -6,13 +6,16 @@ import model.*;
 import service.Service;
 import service.ServiceException;
 import spark.*;
+import websocket.commands.UserGameCommand;
 
 public class Server {
+
 
     private AuthDAO authDAO;
     private GameDAO gameDAO;
     private UserDAO userDAO;
     private Service service;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         try{
@@ -23,6 +26,8 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+
+        webSocketHandler = new WebSocketHandler(authDAO, gameDAO, userDAO);
     }
 
     public int run(int desiredPort) {
@@ -30,7 +35,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-//        Spark.webSocket("/ws", new WebSocketHandler());
+        Spark.webSocket("/ws", new WebSocketHandler(authDAO, gameDAO, userDAO));
 
         //This line initializes the server and can be removed once you have a functioning endpoint
         Spark.post("/user", this::register);
@@ -113,11 +118,7 @@ public class Server {
 
     public Object joinGame(Request req, Response res) throws ServiceException, DataAccessException {
 
-//        GameData gameData = new Gson().fromJson(req.body(), GameData.class);
-//        UserData userData = new Gson().fromJson(req.body(), UserData.class);
-
         JoinGameData joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
-
         String authToken = req.headers("Authorization");
 
         // Join Game

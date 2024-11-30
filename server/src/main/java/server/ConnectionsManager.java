@@ -1,5 +1,6 @@
 package server;
 
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 
@@ -12,7 +13,7 @@ public class ConnectionsManager {
     public final ConcurrentHashMap<String, Connections> connections = new ConcurrentHashMap<>();
 
     public void add(String user, Session session) {
-        var connection = new Connections(session);
+        var connection = new Connections(session, user);
         connections.put(user, connection);
     }
 
@@ -20,9 +21,37 @@ public class ConnectionsManager {
         connections.remove(user);
     }
 
-    public void broadcast(ServerMessage msg) throws IOException {
-        for(var c: connections.values()) {
-            c.send(msg.toString());
+    public void sendRootMessage(ServerMessage.ServerMessageType msgType, String username, GameData game, Session session) {
+        ServerMessage serverMessage = new ServerMessage(msgType);
+        String msg = serverMessage.notificationMessage("You", game.gameName());
+
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.username.equals(username)) {
+                    try {
+                        c.send(msg);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
+
+    public void sendOthersMessage(ServerMessage.ServerMessageType msgType, String username, GameData game, Session session) throws IOException {
+        ServerMessage serverMessage = new ServerMessage(msgType);
+        String msg = serverMessage.notificationMessage(username, game.gameName());
+
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (!c.username.equals(username)) {
+                    try {
+                        c.send(msg);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         }
     }
 }
