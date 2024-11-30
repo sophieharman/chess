@@ -1,8 +1,11 @@
 package websocket.messages;
 
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.SQLOutput;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -13,7 +16,7 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String user;
+    String message;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -26,10 +29,10 @@ public class ServerMessage {
 
     }
 
-//    public ServerMessage(ServerMessageType type, String user) {
-//        this.serverMessageType = type;
-//        this.user = user;
-//    }
+    public ServerMessage(ServerMessageType type, String message) {
+        this.serverMessageType = type;
+        this.message = message;
+    }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
@@ -45,9 +48,9 @@ public class ServerMessage {
         return "";
     }
 
-    public String notificationMessage(String username, String gameName) {
-        String message = String.format("%s joined %s", username, gameName);
-        return message;
+
+    public void notificationMessage(String username, String gameName) {
+        this.message = String.format("%s joined %s", username, gameName);
     }
 
     @Override

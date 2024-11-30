@@ -3,7 +3,9 @@ package server;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import exception.ResponseException;
 import model.GameData;
+import service.BadRequestException;
 import service.Service;
 import service.UnauthorizedException;
 import websocket.commands.UserGameCommand;
@@ -31,6 +33,9 @@ public class WebSocketHandler {
     private final ConnectionsManager connections = new ConnectionsManager();
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+        this.userDAO = userDAO;
     }
 
     @OnWebSocketMessage
@@ -42,13 +47,20 @@ public class WebSocketHandler {
         String authToken = action.getAuthToken();
         Integer gameID = action.getGameID();
         String user = authDAO.getUser(authToken);
-        GameData game = gameDAO.getGame(gameID);
-        String gameName = game.gameName();
 
         // Verify Authentication
         if (user == null) {
             throw new UnauthorizedException();
         }
+
+        // Verify GameID
+        GameData game = gameDAO.getGame(gameID);
+
+        if (game == null) {
+            throw new BadRequestException();
+        }
+
+        String gameName = game.gameName();
 
 
         switch (action.getCommandType()) {

@@ -1,5 +1,6 @@
 package server;
 
+import com.google.gson.Gson;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
@@ -23,13 +24,13 @@ public class ConnectionsManager {
 
     public void sendRootMessage(ServerMessage.ServerMessageType msgType, String username, GameData game, Session session) {
         ServerMessage serverMessage = new ServerMessage(msgType);
-        String msg = serverMessage.notificationMessage("You", game.gameName());
+        serverMessage.notificationMessage("You", game.gameName());
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.username.equals(username)) {
                     try {
-                        c.send(msg);
+                        c.send(new Gson().toJson(serverMessage));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -40,13 +41,13 @@ public class ConnectionsManager {
 
     public void sendOthersMessage(ServerMessage.ServerMessageType msgType, String username, GameData game, Session session) throws IOException {
         ServerMessage serverMessage = new ServerMessage(msgType);
-        String msg = serverMessage.notificationMessage(username, game.gameName());
+        serverMessage.notificationMessage(username, game.gameName());
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.username.equals(username)) {
                     try {
-                        c.send(msg);
+                        c.send(new Gson().toJson(serverMessage));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
