@@ -22,7 +22,7 @@ public class ConnectionsManager {
         connections.remove(user);
     }
 
-    public void sendRootMessage(ServerMessage msgType, String username, GameData game, Session session) {
+    public void sendRootMessage(ServerMessage msgType, String username, Session session) {
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
@@ -37,7 +37,7 @@ public class ConnectionsManager {
         }
     }
 
-    public void sendOthersMessage(ServerMessage msgType, String username, GameData game, Session session) throws IOException {
+    public void sendOthersMessage(ServerMessage msgType, String username, Session session) throws IOException {
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
