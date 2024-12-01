@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String message;
+//    String message;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -31,7 +31,7 @@ public class ServerMessage {
 
     public ServerMessage(ServerMessageType type, String message) {
         this.serverMessageType = type;
-        this.message = message;
+//        this.message = message;
     }
 
     public ServerMessageType getServerMessageType() {
@@ -48,10 +48,9 @@ public class ServerMessage {
         return "";
     }
 
-
-    public void notificationMessage(String username, String gameName) {
-        this.message = String.format("%s joined %s", username, gameName);
-    }
+//    public void notificationMessage(String username, String gameName) {
+//        this.message = String.format("%s joined %s", username, gameName);
+//    }
 
     @Override
     public boolean equals(Object o) {

@@ -16,10 +16,11 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.messages.LoadGame;
+import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import static websocket.messages.ServerMessage.ServerMessageType;
-import static websocket.messages.ServerMessage.ServerMessageType.LOAD_GAME;
-import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
+import static websocket.messages.ServerMessage.ServerMessageType.*;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -52,6 +53,8 @@ public class WebSocketHandler {
 
         // Verify Authentication
         if (user == null) {
+            // Error Message!!!!!
+//            connections.sendRootMessage(ERROR, user, gameData, session);
             throw new UnauthorizedException();
         }
 
@@ -74,17 +77,17 @@ public class WebSocketHandler {
 
         // Determine Player v. Observer (LATER)
 
-
         // Register Connection
         connections.add(user, session);
 
         // Send Root Message
-
-        LoadGame loadGameMessage = new LoadGame(LOAD_GAME, new ChessGame());
-        connections.sendRootMessage(loadGameMessage, user, gameData, session);
+        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame()); // FIX THIS
+        connections.sendRootMessage(loadGame, user, gameData, session);
 
         // Send Other Players Message
-        connections.sendOthersMessage(NOTIFICATION, user, gameData, session);
+        String message = "Message HERE!";
+        Notification notification = new Notification(NOTIFICATION, message);
+        connections.sendOthersMessage(notification, user, gameData, session);
     }
 
 }

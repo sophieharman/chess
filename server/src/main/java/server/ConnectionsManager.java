@@ -23,8 +23,6 @@ public class ConnectionsManager {
     }
 
     public void sendRootMessage(ServerMessage msgType, String username, GameData game, Session session) {
-//        ServerMessage serverMessage = new ServerMessage(msgType);
-//        serverMessage.notificationMessage("You", game.gameName());
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
@@ -39,15 +37,13 @@ public class ConnectionsManager {
         }
     }
 
-    public void sendOthersMessage(ServerMessage.ServerMessageType msgType, String username, GameData game, Session session) throws IOException {
-        ServerMessage serverMessage = new ServerMessage(msgType);
-        serverMessage.notificationMessage(username, game.gameName());
+    public void sendOthersMessage(ServerMessage msgType, String username, GameData game, Session session) throws IOException {
 
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.username.equals(username)) {
                     try {
-                        c.send(new Gson().toJson(serverMessage));
+                        c.send(new Gson().toJson(msgType));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
