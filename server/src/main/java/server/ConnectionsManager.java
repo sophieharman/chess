@@ -22,19 +22,20 @@ public class ConnectionsManager {
         connections.remove(user);
     }
 
-    public void sendRootMessage(ServerMessage msgType, String username, Session session) {
+    public void sendRootMessage(ServerMessage msgType, String username, Session session) throws IOException {
 
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (c.username.equals(username)) {
-                    try {
-                        c.send(new Gson().toJson(msgType));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
+        session.getRemote().sendString(new Gson().toJson(msgType));
+//        for (var c : connections.values()) {
+//            if (c.session.isOpen()) {
+//                if (c.username.equals(username)) {
+//                    try {
+//                        c.send(new Gson().toJson(msgType));
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }
     }
 
     public void sendOthersMessage(ServerMessage msgType, String username, Session session) throws IOException {

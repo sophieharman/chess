@@ -65,12 +65,12 @@ public class WebSocketHandler {
         // Verify GameID
         GameData gameData = gameDAO.getGame(gameID);
 
-//        if (gameData.game() == null) {
-//            String message =  "Message HERE!";
-//            ErrorMessage error = new ErrorMessage(ERROR, message);
-//            connections.sendRootMessage(error, user, session);
-//            return;
-//        }
+        if (gameData == null) {
+            String message =  "Error: Message HERE!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendRootMessage(error, user, session);
+            return;
+        }
 
         switch (action.getCommandType()) {
             case CommandType.CONNECT -> connect(user, gameData, session);
