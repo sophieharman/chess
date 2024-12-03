@@ -39,6 +39,20 @@ public class ConnectionsManager {
         session.getRemote().sendString(new Gson().toJson(msgType));
     }
 
+    public void sendIndividualMessage(ServerMessage msgType, String username, Session session) {
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.username.equals(username)) {
+                    try {
+                        c.send(new Gson().toJson(msgType));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
+
     public void sendOthersMessage(ServerMessage msgType, String username, Session session) throws IOException {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
