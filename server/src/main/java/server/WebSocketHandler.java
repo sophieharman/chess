@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -9,6 +11,8 @@ import model.GameData;
 import service.BadRequestException;
 import service.Service;
 import service.UnauthorizedException;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
 import websocket.commands.UserGameCommand.CommandType;
 import com.google.gson.Gson;
@@ -56,27 +60,27 @@ public class WebSocketHandler {
         if (user == null) {
             String message =  "Message HERE!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-            connections.sendRootMessage(error, user, session);
+            connections.sendRootMessage(error, session);
         }
-
-        // Register Connection
-        connections.add(user, session);
 
         // Verify GameID
         GameData gameData = gameDAO.getGame(gameID);
-
         if (gameData == null) {
             String message =  "Error: Message HERE!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-            connections.sendRootMessage(error, user, session);
+            connections.sendRootMessage(error, session);
             return;
         }
 
+        // Register Connection
+        connections.add(user, gameData.gameID(), session);
+
+
         switch (action.getCommandType()) {
             case CommandType.CONNECT -> connect(user, gameData, session);
-            case CommandType.MAKE_MOVE -> makeMove(user, gameData, session);
+            case CommandType.MAKE_MOVE -> makeMove(new Gson().fromJson(msg, MakeMoveCommand.class), user, gameData, session);
             case CommandType.LEAVE -> leave();
-            case CommandType.RESIGN -> resign();
+            case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class));
         }
     }
 
@@ -86,7 +90,7 @@ public class WebSocketHandler {
 
         // Send Root Message
         LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame()); // FIX THIS
-        connections.sendRootMessage(loadGame, user, session);
+        connections.sendRootMessage(loadGame, session);
 
         // Send Other Players Message
         String message = "Message HERE!";
@@ -94,32 +98,27 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
-    public void makeMove(String user, GameData gameData, Session session) throws IOException {
+    public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException {
 
-        // Load Game for White and Black
-        String whiteUser = gameData.whiteUsername();
-        String blackUser = gameData.blackUsername();
-        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame()); // FIX THIS
-        connections.sendRootMessage(loadGame, whiteUser, session);
-        connections.sendRootMessage(loadGame, blackUser, session);
+        // Update Board with Chess Move
+        ChessMove move = makeMove.getMove();
+        gameData.game().makeMove(move);
 
-        // Load Game for Observers
+        // Load Game for Game Participants
+        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame());
+        connections.sendGameParticipantsMessage(loadGame, gameData.gameID());
 
         // Send Notification to White and Black Player
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
-        connections.sendRootMessage(notification, user, session);
-        connections.sendRootMessage(notification, user, session);
-
-        // Send Notification to Observer
-
+        connections.sendGameParticipantsMessage(notification, gameData.gameID());
     }
 
     public void leave() {
         System.out.println("Implement");
     }
 
-    public void resign() {
+    public void resign(ResignCommand resign) {
         System.out.println("Implement");
     }
 
