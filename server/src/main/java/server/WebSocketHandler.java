@@ -103,15 +103,17 @@ public class WebSocketHandler {
         // Update Board with Chess Move
         ChessGame game = gameData.game();
         ChessMove move = makeMove.getMove();
-        if (game.validMoves(move.getStartPosition()).contains(move)) {
-            game.makeMove(move);
+        if (game != null) {
+            if (game.validMoves(move.getStartPosition()).contains(move)) {
+                game.makeMove(move);
+            }
         }
 
         // Load Game for Game Participants
         LoadGame loadGame = new LoadGame(LOAD_GAME, game);
         connections.sendGameParticipantsMessage(loadGame, gameData.gameID());
 
-        // Send Notification to White and Black Player
+        // Send Notification to Game Participants
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
         connections.sendGameParticipantsMessage(notification, gameData.gameID());

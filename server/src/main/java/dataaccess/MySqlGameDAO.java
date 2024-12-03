@@ -29,11 +29,12 @@ public class MySqlGameDAO implements GameDAO {
                 Integer gameID = random.nextInt(100_000_000, 1_000_000_000);
 
                 // New Game Data
+                ChessGame newGame = new ChessGame();
                 ps.setInt(1, gameID);
                 ps.setString(2, null);
                 ps.setString(3, null);
                 ps.setString(4, gameName);
-                ps.setString(5, null);
+                ps.setString(5, new Gson().toJson(newGame));
                 ps.executeUpdate();
                 return gameID;
             }
