@@ -79,7 +79,7 @@ public class WebSocketHandler {
         switch (action.getCommandType()) {
             case CommandType.CONNECT -> connect(user, gameData, session);
             case CommandType.MAKE_MOVE -> makeMove(new Gson().fromJson(msg, MakeMoveCommand.class), user, gameData, session);
-            case CommandType.LEAVE -> leave();
+            case CommandType.LEAVE -> leave(user, session);
             case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class));
         }
     }
@@ -101,11 +101,14 @@ public class WebSocketHandler {
     public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException {
 
         // Update Board with Chess Move
+        ChessGame game = gameData.game();
         ChessMove move = makeMove.getMove();
-        gameData.game().makeMove(move);
+        if (game.validMoves(move.getStartPosition()).contains(move)) {
+            game.makeMove(move);
+        }
 
         // Load Game for Game Participants
-        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame());
+        LoadGame loadGame = new LoadGame(LOAD_GAME, game);
         connections.sendGameParticipantsMessage(loadGame, gameData.gameID());
 
         // Send Notification to White and Black Player
@@ -114,8 +117,13 @@ public class WebSocketHandler {
         connections.sendGameParticipantsMessage(notification, gameData.gameID());
     }
 
-    public void leave() {
-        System.out.println("Implement");
+    public void leave(String user, Session session) throws IOException {
+        connections.remove(user);
+
+        // Send Other Players Message
+        String message = "Message HERE!";
+        Notification notification = new Notification(NOTIFICATION, message);
+        connections.sendOthersMessage(notification, user, session);
     }
 
     public void resign(ResignCommand resign) {
