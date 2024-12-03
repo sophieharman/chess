@@ -8,6 +8,7 @@ import websocket.commands.UserGameCommand;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import websocket.messages.ServerMessage;
 
@@ -52,7 +53,7 @@ public class ConnectionsManager {
         }
     }
 
-    public void sendGameParticipantsMessage(ServerMessage msgType, Integer gameID) {
+    public void sendGameParticipantsMessage(ServerMessage msgType, Integer gameID, String playerMoved) {
 
         HashSet<String> players = gameConnections.get(gameID);
 
@@ -61,7 +62,9 @@ public class ConnectionsManager {
 
                 if (players.contains(c.username)) {
                     try {
+                        if (!Objects.equals(c.username, playerMoved)){
                         c.send(new Gson().toJson(msgType));
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

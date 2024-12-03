@@ -111,12 +111,22 @@ public class WebSocketHandler {
 
         // Load Game for Game Participants
         LoadGame loadGame = new LoadGame(LOAD_GAME, game);
-        connections.sendGameParticipantsMessage(loadGame, gameData.gameID());
+        connections.sendGameParticipantsMessage(loadGame, gameData.gameID(),null);
+
+        // Determine Player who Moved
+        String playerMoved;
+        ChessGame.TeamColor color = game.getTeamTurn();
+        if (color == ChessGame.TeamColor.WHITE) {
+            playerMoved = gameData.blackUsername();
+        }
+        else {
+            playerMoved = gameData.whiteUsername();
+        }
 
         // Send Notification to Game Participants
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
-        connections.sendGameParticipantsMessage(notification, gameData.gameID());
+        connections.sendGameParticipantsMessage(notification, gameData.gameID(), playerMoved);
     }
 
     public void leave(String user, Session session) throws IOException {
