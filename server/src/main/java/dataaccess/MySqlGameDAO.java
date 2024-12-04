@@ -63,6 +63,10 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
+    public void updateGame() {
+        System.out.println("IMPLEMENT!!!!");
+    }
+
     public void addGame(GameData gameInfo) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";

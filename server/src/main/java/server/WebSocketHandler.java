@@ -8,6 +8,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import exception.ResponseException;
+import model.AuthData;
 import model.GameData;
 import service.BadRequestException;
 import service.Service;
@@ -28,7 +29,7 @@ import static websocket.messages.ServerMessage.ServerMessageType;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 import java.io.IOException;
 import java.util.Map;
-
+import java.util.Objects;
 
 
 @WebSocket
@@ -80,7 +81,7 @@ public class WebSocketHandler {
             case CommandType.CONNECT -> connect(user, gameData, session);
             case CommandType.MAKE_MOVE -> makeMove(new Gson().fromJson(msg, MakeMoveCommand.class), user, gameData, session);
             case CommandType.LEAVE -> leave(user, session);
-            case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class));
+            case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class), session);
         }
     }
 
@@ -98,7 +99,7 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
-    public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException {
+    public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException, DataAccessException {
 
         // Update Board with Chess Move
         ChessGame game = gameData.game();
@@ -106,13 +107,22 @@ public class WebSocketHandler {
 
         // Determine Player who Moved
         String playerMoved;
-        boolean white;
+        String wrongPlayer;
         ChessGame.TeamColor color = game.getTeamTurn();
         if (color == ChessGame.TeamColor.WHITE) {
             playerMoved = gameData.whiteUsername();
+            wrongPlayer = gameData.blackUsername();
         }
         else {
             playerMoved = gameData.blackUsername();
+            wrongPlayer = gameData.whiteUsername();
+        }
+
+        if ((Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.BLACK) || (Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.WHITE)) {
+            String message = "Message HERE!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendIndividualMessage(error, wrongPlayer, session);
+            return;
         }
 
         if (!game.gameOver()) {
@@ -126,12 +136,6 @@ public class WebSocketHandler {
                 connections.sendIndividualMessage(error, playerMoved, session);
                 return;
             }
-
-//            if (ChessGame.TeamColor.BLACK == color || ChessGame.TeamColor.WHITE == color) {
-//                String message = "Message HERE!";
-//                ErrorMessage error = new ErrorMessage(ERROR, message);
-//                connections.sendIndividualMessage(error, playerMoved, session);
-//            }
 
             // Load Game for Game Participants
             LoadGame loadGame = new LoadGame(LOAD_GAME, game);
@@ -161,19 +165,32 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
-    public void resign(ResignCommand resign) throws DataAccessException {
+    public void resign(ResignCommand resign, Session session) throws DataAccessException, IOException {
 
         // Grab Game
         Integer gameID = resign.getGameID();
         GameData gameData = gameDAO.getGame(gameID);
 
-        // Resign
-        gameData.game().resign();
+        if (!gameData.game().gameOver()) {
 
-        // Send Notification Message to Game Participants
-        String message = "Message HERE!";
-        Notification notification = new Notification(NOTIFICATION, message);
-        connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
+            // Resign
+            gameData.game().resign();
+
+            // Send Notification Message to Game Participants
+            String message = "Message HERE!";
+            Notification notification = new Notification(NOTIFICATION, message);
+            connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
+
+            // Update Database
+            // gameDAO.updateGame();
+
+        }
+        else {
+            String message = "Message HERE!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendRootMessage(error, session);
+
+        }
 
     }
 
