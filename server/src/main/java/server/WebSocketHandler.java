@@ -99,11 +99,24 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
+    public boolean player(String user, GameData gameData) {
+        // Determine whether User is a Player or Observer
+        return Objects.equals(user, gameData.whiteUsername()) || Objects.equals(user, gameData.blackUsername());
+    }
+
     public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException, DataAccessException {
 
         // Update Board with Chess Move
         ChessGame game = gameData.game();
         ChessMove move = makeMove.getMove();
+
+        // Verify User is a Player and Not an Observer
+        if (!player(user, gameData)) {
+            String message = "Message HERE!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendIndividualMessage(error, user, session);
+            return;
+        }
 
         // Determine Player who Moved
         String playerMoved;
@@ -118,7 +131,7 @@ public class WebSocketHandler {
             wrongPlayer = gameData.whiteUsername();
         }
 
-        if ((Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.BLACK) || (Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.WHITE)) {
+        if ((Objects.equals(wrongPlayer, gameData.blackUsername()) && color==ChessGame.TeamColor.BLACK) || (Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.WHITE)) {
             String message = "Message HERE!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, wrongPlayer, session);
