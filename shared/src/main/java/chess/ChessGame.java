@@ -13,6 +13,7 @@ import java.util.HashSet;
 public class ChessGame
 {
     private boolean whiteTurn = true;
+    private boolean gameOver = false;
     private ChessBoard board = new ChessBoard();
     private ChessBoard boardCloned = new ChessBoard();
 
@@ -290,7 +291,11 @@ public class ChessGame
         Collection<ChessMove> valid = collectValidMoves(teamColor);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && isInCheck(teamColor);
+        if (valid.isEmpty() && isInCheck(teamColor)) {
+            gameOver = true;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -305,7 +310,19 @@ public class ChessGame
         Collection<ChessMove> valid = collectValidMoves(teamColor);
 
         // Check if King is in Under Attack and Able to Escape
-        return valid.isEmpty() && !danger(board, teamColor);
+        if (valid.isEmpty() && !danger(board, teamColor)) {
+            gameOver = true;
+            return true;
+        }
+        return false;
+    }
+
+    public void resign() {
+        gameOver = true;
+    }
+
+    public boolean gameOver() {
+        return gameOver;
     }
 
     public boolean danger(ChessBoard boardCopy, TeamColor teamColor)

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import exception.ResponseException;
@@ -25,7 +26,6 @@ import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 import static websocket.messages.ServerMessage.ServerMessageType;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -106,6 +106,7 @@ public class WebSocketHandler {
 
         // Determine Player who Moved
         String playerMoved;
+        boolean white;
         ChessGame.TeamColor color = game.getTeamTurn();
         if (color == ChessGame.TeamColor.WHITE) {
             playerMoved = gameData.whiteUsername();
@@ -114,9 +115,23 @@ public class WebSocketHandler {
             playerMoved = gameData.blackUsername();
         }
 
+        if (!game.gameOver()) {
 
-        if (game.validMoves(move.getStartPosition()).contains(move)) {
-            game.makeMove(move);
+            if (game.validMoves(move.getStartPosition()).contains(move)) {
+                game.makeMove(move);
+            }
+            else {
+                String message = "Message HERE!";
+                ErrorMessage error = new ErrorMessage(ERROR, message);
+                connections.sendIndividualMessage(error, playerMoved, session);
+                return;
+            }
+
+//            if (ChessGame.TeamColor.BLACK == color || ChessGame.TeamColor.WHITE == color) {
+//                String message = "Message HERE!";
+//                ErrorMessage error = new ErrorMessage(ERROR, message);
+//                connections.sendIndividualMessage(error, playerMoved, session);
+//            }
 
             // Load Game for Game Participants
             LoadGame loadGame = new LoadGame(LOAD_GAME, game);
@@ -130,7 +145,9 @@ public class WebSocketHandler {
         else {
             String message = "Message HERE!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-            connections.sendIndividualMessage(error, playerMoved, session);
+//            connections.sendIndividualMessage(error, playerMoved, session);
+//            connections.sendGameParticipantsMessage(error, gameData.gameID(), null);
+            connections.sendOthersMessage(error, null, session);
         }
 
     }
@@ -144,8 +161,20 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
-    public void resign(ResignCommand resign) {
-        System.out.println("Implement");
+    public void resign(ResignCommand resign) throws DataAccessException {
+
+        // Grab Game
+        Integer gameID = resign.getGameID();
+        GameData gameData = gameDAO.getGame(gameID);
+
+        // Resign
+        gameData.game().resign();
+
+        // Send Notification Message to Game Participants
+        String message = "Message HERE!";
+        Notification notification = new Notification(NOTIFICATION, message);
+        connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
+
     }
 
 }
