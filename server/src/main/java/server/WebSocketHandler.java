@@ -81,13 +81,11 @@ public class WebSocketHandler {
             case CommandType.CONNECT -> connect(user, gameData, session);
             case CommandType.MAKE_MOVE -> makeMove(new Gson().fromJson(msg, MakeMoveCommand.class), user, gameData, session);
             case CommandType.LEAVE -> leave(user, session);
-            case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class), session);
+            case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class), user, session);
         }
     }
 
     public void connect(String user, GameData gameData, Session session) throws IOException {
-
-        // Determine Player v. Observer (LATER)
 
         // Send Root Message
         LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame()); // FIX THIS
@@ -131,7 +129,7 @@ public class WebSocketHandler {
             wrongPlayer = gameData.whiteUsername();
         }
 
-        if ((Objects.equals(wrongPlayer, gameData.blackUsername()) && color==ChessGame.TeamColor.BLACK) || (Objects.equals(wrongPlayer, gameData.whiteUsername()) && color==ChessGame.TeamColor.WHITE)) {
+        if (!Objects.equals(playerMoved, user)) {
             String message = "Message HERE!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, wrongPlayer, session);
@@ -170,6 +168,7 @@ public class WebSocketHandler {
     }
 
     public void leave(String user, Session session) throws IOException {
+
         connections.remove(user);
 
         // Send Other Players Message
@@ -178,11 +177,19 @@ public class WebSocketHandler {
         connections.sendOthersMessage(notification, user, session);
     }
 
-    public void resign(ResignCommand resign, Session session) throws DataAccessException, IOException {
+    public void resign(ResignCommand resign, String user, Session session) throws DataAccessException, IOException {
 
         // Grab Game
         Integer gameID = resign.getGameID();
         GameData gameData = gameDAO.getGame(gameID);
+
+        // Verify User is a Player and Not an Observer
+        if (!player(user, gameData)) {
+            String message = "Message HERE!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendIndividualMessage(error, user, session);
+            return;
+        }
 
         if (!gameData.game().gameOver()) {
 
@@ -195,7 +202,7 @@ public class WebSocketHandler {
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
 
             // Update Database
-            // gameDAO.updateGame();
+             gameDAO.updateGame(gameData);
 
         }
         else {

@@ -28,6 +28,11 @@ public class MemoryGameDAO implements GameDAO{
         games.put(game.gameID(), game);
     }
 
+    @Override
+    public void updateGame(GameData gameData) throws DataAccessException {
+        games.put(gameData.gameID(), gameData);
+    }
+
     public Collection<GameData> listGames() {
         // Return a Collection instead of map (for future phases) (games.values())
         return games.values();

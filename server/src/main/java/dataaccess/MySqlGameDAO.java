@@ -63,8 +63,19 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
-    public void updateGame() {
-        System.out.println("IMPLEMENT!!!!");
+    public void updateGame(GameData gameData) throws DataAccessException {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SET game=? where gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                // Update Game Data
+                ps.setInt(1, gameData.gameID());
+                ps.setString(2, new Gson().toJson(gameData.game()));
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public void addGame(GameData gameInfo) throws DataAccessException {
