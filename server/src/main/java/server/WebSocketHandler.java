@@ -7,12 +7,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import exception.ResponseException;
-import model.AuthData;
 import model.GameData;
-import service.BadRequestException;
 import service.Service;
-import service.UnauthorizedException;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
@@ -24,11 +20,8 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
-import websocket.messages.ServerMessage;
-import static websocket.messages.ServerMessage.ServerMessageType;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -205,7 +198,6 @@ public class WebSocketHandler {
             String message = "Message HERE!";
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
-
 
         }
         else {
