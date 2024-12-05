@@ -198,13 +198,15 @@ public class WebSocketHandler {
             // Resign
             gameData.game().resign();
 
+            // Update Database
+            gameDAO.updateGame(gameData);
+
             // Send Notification Message to Game Participants
             String message = "Message HERE!";
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
 
-            // Update Database
-             gameDAO.updateGame(gameData);
+
         }
         else {
             String message = "Message HERE!";
