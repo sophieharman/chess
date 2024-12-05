@@ -110,7 +110,7 @@ public class WebSocketHandler {
 
         // Verify User is a Player and Not an Observer
         if (!player(user, gameData)) {
-            String message = "Message HERE!";
+            String message = "Observer!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, user, session);
             return;
@@ -130,7 +130,7 @@ public class WebSocketHandler {
         }
 
         if (!Objects.equals(playerMoved, user)) {
-            String message = "Message HERE!";
+            String message = "Wrong Player!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, wrongPlayer, session);
             return;
@@ -140,6 +140,7 @@ public class WebSocketHandler {
 
             if (game.validMoves(move.getStartPosition()).contains(move)) {
                 game.makeMove(move);
+                gameDAO.updateGame(gameData);
             }
             else {
                 String message = "Message HERE!";
@@ -156,12 +157,13 @@ public class WebSocketHandler {
             String message = "Message HERE!";
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), playerMoved);
+
+
+
         }
         else {
-            String message = "Message HERE!";
+            String message = "Game Over!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-//            connections.sendIndividualMessage(error, playerMoved, session);
-//            connections.sendGameParticipantsMessage(error, gameData.gameID(), null);
             connections.sendOthersMessage(error, null, session);
         }
 
@@ -203,7 +205,6 @@ public class WebSocketHandler {
 
             // Update Database
              gameDAO.updateGame(gameData);
-
         }
         else {
             String message = "Message HERE!";
