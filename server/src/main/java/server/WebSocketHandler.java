@@ -157,7 +157,10 @@ public class WebSocketHandler {
         else {
             String message = "Game Over!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-            connections.sendOthersMessage(error, null, session);
+            // NOT THE OBSERVERS!!!
+            connections.sendIndividualMessage(error, playerMoved, session);
+//            connections.sendOthersMessage(error, null, session);
+//            connections.sendOthersMessage(error, null, session);
         }
 
     }
