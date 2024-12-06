@@ -87,7 +87,8 @@ public class WebSocketHandler {
         // Send Other Players Message
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
-        connections.sendOthersMessage(notification, user, session);
+//        connections.sendOthersMessage(notification, user, session);
+        connections.sendGameParticipantsMessage(notification, gameData.gameID(), user);
     }
 
     public boolean player(String user, GameData gameData) {
@@ -151,8 +152,6 @@ public class WebSocketHandler {
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), playerMoved);
 
-
-
         }
         else {
             String message = "Game Over!";
@@ -191,7 +190,7 @@ public class WebSocketHandler {
         // Send Other Players Message
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
-        connections.sendOthersMessage(notification, user, session);
+        connections.sendGameParticipantsMessage(notification, gameData.gameID(), user);
     }
 
     public void resign(ResignCommand resign, String user, Session session) throws DataAccessException, IOException {
