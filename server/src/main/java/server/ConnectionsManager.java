@@ -53,20 +53,6 @@ public class ConnectionsManager {
         }
     }
 
-    public void sendOthersMessage(ServerMessage msgType, String username, Session session) throws IOException {
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.username.equals(username)) {
-                    try {
-                        c.send(new Gson().toJson(msgType));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-    }
-
     public void sendGameParticipantsMessage(ServerMessage msgType, Integer gameID, String playerMoved) {
 
         HashSet<String> players = gameConnections.get(gameID);
@@ -74,15 +60,18 @@ public class ConnectionsManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
 
-                if (players.contains(c.username)) {
-                    try {
-                        if (!Objects.equals(c.username, playerMoved)){
-                        c.send(new Gson().toJson(msgType));
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                if (!players.contains(c.username)) {
+                    continue;
                 }
+
+                try {
+                    if (!Objects.equals(c.username, playerMoved)){
+                    c.send(new Gson().toJson(msgType));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         }
     }

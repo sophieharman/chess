@@ -81,13 +81,12 @@ public class WebSocketHandler {
     public void connect(String user, GameData gameData, Session session) throws IOException {
 
         // Send Root Message
-        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame()); // FIX THIS
+        LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame());
         connections.sendRootMessage(loadGame, session);
 
         // Send Other Players Message
         String message = "Message HERE!";
         Notification notification = new Notification(NOTIFICATION, message);
-//        connections.sendOthersMessage(notification, user, session);
         connections.sendGameParticipantsMessage(notification, gameData.gameID(), user);
     }
 
@@ -96,7 +95,8 @@ public class WebSocketHandler {
         return Objects.equals(user, gameData.whiteUsername()) || Objects.equals(user, gameData.blackUsername());
     }
 
-    public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData, Session session) throws IOException, InvalidMoveException, DataAccessException {
+    public void makeMove(MakeMoveCommand makeMove, String user, GameData gameData,
+                         Session session) throws IOException, InvalidMoveException, DataAccessException {
 
         // Update Board with Chess Move
         ChessGame game = gameData.game();
