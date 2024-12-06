@@ -73,7 +73,7 @@ public class WebSocketHandler {
         switch (action.getCommandType()) {
             case CommandType.CONNECT -> connect(user, gameData, session);
             case CommandType.MAKE_MOVE -> makeMove(new Gson().fromJson(msg, MakeMoveCommand.class), user, gameData, session);
-            case CommandType.LEAVE -> leave(user, session);
+            case CommandType.LEAVE -> leave(user, gameData, session);
             case CommandType.RESIGN -> resign(new Gson().fromJson(msg, ResignCommand.class), user, session);
         }
     }
@@ -157,17 +157,36 @@ public class WebSocketHandler {
         else {
             String message = "Game Over!";
             ErrorMessage error = new ErrorMessage(ERROR, message);
-            // NOT THE OBSERVERS!!!
             connections.sendIndividualMessage(error, playerMoved, session);
-//            connections.sendOthersMessage(error, null, session);
-//            connections.sendOthersMessage(error, null, session);
         }
 
     }
 
-    public void leave(String user, Session session) throws IOException {
+    public void leave(String user, GameData gameData, Session session) throws IOException, DataAccessException {
 
         connections.remove(user);
+
+        Integer gameID = gameData.gameID();
+        String gameName = gameData.gameName();
+        ChessGame game = gameData.game();
+
+
+        GameData updatedGameData;
+        if (Objects.equals(user, gameData.whiteUsername()) || Objects.equals(user, gameData.blackUsername())) {
+            if (Objects.equals(user, gameData.whiteUsername())) {
+                updatedGameData = new GameData(gameID, null, gameData.blackUsername(), gameName, game);
+            } else {
+                updatedGameData = new GameData(gameID, gameData.whiteUsername(), null, gameName, game);
+            }
+
+            gameDAO.updateGame(updatedGameData);
+        }
+        else {
+            String message = "Error!";
+            ErrorMessage error = new ErrorMessage(ERROR, message);
+            connections.sendIndividualMessage(error, user, session);
+        }
+
 
         // Send Other Players Message
         String message = "Message HERE!";
