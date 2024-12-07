@@ -3,11 +3,14 @@ package ui;
 import chess.ChessBoard;
 import exception.ResponseException;
 import model.*;
+import websockets.WebSocketFacade;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Client {
 
+    private WebSocketFacade ws;
     BoardDisplay display = new BoardDisplay();
     ChessBoard board = new ChessBoard();
     boolean listGamesCalled = false;
@@ -22,16 +25,15 @@ public class Client {
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-    }
 
-    public static void main(String[] args) throws ResponseException {
-        var serverUrl = "http://localhost:8080";
-        if (args.length == 1) {
-            serverUrl = args[0];
+        try {
+            new Repl(serverUrl).run();
+        } catch (ResponseException e) {
+            System.out.println("Error: ");
         }
-
-        new Repl(serverUrl).run();
     }
+
+
 
     public String eval(String input) {
         try {
@@ -44,7 +46,7 @@ public class Client {
                 case "logout" -> logout(params);
                 case "createGame" -> createGame(params);
                 case "listGames" -> listGames(params);
-                case "joinGame" -> joinGame(params);
+//                case "joinGame" -> joinGame(params);
                 case "observeGame" -> observeGame(params);
                 case "redrawBoard" -> redrawBoard(params);
                 case "leave" -> leave(params);
@@ -131,7 +133,7 @@ public class Client {
         throw new ResponseException(400, "Expected: <>");
     }
 
-    public String joinGame(Object... params) throws ResponseException {
+    public String joinGame(Object... params) throws ResponseException, IOException {
         if (!listGamesCalled) {
             throw new ResponseException(500, "Error: Please list games before attempting to join a game");
         }
@@ -164,6 +166,10 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
+
+//            ws = new WebSocketFacade(serverUrl, notificationHandler);
+//            ws.connect(authToken, gameID);
+
             display.main(board, "black");
             display.main(board,"white");
             return "You have successfully joined Game " + gameID;
