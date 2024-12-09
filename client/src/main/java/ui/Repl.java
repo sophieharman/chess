@@ -11,9 +11,9 @@ public class Repl {
     private final Client client;
     private State state = State.SIGNEDOUT;
 
-    public Repl(String serverUrl)
+    public Repl(String serverUrl, Client client)
     {
-        client = new Client(serverUrl);
+        this.client = client;
     }
 
     public void run() throws ResponseException {

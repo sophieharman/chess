@@ -27,7 +27,7 @@ public class Client {
         this.serverUrl = serverUrl;
 
         try {
-            new Repl(serverUrl).run();
+            new Repl(serverUrl, this).run();
         } catch (ResponseException e) {
             System.out.println("Error: ");
         }
@@ -46,7 +46,7 @@ public class Client {
                 case "logout" -> logout(params);
                 case "createGame" -> createGame(params);
                 case "listGames" -> listGames(params);
-//                case "joinGame" -> joinGame(params);
+                case "joinGame" -> joinGame(params);
                 case "observeGame" -> observeGame(params);
                 case "redrawBoard" -> redrawBoard(params);
                 case "leave" -> leave(params);
@@ -56,8 +56,8 @@ public class Client {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException ex) {
-            return ex.getMessage();
+        } catch (ResponseException | IOException e) {
+            return e.getMessage();
         }
 
     }
@@ -104,6 +104,9 @@ public class Client {
             CreateGameResult game = server.createGame(params[0], authToken);
 
             gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+
+            // Reset Board
+            board.resetBoard();
 
             return String.format("New Game Created: %s", params[0]);
         }
@@ -170,8 +173,13 @@ public class Client {
 //            ws = new WebSocketFacade(serverUrl, notificationHandler);
 //            ws.connect(authToken, gameID);
 
-            display.main(board, "black");
-            display.main(board,"white");
+            if (playerColor.equals("WHITE")) {
+                display.main(board,"white");
+            }
+            if (playerColor.equals("BLACK")) {
+                display.main(board, "black");
+            }
+
             return "You have successfully joined Game " + gameID;
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
@@ -192,8 +200,6 @@ public class Client {
             if (primaryID == null) {
                 throw new ResponseException(404, "Error: Game ID not found");
             }
-            board.resetBoard();
-            display.main(board, "black");
             display.main(board,"white");
             return "You have successfully joined the game as an observer";
         }
