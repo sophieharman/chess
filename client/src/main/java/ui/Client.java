@@ -2,6 +2,8 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -67,7 +69,7 @@ public class Client implements NotificationHandler {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException | IOException | DeploymentException | URISyntaxException e) {
+        } catch (ResponseException | IOException | DeploymentException | URISyntaxException | InvalidMoveException e) {
             return e.getMessage();
         }
 
@@ -267,21 +269,44 @@ public class Client implements NotificationHandler {
         throw new ResponseException(400, "Expected: <Username> <GameID>");
     }
 
-    public String makeMove(String... params) throws ResponseException, DeploymentException, URISyntaxException, IOException {
-
-        if (params.length == 2) {
+    public String makeMove(String... params) throws ResponseException, DeploymentException, URISyntaxException, IOException, InvalidMoveException {
+        if (params.length == 4) {
 
             // Verify Game ID
-            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[0].toString()));
             if (primaryID == null) {
                 throw new ResponseException(404, "Error: Game ID not found");
             }
+
+            String start = params[1].toString();
+            String end = params[2].toString();
+            String user = params[3].toString();
+
+            ChessGame game = gameInfo.getGame(primaryID).game();
+
+            String whiteUsername = gameInfo.getGame(primaryID).whiteUsername();
+            String blackUsername = gameInfo.getGame(primaryID).blackUsername();
+
+            String playerColor;
+            if (user.equals(whiteUsername)) {
+                playerColor = "white";
+            } else if (user.equals(blackUsername)) {
+                playerColor = "black";
+            } else {
+                throw new ResponseException(400, "Error: User Not Authorized to Make Move in Game");
+            }
+
+            // Make Move
+            MoveMapping moveMapping = new MoveMapping(start, end, playerColor, game.getBoard());
+            ChessMove move = moveMapping.convertToMove();
+            game.makeMove(move);
+
 
             ws = new WebSocketFacade(serverUrl, this);
             ws.makeMove(authToken, primaryID);
             return "";
         }
-        throw new ResponseException(400, "Expected: <GameID>");
+        throw new ResponseException(400, "Expected: <GameID> <<a-h><1-8>> <<a-h><1-8>> <Username>");
     }
 
     public String resign(String... params) throws DeploymentException, URISyntaxException, IOException, ResponseException {
@@ -322,7 +347,7 @@ public class Client implements NotificationHandler {
                 - help
                 - redrawBoard <PlayerColor> <GameID>
                 - highlightLegalMoves
-                - makeMove
+                - makeMove <GameID> <<a-h><1-8>> <<a-h><1-8>> <Username>
                 - leave <Username> <GameID>
                 - resign
                 """;

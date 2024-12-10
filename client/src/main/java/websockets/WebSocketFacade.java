@@ -14,14 +14,12 @@ public class WebSocketFacade extends Endpoint{
 
     private Session session;
     NotificationHandler notificationHandler;
-    ErrorHandler errorHandler;
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws URISyntaxException, DeploymentException, IOException {
 
         url = url.replace("http", "ws");
         URI socketURI = new URI(url + "/ws");
         this.notificationHandler = notificationHandler;
-        this.errorHandler = errorHandler;
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, socketURI);

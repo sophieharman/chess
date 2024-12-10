@@ -78,7 +78,7 @@ public class WebSocketHandler {
         }
     }
 
-    public void connect(String user, GameData gameData, Session session) throws IOException {
+    public void connect(String user, GameData gameData, Session session) throws IOException, DataAccessException {
 
         // Send Root Message
         LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame());
@@ -92,6 +92,9 @@ public class WebSocketHandler {
         } else {
             color = "an observer";
         }
+
+        // Update Game Data
+        gameDAO.updateGame(gameData);
 
         // Send Other Players Message
         String message = String.format("%s connected to %s as %s.", user, gameData.gameName(), color);
