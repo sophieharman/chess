@@ -52,7 +52,7 @@ public class WebSocketHandler {
 
         // Verify Authentication
         if (user == null) {
-            String message =  "Message HERE!";
+            String message =  "Error: Unauthorized Access";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendRootMessage(error, session);
         }
@@ -60,7 +60,7 @@ public class WebSocketHandler {
         // Verify GameID
         GameData gameData = gameDAO.getGame(gameID);
         if (gameData == null) {
-            String message =  "Error: Message HERE!";
+            String message =  "Error: Invalid GameID";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendRootMessage(error, session);
             return;
@@ -84,8 +84,17 @@ public class WebSocketHandler {
         LoadGame loadGame = new LoadGame(LOAD_GAME, new ChessGame());
         connections.sendRootMessage(loadGame, session);
 
+        String color;
+        if (user.equals(gameData.whiteUsername())) {
+            color = "white";
+        } else if (user.equals(gameData.blackUsername())) {
+            color = "black";
+        } else {
+            color = "an observer";
+        }
+
         // Send Other Players Message
-        String message = "Message HERE!";
+        String message = String.format("%s connected to %s as %s.", user, gameData.gameName(), color);
         Notification notification = new Notification(NOTIFICATION, message);
         connections.sendGameParticipantsMessage(notification, gameData.gameID(), user);
     }
@@ -104,7 +113,7 @@ public class WebSocketHandler {
 
         // Verify User is a Player and Not an Observer
         if (!player(user, gameData)) {
-            String message = "Observer!";
+            String message = "Error: Observer not Authorized to Make Move";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, user, session);
             return;
@@ -124,7 +133,7 @@ public class WebSocketHandler {
         }
 
         if (!Objects.equals(playerMoved, user)) {
-            String message = "Wrong Player!";
+            String message = "Error: Player Move Out of Turn";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, wrongPlayer, session);
             return;
@@ -137,7 +146,7 @@ public class WebSocketHandler {
                 gameDAO.updateGame(gameData);
             }
             else {
-                String message = "Message HERE!";
+                String message = "Error: Invalid Move";
                 ErrorMessage error = new ErrorMessage(ERROR, message);
                 connections.sendIndividualMessage(error, playerMoved, session);
                 return;
@@ -148,13 +157,13 @@ public class WebSocketHandler {
             connections.sendGameParticipantsMessage(loadGame, gameData.gameID(),null);
 
             // Send Notification to Game Participants
-            String message = "Message HERE!";
+            String message = String.format("%s made move from %s to %s", user, "PLACE1", "PLACE2");
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), playerMoved);
 
         }
         else {
-            String message = "Game Over!";
+            String message = "Error: Game Over -- No More Moves Can Be Made";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, playerMoved, session);
         }
@@ -181,14 +190,14 @@ public class WebSocketHandler {
             gameDAO.updateGame(updatedGameData);
         }
         else {
-            String message = "Error!";
+            String message = "Error: You Must Be Connected to Game as Black or White to Leave";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, user, session);
         }
 
 
         // Send Other Players Message
-        String message = "Message HERE!";
+        String message = String.format("%s left the game", user);
         Notification notification = new Notification(NOTIFICATION, message);
         connections.sendGameParticipantsMessage(notification, gameData.gameID(), user);
     }
@@ -201,7 +210,7 @@ public class WebSocketHandler {
 
         // Verify User is a Player and Not an Observer
         if (!player(user, gameData)) {
-            String message = "Message HERE!";
+            String message = "Error: Must be Player to Resign";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendIndividualMessage(error, user, session);
             return;
@@ -216,13 +225,13 @@ public class WebSocketHandler {
             gameDAO.updateGame(gameData);
 
             // Send Notification Message to Game Participants
-            String message = "Message HERE!";
+            String message = String.format("%s resigned", user);
             Notification notification = new Notification(NOTIFICATION, message);
             connections.sendGameParticipantsMessage(notification, gameData.gameID(), null);
 
         }
         else {
-            String message = "Message HERE!";
+            String message = "Error: Cannot Resign -- Game is Over";
             ErrorMessage error = new ErrorMessage(ERROR, message);
             connections.sendRootMessage(error, session);
 

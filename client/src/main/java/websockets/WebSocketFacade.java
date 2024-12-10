@@ -8,15 +8,20 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import websocket.commands.UserGameCommand.CommandType;
+import websocket.messages.Notification;
 
 public class WebSocketFacade extends Endpoint{
 
     private Session session;
+    NotificationHandler notificationHandler;
+    ErrorHandler errorHandler;
 
-    public WebSocketFacade(String url) throws URISyntaxException, DeploymentException, IOException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws URISyntaxException, DeploymentException, IOException {
 
         url = url.replace("http", "ws");
         URI socketURI = new URI(url + "/ws");
+        this.notificationHandler = notificationHandler;
+        this.errorHandler = errorHandler;
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, socketURI);
@@ -25,7 +30,7 @@ public class WebSocketFacade extends Endpoint{
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             @Override
             public void onMessage(String message) {
-                System.out.println("IMPLEMENT");
+                notificationHandler.notify(message);
             }
         });
     }

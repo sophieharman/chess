@@ -104,7 +104,7 @@ public class Service {
 
         // Create New Game
         Integer gameID = gameDAO.createGame(gameName);
-        return new CreateGameResult(gameID, null, null, gameName);
+        return new CreateGameResult(gameID, null, null, gameName, gameDAO.getGame(gameID));
     }
 
     public JoinGameResult joinGame(String playerColor, String authToken, Integer gameID) throws ServiceException, DataAccessException {

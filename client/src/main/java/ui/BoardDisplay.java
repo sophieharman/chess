@@ -137,10 +137,10 @@ public class BoardDisplay {
             String piece = pieceMapping.get(chessPiece.getPieceType());
             ChessGame.TeamColor pieceColor = chessPiece.getTeamColor();
             if (pieceColor == ChessGame.TeamColor.WHITE) {
-                out.print(SET_TEXT_COLOR_WHITE);
+                out.print(SET_TEXT_COLOR_BLACK); //CHANGED THIS
             }
             else {
-                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(SET_TEXT_COLOR_WHITE); // CHANGED THIS
             }
             out.print(piece);
         }

@@ -1,14 +1,23 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import exception.ResponseException;
 import model.*;
+import websocket.messages.Notification;
+import websockets.ErrorHandler;
+import websockets.NotificationHandler;
 import websockets.WebSocketFacade;
 
+import javax.websocket.DeploymentException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 
-public class Client {
+public class Client implements NotificationHandler {
 
     private WebSocketFacade ws;
     BoardDisplay display = new BoardDisplay();
@@ -21,10 +30,12 @@ public class Client {
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
+    private GameState gameState = GameState.OUT;
 
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+
 
         try {
             new Repl(serverUrl, this).run();
@@ -56,7 +67,7 @@ public class Client {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException | IOException e) {
+        } catch (ResponseException | IOException | DeploymentException | URISyntaxException e) {
             return e.getMessage();
         }
 
@@ -103,7 +114,7 @@ public class Client {
         if (params.length == 1) {
             CreateGameResult game = server.createGame(params[0], authToken);
 
-            gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+            gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername(), game.game());
 
             // Reset Board
             board.resetBoard();
@@ -126,7 +137,7 @@ public class Client {
                 ids.addID(game.gameID(), idCount);
 
                 // Record Game Information in Client
-                gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername());
+                gameInfo.addInfo(game.gameID(), game.whiteUsername(), game.blackUsername(), game);
                 listGamesCalled = true;
 
                 System.out.printf("%-10s %-10s %-10s %-10s%n", idCount, game.gameName(), game.whiteUsername(), game.blackUsername());
@@ -136,7 +147,7 @@ public class Client {
         throw new ResponseException(400, "Expected: <>");
     }
 
-    public String joinGame(Object... params) throws ResponseException, IOException {
+    public String joinGame(Object... params) throws ResponseException, IOException, DeploymentException, URISyntaxException {
         if (!listGamesCalled) {
             throw new ResponseException(500, "Error: Please list games before attempting to join a game");
         }
@@ -162,6 +173,7 @@ public class Client {
             // Grab Game Data
             String whiteUser = gameInfo.getWhiteUser(primaryID);
             String blackUser = gameInfo.getBlackUser(primaryID);
+            GameData game = gameInfo.getGame(primaryID);
 
             // Verify Position is Open
             if (playerColor.equals("WHITE") && whiteUser != null || playerColor.equals("BLACK") && blackUser != null) {
@@ -169,15 +181,16 @@ public class Client {
             }
 
             server.joinGame(playerColor, authToken, primaryID);
+            gameState = GameState.IN;
 
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-//            ws.connect(authToken, gameID);
+            ws = new WebSocketFacade(serverUrl, this);
+            ws.connect(authToken, gameID);
 
             if (playerColor.equals("WHITE")) {
-                display.main(board,"white");
+                display.main(game.game().getBoard(),"white");
             }
             if (playerColor.equals("BLACK")) {
-                display.main(board, "black");
+                display.main(game.game().getBoard(), "black");
             }
 
             return "You have successfully joined Game " + gameID;
@@ -185,7 +198,7 @@ public class Client {
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
     }
 
-    public String observeGame(String... params) throws ResponseException {
+    public String observeGame(String... params) throws ResponseException, DeploymentException, URISyntaxException, IOException {
         if (params.length == 1) {
 
             // Verify Parameter is an Integer
@@ -200,19 +213,29 @@ public class Client {
             if (primaryID == null) {
                 throw new ResponseException(404, "Error: Game ID not found");
             }
-            display.main(board,"white");
+            GameData game = gameInfo.getGame(primaryID);
+
+            ws = new WebSocketFacade(serverUrl, this);
+            ws.connect(authToken, primaryID);
+            gameState = GameState.IN;
+
+            display.main(game.game().getBoard(),"white");
             return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");
     }
 
     public String redrawBoard(String... params) {
-        System.out.println("Implement");
+        if (params.length == 1) {
+            System.out.println("IMPLEMENT");
+        }
         return "";
     }
 
     public String leave(String... params) {
         System.out.println("Implement");
+
+        gameState = GameState.OUT;
         return "You've left the game.";
     }
 
@@ -222,7 +245,7 @@ public class Client {
     }
 
     public String resign(String... params) {
-        System.out.println("Implement");
+        gameState = GameState.OUT;
         return "Game Over. You’ve forfeited the game.";
     }
 
@@ -239,13 +262,32 @@ public class Client {
                     - quit
                     """;
         }
-        return """
+        else {
+            if (gameState == GameState.IN) {
+                return """
+                - help
+                - redrawBoard
+                - highlightLegalMoves
+                - makeMove
+                - leave
+                - resign
+                """;
+            }
+            return """
                 - listGames
                 - joinGame <PlayerColor> <GameID>
                 - observeGame <GameID>
                 - createGame <GameName>
                 - logout
                 """;
+        }
+
     }
 
+    @Override
+    public void notify(String notification) {
+        JsonObject jsonObject = JsonParser.parseString(notification).getAsJsonObject();
+        String msg = jsonObject.get("message").getAsString();
+        System.out.println(msg);
+    }
 }
