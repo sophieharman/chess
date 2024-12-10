@@ -225,28 +225,82 @@ public class Client implements NotificationHandler {
         throw new ResponseException(400, "Expected: <GameID>");
     }
 
-    public String redrawBoard(String... params) {
-        if (params.length == 1) {
-            System.out.println("IMPLEMENT");
+    public String redrawBoard(String... params) throws ResponseException {
+        if (params.length == 2) {
+
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
+            }
+            GameData game = gameInfo.getGame(primaryID);
+
+            // Unpack Parameters
+            String playerColor = params[0].toString().toUpperCase();
+            Integer gameID = Integer.valueOf(params[1].toString());
+
+            // Redraw Board
+            display.main(game.game().getBoard(), playerColor);
+            return "";
         }
-        return "";
+        throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
     }
 
-    public String leave(String... params) {
-        System.out.println("Implement");
+    public String leave(Object... params) throws DeploymentException, URISyntaxException, IOException, ResponseException {
+        if (params.length == 2) {
 
-        gameState = GameState.OUT;
-        return "You've left the game.";
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
+            }
+
+            String user = params[0].toString();
+;
+
+            ws = new WebSocketFacade(serverUrl, this);
+            ws.leave(user, primaryID);
+
+            gameState = GameState.OUT;
+            return "You've left the game.";
+        }
+        throw new ResponseException(400, "Expected: <Username> <GameID>");
     }
 
-    public String makeMove(String... params) {
-        System.out.println("Implement");
-        return "";
+    public String makeMove(String... params) throws ResponseException, DeploymentException, URISyntaxException, IOException {
+
+        if (params.length == 2) {
+
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
+            }
+
+            ws = new WebSocketFacade(serverUrl, this);
+            ws.makeMove(authToken, primaryID);
+            return "";
+        }
+        throw new ResponseException(400, "Expected: <GameID>");
     }
 
-    public String resign(String... params) {
-        gameState = GameState.OUT;
-        return "Game Over. You’ve forfeited the game.";
+    public String resign(String... params) throws DeploymentException, URISyntaxException, IOException, ResponseException {
+
+        if (params.length == 2) {
+
+            // Verify Game ID
+            Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[1].toString()));
+            if (primaryID == null) {
+                throw new ResponseException(404, "Error: Game ID not found");
+            }
+
+            ws = new WebSocketFacade(serverUrl, this);
+            ws.leave(authToken, primaryID);
+
+            gameState = GameState.OUT;
+            return "Game Over. You’ve forfeited the game.";
+        }
+        throw new ResponseException(400, "Expected: <GameID>");
     }
 
     public String showLegalMoves(String... params) {
@@ -266,10 +320,10 @@ public class Client implements NotificationHandler {
             if (gameState == GameState.IN) {
                 return """
                 - help
-                - redrawBoard
+                - redrawBoard <PlayerColor> <GameID>
                 - highlightLegalMoves
                 - makeMove
-                - leave
+                - leave <Username> <GameID>
                 - resign
                 """;
             }
