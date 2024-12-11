@@ -70,7 +70,7 @@ public class MoveMapping {
         verifyFormatting(str);
         Integer row = Character.getNumericValue(str.charAt(1));
         Integer col = mapping.get(str.charAt(0));
-        return new ChessPosition(col, row);
+        return new ChessPosition(row, col);
     }
 
     public boolean inGrid(ChessPosition position) {
@@ -115,6 +115,6 @@ public class MoveMapping {
 
         // Return Move
         ChessPiece piece = getPiece(startPos);
-        return new ChessMove(startPos, endPos, piece.getPieceType());
+        return new ChessMove(startPos, endPos, null);
     }
 }

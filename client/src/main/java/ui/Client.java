@@ -1,16 +1,13 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import exception.ResponseException;
 import model.*;
-import websocket.messages.Notification;
-import websockets.ErrorHandler;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websockets.NotificationHandler;
 import websockets.WebSocketFacade;
 
@@ -21,6 +18,7 @@ import java.util.*;
 
 public class Client implements NotificationHandler {
 
+    ChessGame game;
     private String playerColor;
     private WebSocketFacade ws;
     BoardDisplay display = new BoardDisplay();
@@ -37,8 +35,10 @@ public class Client implements NotificationHandler {
 
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
+        this.board = board;
         this.serverUrl = serverUrl;
         this.playerColor = null;
+        this.game = new ChessGame();
 
 
         try {
@@ -192,11 +192,11 @@ public class Client implements NotificationHandler {
 
             if (color.equals("WHITE")) {
                 playerColor = "white";
-                display.main(game.game().getBoard(),"white");
+                display.main(game.game().getBoard(),"white", false, null);
             }
             if (color.equals("BLACK")) {
                 playerColor = "black";
-                display.main(game.game().getBoard(), "black");
+                display.main(game.game().getBoard(), "black", false, null);
             }
 
             return "You have successfully joined Game " + gameID;
@@ -225,7 +225,7 @@ public class Client implements NotificationHandler {
             ws.connect(authToken, primaryID);
             gameState = GameState.IN;
 
-            display.main(game.game().getBoard(),"white");
+            display.main(game.game().getBoard(),"white", false, null);
             return "You have successfully joined the game as an observer";
         }
         throw new ResponseException(400, "Expected: <GameID>");
@@ -246,7 +246,12 @@ public class Client implements NotificationHandler {
             Integer gameID = Integer.valueOf(params[1].toString());
 
             // Redraw Board
-            display.main(game.game().getBoard(), playerColor);
+            if (playerColor.equals("white")) {
+                display.main(game.game().getBoard(),"black", false, null);
+            }
+            if (playerColor.equals("black")) {
+                display.main(game.game().getBoard(), "white", false, null);
+            }
             return "";
         }
         throw new ResponseException(400, "Expected: <PlayerColor> <GameID>");
@@ -293,7 +298,7 @@ public class Client implements NotificationHandler {
             game.makeMove(move);
 
             ws = new WebSocketFacade(serverUrl, this);
-            ws.makeMove(authToken, primaryID);
+            ws.makeMove(authToken, primaryID, move, game);
             return "";
         }
         throw new ResponseException(400, "Expected: <GameID> <<a-h><1-8>> <<a-h><1-8>>");
@@ -318,9 +323,29 @@ public class Client implements NotificationHandler {
         throw new ResponseException(400, "Expected: <GameID>");
     }
 
-    public String showLegalMoves(String... params) {
-        System.out.println("Implement");
-        return "";
+    public String showLegalMoves(String... params) throws ResponseException {
+        if (params.length == 1) {
+
+            // Verify Parameter
+            String start = params[1].toString();
+            MoveMapping map =  new MoveMapping(start, null, null, null);
+            ChessPosition startPosition = map.convertToPosition(start);
+            Collection<ChessMove> validMoves = game.validMoves(startPosition);
+
+            // Redraw Board
+            if (playerColor.equals("white")) {
+                display.main(game.getBoard(),"black", true, validMoves);
+            }
+            if (playerColor.equals("black")) {
+                display.main(game.getBoard(), "white", true, validMoves);
+            }
+
+            return "";
+
+
+
+        }
+        throw new ResponseException(400, "Expected: <StartPosition>");
     }
 
     public String help() {
@@ -336,8 +361,8 @@ public class Client implements NotificationHandler {
                 return """
                 - help
                 - redrawBoard <PlayerColor> <GameID>
-                - highlightLegalMoves
-                - makeMove <GameID> <<a-h><1-8>> <<a-h><1-8>> <Username>
+                - highlightLegalMoves <<a-h><1-8>>
+                - makeMove <GameID> <<a-h><1-8>> <<a-h><1-8>>
                 - leave <Username> <GameID>
                 - resign
                 """;
@@ -354,19 +379,33 @@ public class Client implements NotificationHandler {
     }
 
     @Override
-    public void load(String notification) {
-        // Handle Load Game Messages!
-
-        // Save the Game
-
+    public void load(String notification){
         JsonObject jsonObject = JsonParser.parseString(notification).getAsJsonObject();
-        System.out.println("IMPLEMENT");
+
+        if (jsonObject.has("game")) {
+            JsonObject gameJson = jsonObject.getAsJsonObject("game");
+            ChessGame gameUpdated = new Gson().fromJson(gameJson, ChessGame.class);
+
+            // Update Game Attribute
+            game = gameUpdated;
+
+            // Display Board
+            if (playerColor.equals("white")) {
+                display.main(game.getBoard(), "black", false, null);
+            }
+            if (playerColor.equals("black")) {
+                display.main(game.getBoard(), "white", false, null);
+            }
+
+        }
     }
 
     @Override
     public void notify(String notification) {
         JsonObject jsonObject = JsonParser.parseString(notification).getAsJsonObject();
-        String msg = jsonObject.get("message").getAsString();
-        System.out.println(msg);
+        if (jsonObject.has("message")) {
+            String msg = jsonObject.get("message").getAsString();
+            System.out.println(msg);
+        }
     }
 }

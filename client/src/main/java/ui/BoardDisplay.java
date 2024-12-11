@@ -3,10 +3,8 @@ package ui;
 import java.util.*;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+
+import chess.*;
 import chess.ChessPiece.PieceType;
 import exception.ResponseException;
 
@@ -21,7 +19,7 @@ public class BoardDisplay {
     public ChessBoard board = new ChessBoard();
 
 
-    public void main(ChessBoard newBoard, String teamColor) throws ResponseException {
+    public void main(ChessBoard newBoard, String teamColor, boolean highlight, Collection<ChessMove> validMoves) {
 
         // Update Board
         board = newBoard;
@@ -40,7 +38,7 @@ public class BoardDisplay {
 
         drawHeader(out, teamColor);
 
-        drawBoard(out, teamColor);
+        drawBoard(out, teamColor, highlight, validMoves);
 
         drawHeader(out, teamColor);
 
@@ -70,7 +68,7 @@ public class BoardDisplay {
         setBlack(out);
     }
 
-    private void drawBoard(PrintStream out, String teamColor) {
+    private void drawBoard(PrintStream out, String teamColor, boolean highlight, Collection<ChessMove> validMoves) {
         int sideHeader;
         if (Objects.equals(teamColor, "white")) {
             sideHeader = 8;
@@ -92,9 +90,23 @@ public class BoardDisplay {
             for (int j = start; j != stop; j += step) {
 
                 if(colAlt) {
+                    if (highlight) {
+                        ChessPosition pos = new ChessPosition(i, j);
+                        if (validMoves.contains(pos)) {
+                            setLightGray(out);
+                            break;
+                        }
+                    }
                     setLightBrown(out);
                 }
                 else {
+                    if (highlight) {
+                        ChessPosition pos = new ChessPosition(i, j);
+                        if (validMoves.contains(pos)) {
+                            setDarkGray(out);
+                            break;
+                        }
+                    }
                     setDarkBrown(out);
                 }
 
@@ -159,6 +171,16 @@ public class BoardDisplay {
     private static void setLightBrown(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_BROWN);
         out.print(SET_TEXT_COLOR_LIGHT_BROWN);
+    }
+
+    private static void setDarkGray(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(SET_TEXT_COLOR_DARK_GREY);
+    }
+
+    private static void setLightGray(PrintStream out) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
     }
 
 }
