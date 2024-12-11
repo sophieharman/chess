@@ -68,9 +68,9 @@ public class MoveMapping {
 
     public ChessPosition convertToPosition(String str) throws ResponseException {
         verifyFormatting(str);
-        Integer row = mapping.get(str.charAt(1)).intValue();
+        Integer row = Character.getNumericValue(str.charAt(1));
         Integer col = mapping.get(str.charAt(0));
-        return new ChessPosition(row, col);
+        return new ChessPosition(col, row);
     }
 
     public boolean inGrid(ChessPosition position) {

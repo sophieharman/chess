@@ -93,9 +93,6 @@ public class WebSocketHandler {
             color = "an observer";
         }
 
-        // Update Game Data
-        gameDAO.updateGame(gameData);
-
         // Send Other Players Message
         String message = String.format("%s connected to %s as %s.", user, gameData.gameName(), color);
         Notification notification = new Notification(NOTIFICATION, message);

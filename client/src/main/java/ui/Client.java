@@ -21,6 +21,7 @@ import java.util.*;
 
 public class Client implements NotificationHandler {
 
+    private String playerColor;
     private WebSocketFacade ws;
     BoardDisplay display = new BoardDisplay();
     ChessBoard board = new ChessBoard();
@@ -37,6 +38,7 @@ public class Client implements NotificationHandler {
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.playerColor = null;
 
 
         try {
@@ -169,7 +171,7 @@ public class Client implements NotificationHandler {
             }
 
             // Unpack Parameters
-            String playerColor = params[0].toString().toUpperCase();
+            String color = params[0].toString().toUpperCase();
             Integer gameID = Integer.valueOf(params[1].toString());
 
             // Grab Game Data
@@ -178,20 +180,22 @@ public class Client implements NotificationHandler {
             GameData game = gameInfo.getGame(primaryID);
 
             // Verify Position is Open
-            if (playerColor.equals("WHITE") && whiteUser != null || playerColor.equals("BLACK") && blackUser != null) {
+            if (color.equals("WHITE") && whiteUser != null || color.equals("BLACK") && blackUser != null) {
                 throw new ResponseException(400, "Error: Player Color Occupied");
             }
 
-            server.joinGame(playerColor, authToken, primaryID);
+            server.joinGame(color, authToken, primaryID);
             gameState = GameState.IN;
 
             ws = new WebSocketFacade(serverUrl, this);
             ws.connect(authToken, gameID);
 
-            if (playerColor.equals("WHITE")) {
+            if (color.equals("WHITE")) {
+                playerColor = "white";
                 display.main(game.game().getBoard(),"white");
             }
-            if (playerColor.equals("BLACK")) {
+            if (color.equals("BLACK")) {
+                playerColor = "black";
                 display.main(game.game().getBoard(), "black");
             }
 
@@ -270,7 +274,7 @@ public class Client implements NotificationHandler {
     }
 
     public String makeMove(String... params) throws ResponseException, DeploymentException, URISyntaxException, IOException, InvalidMoveException {
-        if (params.length == 4) {
+        if (params.length == 3) {
 
             // Verify Game ID
             Integer primaryID = ids.getPrimaryGameID(Integer.valueOf(params[0].toString()));
@@ -280,33 +284,19 @@ public class Client implements NotificationHandler {
 
             String start = params[1].toString();
             String end = params[2].toString();
-            String user = params[3].toString();
 
             ChessGame game = gameInfo.getGame(primaryID).game();
-
-            String whiteUsername = gameInfo.getGame(primaryID).whiteUsername();
-            String blackUsername = gameInfo.getGame(primaryID).blackUsername();
-
-            String playerColor;
-            if (user.equals(whiteUsername)) {
-                playerColor = "white";
-            } else if (user.equals(blackUsername)) {
-                playerColor = "black";
-            } else {
-                throw new ResponseException(400, "Error: User Not Authorized to Make Move in Game");
-            }
 
             // Make Move
             MoveMapping moveMapping = new MoveMapping(start, end, playerColor, game.getBoard());
             ChessMove move = moveMapping.convertToMove();
             game.makeMove(move);
 
-
             ws = new WebSocketFacade(serverUrl, this);
             ws.makeMove(authToken, primaryID);
             return "";
         }
-        throw new ResponseException(400, "Expected: <GameID> <<a-h><1-8>> <<a-h><1-8>> <Username>");
+        throw new ResponseException(400, "Expected: <GameID> <<a-h><1-8>> <<a-h><1-8>>");
     }
 
     public String resign(String... params) throws DeploymentException, URISyntaxException, IOException, ResponseException {
@@ -361,6 +351,16 @@ public class Client implements NotificationHandler {
                 """;
         }
 
+    }
+
+    @Override
+    public void load(String notification) {
+        // Handle Load Game Messages!
+
+        // Save the Game
+
+        JsonObject jsonObject = JsonParser.parseString(notification).getAsJsonObject();
+        System.out.println("IMPLEMENT");
     }
 
     @Override
