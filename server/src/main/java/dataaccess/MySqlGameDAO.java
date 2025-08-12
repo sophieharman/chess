@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import java.security.SecureRandom;
 import model.GameData;
 import model.JoinGameData;
 
@@ -25,7 +26,7 @@ public class MySqlGameDAO implements GameDAO {
             try (var ps = conn.prepareStatement(statement)) {
 
                 // Generate Game ID
-                Random random = new Random();
+                Random random = new SecureRandom();
                 Integer gameID = random.nextInt(100_000_000, 1_000_000_000);
 
                 // New Game Data
